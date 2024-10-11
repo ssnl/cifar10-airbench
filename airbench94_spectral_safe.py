@@ -333,7 +333,7 @@ class SafeInputNet(nn.Module):
         l = self.safe_part(qx)  # [B, nClass, imC, H, W]
         # print(l.flatten(-3, -1).norm(dim=-1).mean())
         return (
-            l * x[..., None, :, :, :],
+            l * x[..., None, :, :, :]
         ).mean(dim=(-3, -2, -1))
         return torch.bmm(
             l.flatten(-3, -1),

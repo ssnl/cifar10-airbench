@@ -302,9 +302,9 @@ class BlowUpLinear(nn.Conv2d):
         self.out_classes = out_classes
         self.out_channels = out_channels
         self.out_spatial = out_spatial
-        self.weight.data.div_(
-            out_spatial ** 2 * out_channels
-        )
+        # self.weight.data.div_(
+        #     out_spatial ** 2 * out_channels
+        # )
         # torch.nn.init.dirac_(self.weight[:self.weight.size(1)])
 
     def forward(self, x):
@@ -332,6 +332,9 @@ class SafeInputNet(nn.Module):
         # x: [B, imC, H, W]
         l = self.safe_part(qx)  # [B, nClass, imC, H, W]
         # print(l.flatten(-3, -1).norm(dim=-1).mean())
+        return (
+            l * x[..., None, :, :, :],
+        ).mean(dim=(-3, -2, -1))
         return torch.bmm(
             l.flatten(-3, -1),
             x.flatten(-3, -1)[..., None],

@@ -364,6 +364,7 @@ def make_net():
         ConvGroup(widths['block1'], widths['block2'], batchnorm_momentum, pool=True),
         ConvGroup(widths['block2'], widths['block3'], batchnorm_momentum, pool=False),
         BlowUpLinear(widths['block3'], 8, 32, 3, 10),
+        Mul(hyp['net']['scaling_factor']),
     )
     inner_net[0].weight.requires_grad = False
     net = SafeInputNet(inner_net)

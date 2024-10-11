@@ -369,7 +369,6 @@ def make_net():
     net = SafeInputNet(inner_net)
     # net = net.half().cuda()
     net = net.to(memory_format=torch.channels_last)
-    import ipdb; ipdb.set_trace()
     for mod in net.modules():
         if isinstance(mod, BatchNorm):
             mod.float()

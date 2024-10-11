@@ -35,14 +35,14 @@ torch.backends.cudnn.benchmark = True
 
 hyp = {
     'opt': {
-        'train_epochs': 8,
+        'train_epochs': 20,
         'batch_size': 2000,
         'lr': 6.5,                 # learning rate per 1024 examples
         'momentum': 0.85,
         'weight_decay': 0.015,     # weight decay per 1024 examples (decoupled from learning rate)
         'bias_scaler': 64.0,        # scales up learning rate (but not weight decay) for BatchNorm biases
         'label_smoothing': 0.2,
-        'whiten_bias_epochs': 3,    # how many epochs to train the whitening layer bias before freezing
+        'whiten_bias_epochs': 19,    # how many epochs to train the whitening layer bias before freezing
     },
     'aug': {
         'flip': True,

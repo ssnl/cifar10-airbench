@@ -508,8 +508,8 @@ def main(run, model_trainbias, model_freezebias):
     model = model_trainbias
     filter_params = [p for p in model.parameters() if len(p.shape) == 4 and p.requires_grad]
     norm_biases = [p for n, p in model.named_parameters() if 'norm' in n and p.requires_grad]
-    whiten_bias = model._orig_mod[0].bias
-    fc_layer = model._orig_mod[-2].weight
+    whiten_bias = model._orig_mod.safe_part[0].bias
+    fc_layer = model._orig_mod.safe_part[-2].weight
     param_configs = [dict(params=norm_biases, lr=lr_biases, weight_decay=wd/lr_biases),
                      dict(params=[fc_layer], lr=lr, weight_decay=wd/lr)]
     optimizer1 = SpectralSGDM(filter_params, lr=0.24, momentum=0.6, nesterov=True)
@@ -523,7 +523,7 @@ def main(run, model_trainbias, model_freezebias):
     model = model_freezebias
     filter_params = [p for p in model.parameters() if len(p.shape) == 4 and p.requires_grad]
     norm_biases = [p for n, p in model.named_parameters() if 'norm' in n and p.requires_grad]
-    fc_layer = model._orig_mod[-2].weight
+    fc_layer = model._orig_mod.safe_part[-2].weight
     param_configs = [dict(params=norm_biases, lr=lr_biases, weight_decay=wd/lr_biases),
                      dict(params=[fc_layer], lr=lr, weight_decay=wd/lr)]
     optimizer1 = SpectralSGDM(filter_params, lr=0.24, momentum=0.6, nesterov=True)
@@ -548,7 +548,7 @@ def main(run, model_trainbias, model_freezebias):
     # Initialize the whitening layer using training images
     starter.record()
     train_images = train_loader.normalize(train_loader.images[:5000])
-    init_whitening_conv(model_trainbias._orig_mod[0], train_images)
+    init_whitening_conv(model_trainbias._orig_mod.safe_part[0], train_images)
     ender.record()
     torch.cuda.synchronize()
     total_time_seconds += 1e-3 * starter.elapsed_time(ender)

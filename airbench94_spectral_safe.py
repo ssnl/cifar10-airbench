@@ -4,6 +4,26 @@ Runs in 2.67 seconds on a 400W NVIDIA A100
 Attains 94.04 mean accuracy (n=200 trials)
 """
 
+"""
+Let
+    x: [1, D]
+    W: [D, C]
+    logits = x @ W : [1, C]
+    loss = -log(softmax(logits))[cls] : scalar
+
+The gradient of the loss with respect to x is given by
+    d/dx loss = (d/dlogits loss) @ (d/dx logits)
+              = (softmax(logits) - onehot(cls)) @ W.T
+              = (softmax(x @ W) - onehot(cls)) @ W.T
+
+    ||d/dx loss|| <= ||W|| ||softmax(x @ W) - onehot(cls)||
+
+    take Linf
+
+    ||d/dx loss|| <= ||W||
+"""
+
+
 #############################################
 #            Setup/Hyperparameters          #
 #############################################
@@ -11,13 +31,14 @@ Attains 94.04 mean accuracy (n=200 trials)
 import os
 import sys
 import uuid
-from math import ceil
+from math import ceil, isinf
 
 import torch
 from torch import nn
 import torch.nn.functional as F
 import torchvision
 import torchvision.transforms as T
+from autoattack import AutoAttack
 
 torch.backends.cudnn.benchmark = True
 
@@ -35,7 +56,7 @@ torch.backends.cudnn.benchmark = True
 
 hyp = {
     'opt': {
-        'train_epochs': 20,
+        'train_epochs': 40,
         'batch_size': 2000,
         'lr': 6.5,                 # learning rate per 1024 examples
         'momentum': 0.85,
@@ -56,7 +77,10 @@ hyp = {
         },
         'batchnorm_momentum': 0.6,
         'scaling_factor': 1/9,
-        'tta_level': 2,         # the level of test-time augmentation: 0=none, 1=mirror, 2=mirror+translate
+        'tta_level': 0,         # the level of test-time augmentation: 0=none, 1=mirror, 2=mirror+translate
+        # for imagenet, want to cap l1 norm <3 (c.f. characterizing robusness fig 6b). imagenet is 224x224x3, this is 32x32x3 so we should be 3/49, about 1/16, if we use this.
+        'inp_grad_norm_clip': 1/16,
+        'inp_grad_norm_p': float('inf'),
     },
 }
 
@@ -319,11 +343,15 @@ class BlowUpLinear(nn.Conv2d):
 
 
 class SafeInputNet(nn.Module):
-    def __init__(self, safe_part: nn.Module, eps: float = 8. / 255):
+    def __init__(self, safe_part: nn.Module, eps: float = 8. / 255,
+                 inp_grad_norm_clip: float = 1/16,
+                 inp_grad_norm_p: float = 3):
         super().__init__()
         self.safe_part = safe_part
         perturb_half_range = torch.as_tensor(eps / CIFAR_STD)
         self.register_buffer('perturb_half_range', perturb_half_range)
+        self.inp_grad_norm_clip = inp_grad_norm_clip
+        self.inp_grad_norm_p = inp_grad_norm_p
 
     def forward(self, x):
         # qx: [B, imC, H, W]
@@ -331,8 +359,12 @@ class SafeInputNet(nn.Module):
         qx = x + perturb_distribution.sample(x.shape[:-3])[..., None, None]
         # x: [B, imC, H, W]
         l = self.safe_part(qx)  # [B, nClass, imC, H, W]
-        # for imagenet, want to cap <10. imagenet is 256x256x3, this is 32x32x3 so we should be 10/64
-        l = torch.nn.functional.normalize(l, dim=(-3, -2, -1), p=1) * (10/64)
+        if isinf(self.inp_grad_norm_p):
+            l = l.tanh() * self.inp_grad_norm_clip
+        else:
+            norm = l.norm(dim=(-3, -2, -1), p=self.inp_grad_norm_p, keepdim=True)
+            scale = self.inp_grad_norm_clip / (norm + 1e-12)
+            l = l * scale
         # print(l.flatten(-3, -1).norm(dim=-1).mean())
         return (
             l * x[..., None, :, :, :]
@@ -421,7 +453,7 @@ def print_columns(columns_list, is_head=False, is_final_entry=False):
     if is_head or is_final_entry:
         print('-'*len(print_string))
 
-logging_columns_list = ['run   ', 'epoch', 'train_loss', 'train_acc', 'val_acc', 'tta_val_acc', 'total_time_seconds']
+logging_columns_list = ['run   ', 'epoch', 'train_loss', 'train_acc', 'val_acc', 'tta_val_acc', 'adv_val_acc', 'total_time_seconds']
 def print_training_details(variables, is_final_entry):
     formatted = []
     for col in logging_columns_list:
@@ -440,40 +472,49 @@ def print_training_details(variables, is_final_entry):
 #               Evaluation                 #
 ############################################
 
+# Test-time augmentation strategy (for tta_level=2):
+# 1. Flip/mirror the image left-to-right (50% of the time).
+# 2. Translate the image by one pixel either up-and-left or down-and-right (50% of the time,
+#    i.e. both happen 25% of the time).
+#
+# This creates 6 views per image (left/right times the two translations and no-translation),
+# which we evaluate and then weight according to the given probabilities.
+
+def infer_basic(inputs, net):
+    return net(inputs).clone()
+
+def infer_mirror(inputs, net):
+    return 0.5 * net(inputs) + 0.5 * net(inputs.flip(-1))
+
+def infer_mirror_translate(inputs, net):
+    logits = infer_mirror(inputs, net)
+    pad = 1
+    padded_inputs = F.pad(inputs, (pad,)*4, 'reflect')
+    inputs_translate_list = [
+        padded_inputs[:, :, 0:32, 0:32],
+        padded_inputs[:, :, 2:34, 2:34],
+    ]
+    logits_translate_list = [infer_mirror(inputs_translate, net)
+                                for inputs_translate in inputs_translate_list]
+    logits_translate = torch.stack(logits_translate_list).mean(0)
+    return 0.5 * logits + 0.5 * logits_translate
+
+
 def infer(model, loader, tta_level=0):
-
-    # Test-time augmentation strategy (for tta_level=2):
-    # 1. Flip/mirror the image left-to-right (50% of the time).
-    # 2. Translate the image by one pixel either up-and-left or down-and-right (50% of the time,
-    #    i.e. both happen 25% of the time).
-    #
-    # This creates 6 views per image (left/right times the two translations and no-translation),
-    # which we evaluate and then weight according to the given probabilities.
-
-    def infer_basic(inputs, net):
-        return net(inputs).clone()
-
-    def infer_mirror(inputs, net):
-        return 0.5 * net(inputs) + 0.5 * net(inputs.flip(-1))
-
-    def infer_mirror_translate(inputs, net):
-        logits = infer_mirror(inputs, net)
-        pad = 1
-        padded_inputs = F.pad(inputs, (pad,)*4, 'reflect')
-        inputs_translate_list = [
-            padded_inputs[:, :, 0:32, 0:32],
-            padded_inputs[:, :, 2:34, 2:34],
-        ]
-        logits_translate_list = [infer_mirror(inputs_translate, net)
-                                 for inputs_translate in inputs_translate_list]
-        logits_translate = torch.stack(logits_translate_list).mean(0)
-        return 0.5 * logits + 0.5 * logits_translate
-
     model.eval()
     test_images = loader.normalize(loader.images)
     infer_fn = [infer_basic, infer_mirror, infer_mirror_translate][tta_level]
     with torch.no_grad():
         return torch.cat([infer_fn(inputs, model) for inputs in test_images.split(2000)])
+
+def eval_autoattack(model, loader):
+    model.eval()
+    adversary = AutoAttack(lambda x: model(loader.normalize(x)), norm='Linf', eps=8/255, version='rand')
+    x, y = loader.images, loader.labels
+    x = x * CIFAR_STD + CIFAR_MEAN
+    assert x.max() <= 1 and x.min() >= 0
+    x_adv = loader.normalize(adversary.run_standard_evaluation(x, y, bs=1024))
+    return (infer_basic(x_adv, model).argmax(1) == y).float().mean().item()
 
 def evaluate(model, loader, tta_level=0):
     logits = infer(model, loader, tta_level)
@@ -608,6 +649,7 @@ def main(run, model_trainbias, model_freezebias):
         train_acc = (outputs.detach().argmax(1) == labels).float().mean().item()
         train_loss = loss.item() / batch_size
         val_acc = evaluate(model, test_loader, tta_level=0)
+        adv_val_acc = eval_autoattack(model, test_loader)
         print_training_details(locals(), is_final_entry=False)
         run = None # Only print the run number once
 
@@ -617,6 +659,7 @@ def main(run, model_trainbias, model_freezebias):
 
     starter.record()
     tta_val_acc = evaluate(model, test_loader, tta_level=hyp['net']['tta_level'])
+    adv_val_acc = eval_autoattack(model, test_loader)
     ender.record()
     torch.cuda.synchronize()
     total_time_seconds += 1e-3 * starter.elapsed_time(ender)
@@ -643,7 +686,7 @@ if __name__ == "__main__":
 
     print_columns(logging_columns_list, is_head=True)
     main('warmup', model_trainbias, model_freezebias)
-    accs = torch.tensor([main(run, model_trainbias, model_freezebias) for run in range(200)])
+    accs = torch.tensor([main(run, model_trainbias, model_freezebias) for run in range(10)])
     print('Mean: %.4f    Std: %.4f' % (accs.mean(), accs.std()))
 
     log = {'code': code, 'accs': accs}

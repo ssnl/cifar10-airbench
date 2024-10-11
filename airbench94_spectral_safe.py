@@ -79,7 +79,7 @@ hyp = {
         'scaling_factor': 1/9,
         'tta_level': 0,         # the level of test-time augmentation: 0=none, 1=mirror, 2=mirror+translate
         # for imagenet, want to cap l1 norm <3 (c.f. characterizing robusness fig 6b). imagenet is 224x224x3, this is 32x32x3 so we should be 3/49, about 1/16, if we use this.
-        'inp_grad_norm_clip': 1/16,
+        'inp_grad_norm_clip': 0.05,
         'inp_grad_norm_p': float('inf'),
     },
 }

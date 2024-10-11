@@ -331,10 +331,12 @@ class SafeInputNet(nn.Module):
         qx = x + perturb_distribution.sample(x.shape[:-3])[..., None, None]
         # x: [B, imC, H, W]
         l = self.safe_part(qx)  # [B, nClass, imC, H, W]
+        # for imagenet, want to cap <10. imagenet is 256x256x3, this is 32x32x3 so we should be 10/64
+        l = torch.nn.functional.normalize(l, dim=(-3, -2, -1), p=1) * (10/64)
         # print(l.flatten(-3, -1).norm(dim=-1).mean())
         return (
             l * x[..., None, :, :, :]
-        ).mean(dim=(-3, -2, -1))
+        ).sum(dim=(-3, -2, -1))
         return torch.bmm(
             l.flatten(-3, -1),
             x.flatten(-3, -1)[..., None],

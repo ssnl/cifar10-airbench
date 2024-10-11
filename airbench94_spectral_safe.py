@@ -368,7 +368,7 @@ def make_net():
     )
     inner_net[0].weight.requires_grad = False
     net = SafeInputNet(inner_net)
-    # net = net.half().cuda()
+    net = net.half().cuda()
     net = net.to(memory_format=torch.channels_last)
     for mod in net.modules():
         if isinstance(mod, BatchNorm):

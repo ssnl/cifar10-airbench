@@ -689,7 +689,7 @@ if __name__ == "__main__":
     model_freezebias = torch.compile(model_freezebias, mode='max-autotune')
 
     print_columns(logging_columns_list, is_head=True)
-    main('warmup', model_trainbias, model_freezebias)
+    # main('warmup', model_trainbias, model_freezebias)
     accs = torch.tensor([main(run, model_trainbias, model_freezebias) for run in range(10)])
     print('Mean: %.4f    Std: %.4f' % (accs.mean(), accs.std()))
 

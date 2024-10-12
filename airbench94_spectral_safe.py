@@ -512,6 +512,7 @@ def eval_autoattack(model, loader):
     adversary = AutoAttack(lambda x: model(loader.normalize(x)), norm='Linf', eps=8/255, version='rand')
     x, y = loader.images, loader.labels
     x = x * CIFAR_STD[:, None, None].to(x.device, dtype=x.dtype) + CIFAR_MEAN[:, None, None].to(x.device, dtype=x.dtype)
+    x = x.half()
     assert x.max() <= 1 and x.min() >= 0
     x_adv = loader.normalize(adversary.run_standard_evaluation(x, y, bs=1024))
     return (infer_basic(x_adv, model).argmax(1) == y).float().mean().item()

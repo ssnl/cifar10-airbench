@@ -351,20 +351,20 @@ class SafeInputNet(nn.Module):
                  scale_factor: float = 1):
         super().__init__()
         self.safe_part = safe_part
-        perturb_half_range = torch.as_tensor(eps * 20 / CIFAR_STD)[..., None, None].expand(3, 32, 32)
+        perturb_half_range = torch.as_tensor(eps * 5 / CIFAR_STD)[..., None, None].expand(3, 32, 32)
         perturb_half_range = perturb_half_range.contiguous()[None, ...].to(memory_format=torch.channels_last)[0]
         self.register_buffer('perturb_half_range', perturb_half_range)
         self.inp_grad_norm_clip = inp_grad_norm_clip
         self.inp_grad_norm_p = inp_grad_norm_p
         self.scale = Mul(scale_factor)
-        self.blur = T.GaussianBlur(kernel_size=15, sigma=5)
+        self.blur = T.GaussianBlur(kernel_size=15, sigma=8)
 
     def forward(self, x):
         # qx: [B, imC, H, W]
-        # perturb_distribution = torch.distributions.uniform.Uniform(-self.perturb_half_range, self.perturb_half_range)
+        perturb_distribution = torch.distributions.uniform.Uniform(-self.perturb_half_range, self.perturb_half_range)
         # qx = x + perturb_distribution.sample(x.shape[:-3])
         # qx = torch.lerp(x, torch.randn_like(x), 0.65)
-        qx = torch.lerp(self.blur(x), torch.randn_like(x), 0.1)
+        qx = torch.lerp(self.blur(x), perturb_distribution.sample(x.shape[:-3]), 0.1)
         # x: [B, imC, H, W]
         l_mult, base_l = self.safe_part(qx)  # [B, nClass, imC, H, W]
         if isinf(self.inp_grad_norm_p):

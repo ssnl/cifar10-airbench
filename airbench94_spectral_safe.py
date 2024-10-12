@@ -322,7 +322,7 @@ class BlowUpLinear(Conv):
         assert out_spatial % in_spatial == 0
         spatial_mul = out_spatial // in_spatial
         out_features = (spatial_mul * spatial_mul * out_classes * out_channels)
-        super().__init__(in_channels, out_features, kernel_size=1)
+        super().__init__(in_channels, out_features, kernel_size=1, bias=False)
         self.class_fc = nn.Linear(in_channels * in_spatial * in_spatial, out_classes, bias=False)
         self.spatial_mul = spatial_mul
         self.out_classes = out_classes
@@ -362,7 +362,8 @@ class SafeInputNet(nn.Module):
         # qx: [B, imC, H, W]
         perturb_distribution = torch.distributions.uniform.Uniform(-self.perturb_half_range, self.perturb_half_range)
         # qx = x + perturb_distribution.sample(x.shape[:-3])
-        qx = torch.lerp(x, torch.randn_like(x), 0.65)
+        # qx = torch.lerp(x, torch.randn_like(x), 0.65)
+        qx = T.GaussianBlur(kernel_size=5, sigma=3)(x)
         # x: [B, imC, H, W]
         l_mult, base_l = self.safe_part(qx)  # [B, nClass, imC, H, W]
         if isinf(self.inp_grad_norm_p):

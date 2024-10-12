@@ -660,7 +660,7 @@ def main(run, model_trainbias, model_freezebias):
         train_acc = (outputs.detach().argmax(1) == labels).float().mean().item()
         train_loss = loss.item() / batch_size
         val_acc = evaluate(model, test_loader, tta_level=0)
-        adv_val_acc = eval_autoattack(model, test_loader)
+        # adv_val_acc = eval_autoattack(model, test_loader)
         print_training_details(locals(), is_final_entry=False)
         run = None # Only print the run number once
 

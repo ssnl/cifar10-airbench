@@ -316,7 +316,7 @@ class ConvGroup(nn.Module):
         x = self.activ(x)
         return x
 
-class BlowUpLinear(nn.Conv2d):
+class BlowUpLinear(Conv):
     def __init__(self, in_channels, in_spatial, out_spatial, out_channels, out_classes):
         assert out_spatial % in_spatial == 0
         spatial_mul = out_spatial // in_spatial
@@ -356,7 +356,7 @@ class SafeInputNet(nn.Module):
     def forward(self, x):
         # qx: [B, imC, H, W]
         perturb_distribution = torch.distributions.uniform.Uniform(-self.perturb_half_range, self.perturb_half_range)
-        qx = x + perturb_distribution.sample(x.shape[:-3])[..., None, None]
+        qx = x # + perturb_distribution.sample(x.shape[:-3])[..., None, None]
         # x: [B, imC, H, W]
         l = self.safe_part(qx)  # [B, nClass, imC, H, W]
         if isinf(self.inp_grad_norm_p):

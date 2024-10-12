@@ -557,7 +557,7 @@ def main(run, model_trainbias, model_freezebias):
     # Create optimizers for train whiten bias stage
     model = model_trainbias
     whiten_bias = model._orig_mod.safe_part[0].bias
-    last_layer_fcw = model._orig_mod.safe_part[-2].class_fc.weight
+    last_layer_fcw = model._orig_mod.safe_part[-1].class_fc.weight
     filter_params = [p for p in model.parameters() if len(p.shape) == 4 and p.requires_grad]
     norm_biases = [p for n, p in model.named_parameters() if 'norm' in n and p.requires_grad]
     param_configs = [dict(params=norm_biases, lr=lr_biases, weight_decay=wd/lr_biases),
@@ -571,7 +571,7 @@ def main(run, model_trainbias, model_freezebias):
     optimizer3_trainbias = optimizer3
     # Create optimizers for frozen whiten bias stage
     model = model_freezebias
-    last_layer_fcw = model._orig_mod.safe_part[-2].class_fc.weight
+    last_layer_fcw = model._orig_mod.safe_part[-1].class_fc.weight
     filter_params = [p for p in model.parameters() if len(p.shape) == 4 and p.requires_grad]
     norm_biases = [p for n, p in model.named_parameters() if 'norm' in n and p.requires_grad]
     param_configs = [dict(params=norm_biases, lr=lr_biases, weight_decay=wd/lr_biases),

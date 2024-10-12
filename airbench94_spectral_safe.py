@@ -376,7 +376,7 @@ class SafeInputNet(nn.Module):
         # print(l.flatten(-3, -1).norm(dim=-1).mean())
         logits = (
             l_mult * x[..., None, :, :, :]
-        ).sum(dim=(-3, -2, -1)) + base_l
+        ).sum(dim=(-3, -2, -1)) #+ base_l
         return self.scale(logits)
 
 #############################################

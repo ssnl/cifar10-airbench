@@ -349,7 +349,7 @@ class SafeInputNet(nn.Module):
                  inp_grad_norm_p: float = 3):
         super().__init__()
         self.safe_part = safe_part
-        perturb_half_range = torch.as_tensor(eps * 10 / CIFAR_STD)
+        perturb_half_range = torch.as_tensor(eps * 2 / CIFAR_STD)[..., None, None].expand(3, 32, 32)
         self.register_buffer('perturb_half_range', perturb_half_range)
         self.inp_grad_norm_clip = inp_grad_norm_clip
         self.inp_grad_norm_p = inp_grad_norm_p
@@ -357,7 +357,7 @@ class SafeInputNet(nn.Module):
     def forward(self, x):
         # qx: [B, imC, H, W]
         perturb_distribution = torch.distributions.uniform.Uniform(-self.perturb_half_range, self.perturb_half_range)
-        qx = x + perturb_distribution.sample(x.shape[:-3])[..., None, None]
+        qx = x + perturb_distribution.sample(x.shape[:-3])
         # x: [B, imC, H, W]
         l = self.safe_part(qx)  # [B, nClass, imC, H, W]
         if isinf(self.inp_grad_norm_p):

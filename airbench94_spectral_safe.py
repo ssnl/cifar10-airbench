@@ -59,14 +59,14 @@ CIFAR_STD = torch.tensor((0.2470, 0.2435, 0.2616))
 
 hyp = {
     'opt': {
-        'train_epochs': 40,
+        'train_epochs': 60,
         'batch_size': 2000,
         'lr': 6.5,                 # learning rate per 1024 examples
         'momentum': 0.85,
         'weight_decay': 0.015,     # weight decay per 1024 examples (decoupled from learning rate)
         'bias_scaler': 64.0,        # scales up learning rate (but not weight decay) for BatchNorm biases
         'label_smoothing': 0.2,
-        'whiten_bias_epochs': 19,    # how many epochs to train the whitening layer bias before freezing
+        'whiten_bias_epochs': 20,    # how many epochs to train the whitening layer bias before freezing
     },
     'aug': {
         'flip': True,
@@ -83,7 +83,7 @@ hyp = {
         'tta_level': 0,         # the level of test-time augmentation: 0=none, 1=mirror, 2=mirror+translate
         # method 1: for imagenet, want to cap l1 norm <3 (c.f. characterizing robusness fig 6b). imagenet is 224x224x3, this is 32x32x3 so we should be 3/49, about 1/16, if we use this.
         # method 2: for eps = 8/255 ~= 1/32, to ensure the linf norm * eps * numel / CIFAR_STD < k log 10, we should use about norm < k * 32 * log 10 / (32*32*3*CIFAR_STD) = k * log 10 / (96*CIFAR_STD) ~= 2.3/(96 * 0.25) ~= 0.1 * k
-        'inp_grad_norm_clip': 0.0025,
+        'inp_grad_norm_clip': 0.002,
         'inp_grad_norm_p': float('inf'),
     },
 }
@@ -323,6 +323,7 @@ class BlowUpLinear(Conv):
         spatial_mul = out_spatial // in_spatial
         out_features = (spatial_mul * spatial_mul * out_classes * out_channels)
         super().__init__(in_channels, out_features, kernel_size=1)
+        self.class_fc = nn.Linear(in_channels * in_spatial * in_spatial, out_classes, bias=False)
         self.spatial_mul = spatial_mul
         self.out_classes = out_classes
         self.out_channels = out_channels
@@ -332,15 +333,15 @@ class BlowUpLinear(Conv):
         # )
         # torch.nn.init.dirac_(self.weight[:self.weight.size(1)])
 
-    def forward(self, x):
-        # x: [B, iC, H, W]
-        x = super().forward(x)
+    def forward(self, inputs):
+        # inputs: [B, iC, H, W]
+        x = super().forward(inputs)
         x = x.unflatten(-3, (self.out_classes, self.out_channels, self.spatial_mul, self.spatial_mul))
         # x: [B, nClass, imC, MH, MW, H, W]
         x = x.swapaxes(-2, -3)
         # x: [B, nClass, imC, MH, H, MW, W]
         x = x.flatten(-4, -3).flatten(-2, -1)
-        return x
+        return x, self.class_fc(inputs.flatten(-3, -1))
 
 
 class SafeInputNet(nn.Module):
@@ -360,19 +361,19 @@ class SafeInputNet(nn.Module):
         perturb_distribution = torch.distributions.uniform.Uniform(-self.perturb_half_range, self.perturb_half_range)
         qx = x + perturb_distribution.sample(x.shape[:-3])
         # x: [B, imC, H, W]
-        l = self.safe_part(qx)  # [B, nClass, imC, H, W]
+        l_mult, base_l = self.safe_part(qx)  # [B, nClass, imC, H, W]
         if isinf(self.inp_grad_norm_p):
-            l = l.tanh() * self.inp_grad_norm_clip
+            l_mult = l_mult.tanh() * self.inp_grad_norm_clip
         else:
-            norm = l.norm(dim=(-3, -2, -1), p=self.inp_grad_norm_p, keepdim=True)
+            norm = l_mult.norm(dim=(-3, -2, -1), p=self.inp_grad_norm_p, keepdim=True)
             scale = self.inp_grad_norm_clip / (norm + 1e-12)
-            l = l * scale
+            l_mult = l_mult * scale
         # print(l.flatten(-3, -1).norm(dim=-1).mean())
         return (
-            l * x[..., None, :, :, :]
-        ).sum(dim=(-3, -2, -1))
+            l_mult * x[..., None, :, :, :]
+        ).sum(dim=(-3, -2, -1)) + base_l
         return torch.bmm(
-            l.flatten(-3, -1),
+            l_mult.flatten(-3, -1),
             x.flatten(-3, -1)[..., None],
         ).squeeze(-1)
 
@@ -557,12 +558,12 @@ def main(run, model_trainbias, model_freezebias):
 
     # Create optimizers for train whiten bias stage
     model = model_trainbias
+    whiten_bias = model._orig_mod.safe_part[0].bias
+    last_layer_fcw = model._orig_mod.safe_part[-2].class_fc.weight
     filter_params = [p for p in model.parameters() if len(p.shape) == 4 and p.requires_grad]
     norm_biases = [p for n, p in model.named_parameters() if 'norm' in n and p.requires_grad]
-    whiten_bias = model._orig_mod.safe_part[0].bias
-    fc_layer = model._orig_mod.safe_part[-2].weight
     param_configs = [dict(params=norm_biases, lr=lr_biases, weight_decay=wd/lr_biases),
-                     dict(params=[fc_layer], lr=lr, weight_decay=wd/lr)]
+                     dict(params=[last_layer_fcw], lr=lr, weight_decay=wd/lr)]
     optimizer1 = SpectralSGDM(filter_params, lr=0.24, momentum=0.6, nesterov=True)
     #optimizer1 = torch.optim.SGD(filter_params, lr=lr, weight_decay=wd/lr, momentum=hyp['opt']['momentum'], nesterov=True)
     optimizer2 = torch.optim.SGD(param_configs, momentum=hyp['opt']['momentum'], nesterov=True)
@@ -572,11 +573,11 @@ def main(run, model_trainbias, model_freezebias):
     optimizer3_trainbias = optimizer3
     # Create optimizers for frozen whiten bias stage
     model = model_freezebias
+    last_layer_fcw = model._orig_mod.safe_part[-2].class_fc.weight
     filter_params = [p for p in model.parameters() if len(p.shape) == 4 and p.requires_grad]
     norm_biases = [p for n, p in model.named_parameters() if 'norm' in n and p.requires_grad]
-    fc_layer = model._orig_mod.safe_part[-2].weight
     param_configs = [dict(params=norm_biases, lr=lr_biases, weight_decay=wd/lr_biases),
-                     dict(params=[fc_layer], lr=lr, weight_decay=wd/lr)]
+                     dict(params=[last_layer_fcw], lr=lr, weight_decay=wd/lr)]
     optimizer1 = SpectralSGDM(filter_params, lr=0.24, momentum=0.6, nesterov=True)
     #optimizer1 = torch.optim.SGD(filter_params, lr=lr, weight_decay=wd/lr, momentum=hyp['opt']['momentum'], nesterov=True)
     optimizer2 = torch.optim.SGD(param_configs, momentum=hyp['opt']['momentum'], nesterov=True)

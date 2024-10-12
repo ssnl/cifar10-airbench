@@ -42,6 +42,9 @@ from autoattack import AutoAttack
 
 torch.backends.cudnn.benchmark = True
 
+CIFAR_MEAN = torch.tensor((0.4914, 0.4822, 0.4465))
+CIFAR_STD = torch.tensor((0.2470, 0.2435, 0.2616))
+
 # We express the main training hyperparameters (batch size, learning rate, momentum, and weight decay)
 # in decoupled form, so that each one can be tuned independently. This accomplishes the following:
 # * Assuming time-constant gradients, the average step size is decoupled from everything but the lr.
@@ -78,8 +81,9 @@ hyp = {
         'batchnorm_momentum': 0.6,
         'scaling_factor': 1/9,
         'tta_level': 0,         # the level of test-time augmentation: 0=none, 1=mirror, 2=mirror+translate
-        # for imagenet, want to cap l1 norm <3 (c.f. characterizing robusness fig 6b). imagenet is 224x224x3, this is 32x32x3 so we should be 3/49, about 1/16, if we use this.
-        'inp_grad_norm_clip': 0.05,
+        # method 1: for imagenet, want to cap l1 norm <3 (c.f. characterizing robusness fig 6b). imagenet is 224x224x3, this is 32x32x3 so we should be 3/49, about 1/16, if we use this.
+        # method 2: for eps = 8/255 ~= 1/32, to ensure the linf norm * eps * numel / CIFAR_STD < log 10, we should use about norm < 32 * log 10 / (32*32*3*CIFAR_STD) = log 10 / (96*CIFAR_STD) ~= 2.3/(96 * 0.25) ~= 0.1
+        'inp_grad_norm_clip': 0.1,
         'inp_grad_norm_p': float('inf'),
     },
 }
@@ -171,9 +175,6 @@ class SpectralSGDM(torch.optim.Optimizer):
 #############################################
 #                DataLoader                 #
 #############################################
-
-CIFAR_MEAN = torch.tensor((0.4914, 0.4822, 0.4465))
-CIFAR_STD = torch.tensor((0.2470, 0.2435, 0.2616))
 
 def batch_flip_lr(inputs):
     flip_mask = (torch.rand(len(inputs), device=inputs.device) < 0.5).view(-1, 1, 1, 1)
@@ -348,7 +349,7 @@ class SafeInputNet(nn.Module):
                  inp_grad_norm_p: float = 3):
         super().__init__()
         self.safe_part = safe_part
-        perturb_half_range = torch.as_tensor(eps / CIFAR_STD)
+        perturb_half_range = torch.as_tensor(eps * 2 / CIFAR_STD)
         self.register_buffer('perturb_half_range', perturb_half_range)
         self.inp_grad_norm_clip = inp_grad_norm_clip
         self.inp_grad_norm_p = inp_grad_norm_p
@@ -356,7 +357,7 @@ class SafeInputNet(nn.Module):
     def forward(self, x):
         # qx: [B, imC, H, W]
         perturb_distribution = torch.distributions.uniform.Uniform(-self.perturb_half_range, self.perturb_half_range)
-        qx = x # + perturb_distribution.sample(x.shape[:-3])[..., None, None]
+        qx = x + perturb_distribution.sample(x.shape[:-3])[..., None, None]
         # x: [B, imC, H, W]
         l = self.safe_part(qx)  # [B, nClass, imC, H, W]
         if isinf(self.inp_grad_norm_p):
@@ -507,14 +508,6 @@ def infer(model, loader, tta_level=0):
     with torch.no_grad():
         return torch.cat([infer_fn(inputs, model) for inputs in test_images.split(2000)])
 
-class GradContiguous(torch.autograd.Function):
-    @staticmethod
-    def forward(ctx, x):
-        return x
-
-    @staticmethod
-    def backward(ctx, grad_output):
-        return grad_output.contiguous()
 
 def eval_autoattack(model, loader):
     model.eval()

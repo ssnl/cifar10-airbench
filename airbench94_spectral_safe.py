@@ -357,13 +357,14 @@ class SafeInputNet(nn.Module):
         self.inp_grad_norm_clip = inp_grad_norm_clip
         self.inp_grad_norm_p = inp_grad_norm_p
         self.scale = Mul(scale_factor)
+        self.blur = T.GaussianBlur(kernel_size=15, sigma=5)
 
     def forward(self, x):
         # qx: [B, imC, H, W]
-        perturb_distribution = torch.distributions.uniform.Uniform(-self.perturb_half_range, self.perturb_half_range)
+        # perturb_distribution = torch.distributions.uniform.Uniform(-self.perturb_half_range, self.perturb_half_range)
         # qx = x + perturb_distribution.sample(x.shape[:-3])
         # qx = torch.lerp(x, torch.randn_like(x), 0.65)
-        qx = T.GaussianBlur(kernel_size=5, sigma=3)(x)
+        qx = self.blur(x)
         # x: [B, imC, H, W]
         l_mult, base_l = self.safe_part(qx)  # [B, nClass, imC, H, W]
         if isinf(self.inp_grad_norm_p):

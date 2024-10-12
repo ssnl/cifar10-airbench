@@ -518,12 +518,13 @@ class GradContiguous(torch.autograd.Function):
 
 def eval_autoattack(model, loader):
     model.eval()
-    adversary = AutoAttack(
-        lambda x: model(loader.normalize(x).half().to(memory_format=torch.channels_last)).float(),
-        norm='Linf', eps=8/255, version='rand')
+    model_fn = lambda x: model(loader.normalize(x).half().to(memory_format=torch.channels_last)).float()
+    adversary = AutoAttack(model_fn, norm='Linf', eps=8/255, version='rand')
     x, y = loader.images, loader.labels
     x = x.float() * CIFAR_STD[:, None, None].to(x.device, dtype=x.dtype) + CIFAR_MEAN[:, None, None].to(x.device, dtype=x.dtype)
+    import ipdb; ipdb.set_trace()
     assert x.max() <= 1 and x.min() >= 0
+
     x_adv = loader.normalize(adversary.run_standard_evaluation(x.to(memory_format=torch.contiguous_format), y, bs=1024)).half()
     return (infer_basic(x_adv, model).argmax(1) == y).float().mean().item()
 

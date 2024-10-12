@@ -347,7 +347,8 @@ class BlowUpLinear(Conv):
 class SafeInputNet(nn.Module):
     def __init__(self, safe_part: nn.Module, eps: float = 8. / 255,
                  inp_grad_norm_clip: float = 1/16,
-                 inp_grad_norm_p: float = 3):
+                 inp_grad_norm_p: float = 3,
+                 scale_factor: float = 1):
         super().__init__()
         self.safe_part = safe_part
         perturb_half_range = torch.as_tensor(eps * 5 / CIFAR_STD)[..., None, None].expand(3, 32, 32)
@@ -355,6 +356,7 @@ class SafeInputNet(nn.Module):
         self.register_buffer('perturb_half_range', perturb_half_range)
         self.inp_grad_norm_clip = inp_grad_norm_clip
         self.inp_grad_norm_p = inp_grad_norm_p
+        self.scale = Mul(scale_factor)
 
     def forward(self, x):
         # qx: [B, imC, H, W]
@@ -369,13 +371,10 @@ class SafeInputNet(nn.Module):
             scale = self.inp_grad_norm_clip / (norm + 1e-12)
             l_mult = l_mult * scale
         # print(l.flatten(-3, -1).norm(dim=-1).mean())
-        return (
+        logits = (
             l_mult * x[..., None, :, :, :]
         ).sum(dim=(-3, -2, -1)) + base_l
-        return torch.bmm(
-            l_mult.flatten(-3, -1),
-            x.flatten(-3, -1)[..., None],
-        ).squeeze(-1)
+        return self.scale(logits)
 
 #############################################
 #            Network Definition             #
@@ -404,10 +403,9 @@ def make_net():
         ConvGroup(widths['block1'], widths['block2'], batchnorm_momentum, pool=True),
         ConvGroup(widths['block2'], widths['block3'], batchnorm_momentum, pool=False),
         BlowUpLinear(widths['block3'], 8, 32, 3, 10),
-        Mul(hyp['net']['scaling_factor']),
     )
     inner_net[0].weight.requires_grad = False
-    net = SafeInputNet(inner_net)
+    net = SafeInputNet(inner_net, scale_factor=hyp['net']['scaling_factor'])
     net = net.half().cuda()
     net = net.to(memory_format=torch.channels_last)
     for mod in net.modules():

@@ -83,7 +83,7 @@ hyp = {
         'tta_level': 0,         # the level of test-time augmentation: 0=none, 1=mirror, 2=mirror+translate
         # method 1: for imagenet, want to cap l1 norm <3 (c.f. characterizing robusness fig 6b). imagenet is 224x224x3, this is 32x32x3 so we should be 3/49, about 1/16, if we use this.
         # method 2: for eps = 8/255 ~= 1/32, to ensure the linf norm * eps * numel / CIFAR_STD < k log 10, we should use about norm < k * 32 * log 10 / (32*32*3*CIFAR_STD) = k * log 10 / (96*CIFAR_STD) ~= 2.3/(96 * 0.25) ~= 0.1 * k
-        'inp_grad_norm_clip': 0.002,
+        'inp_grad_norm_clip': 0.00,
         'inp_grad_norm_p': float('inf'),
     },
 }
@@ -362,7 +362,7 @@ class SafeInputNet(nn.Module):
         # qx: [B, imC, H, W]
         perturb_distribution = torch.distributions.uniform.Uniform(-self.perturb_half_range, self.perturb_half_range)
         # qx = x + perturb_distribution.sample(x.shape[:-3])
-        qx = torch.lerp(x, torch.randn_like(x), 0.5)
+        qx = torch.lerp(x, torch.randn_like(x), 0.65)
         # x: [B, imC, H, W]
         l_mult, base_l = self.safe_part(qx)  # [B, nClass, imC, H, W]
         if isinf(self.inp_grad_norm_p):

@@ -351,7 +351,7 @@ class SafeInputNet(nn.Module):
                  scale_factor: float = 1):
         super().__init__()
         self.safe_part = safe_part
-        perturb_half_range = torch.as_tensor(eps * 5 / CIFAR_STD)[..., None, None].expand(3, 32, 32)
+        perturb_half_range = torch.as_tensor(eps * 15 / CIFAR_STD)[..., None, None].expand(3, 32, 32)
         perturb_half_range = perturb_half_range.contiguous()[None, ...].to(memory_format=torch.channels_last)[0]
         self.register_buffer('perturb_half_range', perturb_half_range)
         self.inp_grad_norm_clip = inp_grad_norm_clip

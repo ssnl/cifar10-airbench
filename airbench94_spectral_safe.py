@@ -507,10 +507,19 @@ def infer(model, loader, tta_level=0):
     with torch.no_grad():
         return torch.cat([infer_fn(inputs, model) for inputs in test_images.split(2000)])
 
+class GradContiguous(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, x):
+        return x
+
+    @staticmethod
+    def backward(ctx, grad_output):
+        return grad_output.contiguous()
+
 def eval_autoattack(model, loader):
     model.eval()
     adversary = AutoAttack(
-        lambda x: model(loader.normalize(x).half().to(memory_format=torch.channels_last)).float(),
+        lambda x: model(loader.normalize(GradContiguous.apply(x)).half().to(memory_format=torch.channels_last)).float(),
         norm='Linf', eps=8/255, version='rand')
     x, y = loader.images, loader.labels
     x = x.float() * CIFAR_STD[:, None, None].to(x.device, dtype=x.dtype) + CIFAR_MEAN[:, None, None].to(x.device, dtype=x.dtype)

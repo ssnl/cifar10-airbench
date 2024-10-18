@@ -146,6 +146,12 @@ class Muon(torch.optim.Optimizer):
                     state['stept'] = 0
                 state['stept'] += 1
                 if group['nesterov']:
+                    # m = beta1 * m + g
+                    # g = g + m * beta1
+                    # ----
+                    # equiv:
+                    # g = g + beta1**2 * m + beta1 * g
+                    #   = (1+beta1) g + beta1**2 m
                     if 'momentum_buffer' not in state:
                         state['momentum_buffer'] = torch.zeros_like(rawg)
                     buf = state['momentum_buffer']
@@ -429,7 +435,10 @@ def make_model():
 
 
 # name -> (optim_cls, desc)
-OPTIM_MAP: Mapping[str, Tuple[Callable, str]] = dict(
+OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], str]] = dict(
+    adam=                           ('adam',                                                                                           'adam\n(default b1=0.9)'),
+    adam_b095=                      ('adam_b095',                                                                                      'adam_b095\n(b1=0.9->0.95)'),
+    adam_b0995=                     ('adam_b0995',                                                                                     'adam_b0995\n(b1=0.9->0.995)'),
     muon=                           (functools.partial(Muon, backend='newtonschulz5'),                                                 'muon'),
     muon_sgd=                       (functools.partial(Muon, backend='sgd'),                                                           'SGD\n(i.e., muon without orthogonalization)'),
 

@@ -471,7 +471,7 @@ OPTIM_MAP: Mapping[str, Tuple[Callable, str]] = dict(
 if __name__ == '__main__':
     import sys
     # argv: [optim, lr, seed]
-    optim, lr, seed = sys.argv[1:]
+    optim_kind, lr, seed = sys.argv[1:]
     lr = float(lr)
     seed = int(seed)
 
@@ -483,7 +483,7 @@ if __name__ == '__main__':
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-    file = f'300steps_bzs2048/orth_{optim}_lr{lr:g}_seed{seed}.pth'
+    file = f'300steps_bzs2048/orth_{optim_kind}_lr{lr:g}_seed{seed}.pth'
     if os.path.exists(file):
         print(f'skipping {file}')
         sys.exit()
@@ -491,6 +491,6 @@ if __name__ == '__main__':
     print(f'training {file}')
     model = make_model()
     model.load_state_dict(torch.load('orth_init_weights.pth')[seed])
-    res = train_mnist(model, opt=OPTIM_MAP[optim][0], w_save_key=None, lr=lr, nsteps=500, log_nsteps=5, batch_size=2048)
+    res = train_mnist(model, opt=OPTIM_MAP[optim_kind][0], w_save_key=None, lr=lr, nsteps=500, log_nsteps=5, batch_size=2048)
     torch.save(res._asdict(), file)
     print(f'saved {file}')

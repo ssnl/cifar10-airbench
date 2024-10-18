@@ -454,27 +454,27 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], str]] = dict(
     muon_sched10=                   (functools.partial(Muon, backend='newtonschulz5_sched10', backend_steps=10),                       'muon w scheduled 10-step NS iter\n(default->naive)'),
     muon_sched14=                   (functools.partial(Muon, backend='newtonschulz5_sched14', backend_steps=14),                       'muon w scheduled 14-step NS iter\n(default->naive)'),
 
-    muon_renorm_fro=                (functools.partial(Muon, renormalize='momentum', renorm_kind='fro'),                               'muon renorm\n(||update||_f match ||momentum||)'),
-    muon_renorm_spec=               (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral'),                          'muon renorm\n(||update||_2 match ||momentum||)'),
+    muon_renorm_fro=                (functools.partial(Muon, renormalize='momentum', renorm_kind='fro'),                               'muon renorm\n(||$\Delta W$||_f match ||momentum||)'),
+    muon_renorm_spec=               (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral'),                          'muon renorm\n(||$\Delta W$||_2 match ||momentum||)'),
 
-    muon_renorm_glbsfro=            (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='fro'),                     'muon renorm\n(modula-like weighted-SUM ||update||_f match ||momentum||)'),
-    muon_renorm_glbmfro=            (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='fro'),                     'muon renorm\n(modula-like weighted-MAX ||update||_f match ||momentum||)'),
-    muon_renorm_glbsspec=           (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='spectral'),                'muon renorm\n(modula-like weighted-SUM ||update||_2 match ||momentum||)'),
-    muon_renorm_glbmspec=           (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='spectral'),                'muon renorm\n(modula-like weighted-MAX ||update||_2 match ||momentum||)'),
+    muon_renorm_glbsfro=            (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='fro'),                     'muon renorm\n(modula-like weighted-SUM ||$\Delta W$||_f match ||momentum||)'),
+    muon_renorm_glbmfro=            (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='fro'),                     'muon renorm\n(modula-like weighted-MAX ||$\Delta W$||_f match ||momentum||)'),
+    muon_renorm_glbsspec=           (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='spectral'),                'muon renorm\n(modula-like weighted-SUM ||$\Delta W$||_2 match ||momentum||)'),
+    muon_renorm_glbmspec=           (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='spectral'),                'muon renorm\n(modula-like weighted-MAX ||$\Delta W$||_2 match ||momentum||)'),
 
     muon_noscale=                   (functools.partial(Muon, scale=None),                                                              'muon no scale'),
-    muon_jbscale=                   (functools.partial(Muon, scale='jxbz'),                                                            'muon scale to unit sqrt(out/in)*||update||_2\n(default is unit ||update||_rms)'),
+    muon_jbscale=                   (functools.partial(Muon, scale='jxbz'),                                                            'muon scale to unit sqrt(out/in)*||$\Delta W$||_2\n(default is unit ||$\Delta W$||_rms)'),
 
-    muon_renorm_fro_noscale=        (functools.partial(Muon, renormalize='momentum', renorm_kind='fro', scale=None),                   'muon renorm\n(||update||_f match ||momentum||)\n+ no scale'),
-    muon_renorm_spec_noscale=       (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral', scale=None),              'muon renorm\n(||update||_2 match ||momentum||)\n+ no scale'),
+    muon_renorm_fro_noscale=        (functools.partial(Muon, renormalize='momentum', renorm_kind='fro', scale=None),                   'muon renorm\n(||$\Delta W$||_f match ||momentum||)\n+ no scale'),
+    muon_renorm_spec_noscale=       (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral', scale=None),              'muon renorm\n(||$\Delta W$||_2 match ||momentum||)\n+ no scale'),
 
-    muon_renorm_fro_jbscale=        (functools.partial(Muon, renormalize='momentum', renorm_kind='fro', scale='jxbz'),                 'muon renorm\n(||update||_f match ||momentum||)\n+ unit sqrt(out/in) scale'),
-    muon_renorm_spec_jbscale=       (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral', scale='jxbz'),            'muon renorm\n(||update||_2 match ||momentum||)\n+ unit sqrt(out/in) scale'),
+    muon_renorm_fro_jbscale=        (functools.partial(Muon, renormalize='momentum', renorm_kind='fro', scale='jxbz'),                 'muon renorm\n(||$\Delta W$||_f match ||momentum||)\n+ unit sqrt(out/in) scale'),
+    muon_renorm_spec_jbscale=       (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral', scale='jxbz'),            'muon renorm\n(||$\Delta W$||_2 match ||momentum||)\n+ unit sqrt(out/in) scale'),
 
-    muon_renorm_glbsfro_jbscale=    (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='fro', scale='jxbz'),       'muon renorm\n(modula-like weighted-SUM ||update||_f match ||momentum||)\n+ unit sqrt(out/in) scale'),
-    muon_renorm_glbmfro_jbscale=    (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='fro', scale='jxbz'),       'muon renorm\n(modula-like weighted-MAX ||update||_f match ||momentum||)\n+ unit sqrt(out/in) scale'),
-    muon_renorm_glbsspec_jbscale=   (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='spectral', scale='jxbz'),  'muon renorm\n(modula-like weighted-SUM ||update||_2 match ||momentum||)\n+ unit sqrt(out/in) scale'),
-    muon_renorm_glbmspec_jbscale=   (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='spectral', scale='jxbz'),  'muon renorm\n(modula-like weighted-MAX ||update||_2 match ||momentum||)\n+ unit sqrt(out/in) scale'),
+    muon_renorm_glbsfro_jbscale=    (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='fro', scale='jxbz'),       'muon renorm\n(modula-like weighted-SUM ||$\Delta W$||_f match ||momentum||)\n+ unit sqrt(out/in) scale'),
+    muon_renorm_glbmfro_jbscale=    (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='fro', scale='jxbz'),       'muon renorm\n(modula-like weighted-MAX ||$\Delta W$||_f match ||momentum||)\n+ unit sqrt(out/in) scale'),
+    muon_renorm_glbsspec_jbscale=   (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='spectral', scale='jxbz'),  'muon renorm\n(modula-like weighted-SUM ||$\Delta W$||_2 match ||momentum||)\n+ unit sqrt(out/in) scale'),
+    muon_renorm_glbmspec_jbscale=   (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='spectral', scale='jxbz'),  'muon renorm\n(modula-like weighted-MAX ||$\Delta W$||_2 match ||momentum||)\n+ unit sqrt(out/in) scale'),
 )
 
 if __name__ == '__main__':

@@ -483,7 +483,7 @@ if __name__ == '__main__':
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 
-    file = f'300steps_bzs2048/orth_{optim_kind}_lr{lr:g}_seed{seed}.pth'
+    file = f'241018_300steps_bzs2048/orth_{optim_kind}_lr{lr:g}_seed{seed}.pth'
     if os.path.exists(file):
         print(f'skipping {file}')
         sys.exit()

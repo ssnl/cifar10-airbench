@@ -474,7 +474,7 @@ if __name__ == '__main__':
     optim_kind, lr, seed = sys.argv[1:]
     lr = float(lr)
     seed = int(seed)
-
+    print(optim_kind, lr, seed)
 
     torch.manual_seed(seed + 21436)
     torch.cuda.manual_seed(seed + 21436)
@@ -490,7 +490,7 @@ if __name__ == '__main__':
 
     print(f'training {file}')
     model = make_model()
-    model.load_state_dict(torch.load('orth_init_weights.pth', weights_only=True)[seed])
+    model.load_state_dict(torch.load('orth_init_weights.pth', weights_only=False)[seed])
     res = train_mnist(model, opt=OPTIM_MAP[optim_kind][0], w_save_key=None, lr=lr, nsteps=500, log_nsteps=5, batch_size=2048)
     torch.save(res._asdict(), file)
     print(f'saved {file}')

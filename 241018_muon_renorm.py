@@ -273,7 +273,7 @@ class Muon(torch.optim.Optimizer):
                 g, scale, rawgnorm, gnorm, norm_scale = self.state[p]['last_update']
                 p.data.add_(g, alpha=-lr * scale * norm_scale)
 
-Result = namedtuple('Result', ['steps', 'train_accs', 'eval_accs', 'model_ws'])
+Result = namedtuple('Result', ['steps', 'train_accs', 'eval_accs', 'model_ws', 'state_dict'])
 
 class CallBackProtocol(Protocol):
     def __call__(self, step: int, model: nn.Module, optimizers: list[torch.optim.Optimizer], data: torch.Tensor, target: torch.Tensor, loss: torch.Tensor) -> None: ...
@@ -400,7 +400,7 @@ def train_mnist(model, opt, nsteps=3000, log_nsteps=100,
 
     print("Training completed!")
 
-    return Result(steps, train_accs, eval_accs, model_ws)
+    return Result(steps, train_accs, eval_accs, model_ws, model.state_dict())
 
 
 def make_model():

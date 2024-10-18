@@ -488,6 +488,9 @@ if __name__ == '__main__':
         print(f'skipping {file}')
         sys.exit()
 
+    with open(file + '.running', 'wb') as f:
+        f.write(b'')
+
     print(f'training {file}')
     model = make_model()
     model.load_state_dict(torch.load('orth_init_weights.pth', weights_only=False)[seed])

@@ -473,12 +473,13 @@ if __name__ == '__main__':
     # argv: [optim, lr, seed]
     optim, lr, seed = sys.argv[1:]
     lr = float(lr)
-    seed = int(seed) + 21436
+    seed = int(seed)
 
-    torch.manual_seed(seed)
-    torch.cuda.manual_seed(seed)
-    np.random.seed(seed)
-    random.seed(seed)
+
+    torch.manual_seed(seed + 21436)
+    torch.cuda.manual_seed(seed + 21436)
+    np.random.seed(seed + 21436)
+    random.seed(seed + 21436)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
 

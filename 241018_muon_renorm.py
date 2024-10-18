@@ -469,13 +469,20 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
                                                                                                                                         r'($||\Delta W||_2$ match $||\text{momentum}||_2$)']),
 
     muon_renorm_glbsfro=            (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='fro'),                     [r'muon renorm',
-                                                                                                                                        r'(modula-like weighted-SUM $||\Delta W||_F$ match $||\text{momentum}||_F$)']),
+                                                                                                                                        r'(modula-inspired $||\mathcal{W}||_M := \sum_i s_i ||W_i||_F$,',
+                                                                                                                                        r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
+
     muon_renorm_glbmfro=            (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='fro'),                     [r'muon renorm',
-                                                                                                                                        r'(modula-like weighted-MAX $||\Delta W||_F$ match $||\text{momentum}||_F$)']),
+                                                                                                                                        r'(modula-inspired $||\mathcal{W}||_M := \max_i s_i ||W_i||_F$,',
+                                                                                                                                        r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
+
     muon_renorm_glbsspec=           (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='spectral'),                [r'muon renorm',
-                                                                                                                                        r'(modula-like weighted-SUM $||\Delta W||_2$ match $||\text{momentum}||_2$)']),
+                                                                                                                                        r'(modula-inspired $||\mathcal{W}||_M := \sum_i s_i ||W_i||_2$,',
+                                                                                                                                        r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
+
     muon_renorm_glbmspec=           (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='spectral'),                [r'muon renorm',
-                                                                                                                                        r'(modula-like weighted-MAX $||\Delta W||_2$ match $||\text{momentum}||_2$)']),
+                                                                                                                                        r'(modula-inspired $||\mathcal{W}||_M := \max_i s_i ||W_i||_2$,',
+                                                                                                                                        r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
 
     muon_noscale=                   (functools.partial(Muon, scale=None),                                                              [r'muon no scale']),
     muon_jbscale=                   (functools.partial(Muon, scale='jxbz'),                                                            [r'muon scale to unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$*$||\Delta W||_2$',
@@ -484,6 +491,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_renorm_fro_noscale=        (functools.partial(Muon, renormalize='momentum', renorm_kind='fro', scale=None),                   [r'muon renorm',
                                                                                                                                         r'($||\Delta W||_F$ match $||\text{momentum}||$)',
                                                                                                                                         r'+ no scale']),
+
     muon_renorm_spec_noscale=       (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral', scale=None),              [r'muon renorm',
                                                                                                                                         r'($||\Delta W||_2$ match $||\text{momentum}||$)',
                                                                                                                                         r'+ no scale']),
@@ -491,21 +499,29 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_renorm_fro_jbscale=        (functools.partial(Muon, renormalize='momentum', renorm_kind='fro', scale='jxbz'),                 [r'muon renorm',
                                                                                                                                         r'($||\Delta W||_F$ match $||\text{momentum}||$)',
                                                                                                                                         r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
+
     muon_renorm_spec_jbscale=       (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral', scale='jxbz'),            [r'muon renorm',
                                                                                                                                         r'($||\Delta W||_2$ match $||\text{momentum}||$)',
                                                                                                                                         r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
 
     muon_renorm_glbsfro_jbscale=    (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='fro', scale='jxbz'),       [r'muon renorm',
-                                                                                                                                        r'(modula-like weighted-SUM $||\Delta W||_F$ match $||\text{momentum}||$)',
+                                                                                                                                        r'(modula-inspired $||\mathcal{W}||_M := \sum_i s_i ||W_i||_F$,',
+                                                                                                                                        r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
                                                                                                                                         r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
+
     muon_renorm_glbmfro_jbscale=    (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='fro', scale='jxbz'),       [r'muon renorm',
-                                                                                                                                        r'(modula-like weighted-MAX $||\Delta W||_F$ match $||\text{momentum}||$)',
+                                                                                                                                        r'(modula-inspired $||\mathcal{W}||_M := \max_i s_i ||W_i||_F$,',
+                                                                                                                                        r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
                                                                                                                                         r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
+
     muon_renorm_glbsspec_jbscale=   (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='spectral', scale='jxbz'),  [r'muon renorm',
-                                                                                                                                        r'(modula-like weighted-SUM $||\Delta W||_2$ match $||\text{momentum}||$)',
+                                                                                                                                        r'(modula-inspired $||\mathcal{W}||_M := \sum_i s_i ||W_i||_2$,',
+                                                                                                                                        r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
                                                                                                                                         r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
+
     muon_renorm_glbmspec_jbscale=   (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='spectral', scale='jxbz'),  [r'muon renorm',
-                                                                                                                                        r'(modula-like weighted-MAX $||\Delta W||_2$ match $||\text{momentum}||$)',
+                                                                                                                                        r'(modula-inspired $||\mathcal{W}||_M := \max_i s_i ||W_i||_2$,',
+                                                                                                                                        r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
                                                                                                                                         r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
 )
 

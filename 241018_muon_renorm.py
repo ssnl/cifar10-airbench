@@ -491,6 +491,6 @@ if __name__ == '__main__':
     print(f'training {file}')
     model = make_model()
     model.load_state_dict(torch.load('orth_init_weights.pth')[seed])
-    res = train_mnist(model, opt=OPTIM_MAP[optim], w_save_key=None, lr=lr, nsteps=500, log_nsteps=5, batch_size=2048)
+    res = train_mnist(model, opt=OPTIM_MAP[optim][0], w_save_key=None, lr=lr, nsteps=500, log_nsteps=5, batch_size=2048)
     torch.save(res._asdict(), file)
     print(f'saved {file}')

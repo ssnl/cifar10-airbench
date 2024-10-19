@@ -136,15 +136,6 @@ class Muon(torch.optim.Optimizer):
             lr = group['lr']
             momentum = group['momentum']
             zeropower_backend = zeropower_backends[group['backend']]
-            renormalize = group['renormalize']
-            global_renormalize = None
-            if renormalize is not None:
-                if renormalize.startswith('globalsum_'):
-                    global_renormalize = 'sum'
-                    renormalize = renormalize[10:]
-                elif renormalize.startswith('globalmax_'):
-                    global_renormalize = 'max'
-                    renormalize = renormalize[10:]
 
             for p in group['params']:
                 # rawg: grad or momentum grad

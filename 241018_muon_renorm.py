@@ -232,18 +232,18 @@ class Muon(torch.optim.Optimizer):
                     target_norm = rawgnorm_fn(g, rawgnorm, gnorm)
                     self.state[p]['last_update'] += (target_norm, )
             else:
-                if renormalize == 'globalavg_momentum':
+                if group['target_norm'] == 'globalavg_momentum':
                     target_norm = (
                         sum(rawgnorm_fn(*self.state[p]['last_update']) for p in group['params'] if p.grad is not None)
                         /
                         sum(1 for p in group['params'] if p.grad is not None)
                     )
-                elif renormalize == 'globalmax_momentum':
+                elif group['target_norm'] == 'globalmax_momentum':
                     target_norm = max(rawgnorm_fn(*self.state[p]['last_update']) for p in group['params'] if p.grad is not None)
-                elif renormalize is None:
+                elif group['target_norm'] is None:
                     target_norm = 1
                 else:
-                    assert False, f'unknown renormalize {renormalize}'
+                    assert False, f"unknown target_norm {group['target_norm']}"
                 for p in group['params']:
                     if p.grad is None:
                         continue

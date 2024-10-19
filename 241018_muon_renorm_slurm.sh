@@ -1,467 +1,469 @@
 #! /bin/bash
 
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.0001 -- python 241018_muon_renorm.py adam 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.0001 -- python 241018_muon_renorm.py adam_b095 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.0001 -- python 241018_muon_renorm.py adam_b0995 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.0001 -- python 241018_muon_renorm.py muon_momentum08 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.0001 -- python 241018_muon_renorm.py muon_momentum085 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.0001 -- python 241018_muon_renorm.py muon_momentum09 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.0001 -- python 241018_muon_renorm.py muon_momentum095 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.0001 -- python 241018_muon_renorm.py muon_momentum099 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.0001 -- python 241018_muon_renorm.py muon_no_momentum 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.0001 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.0001 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.0001 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.0001 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.0001 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.0001 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.0001 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.0001 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.0001 -- python 241018_muon_renorm.py muon_proper 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.0001 -- python 241018_muon_renorm.py muon_sched10 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.0001 -- python 241018_muon_renorm.py muon_sched14 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.0001 -- python 241018_muon_renorm.py muon_sched5 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.0001 -- python 241018_muon_renorm.py muon_sched8 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.0001 -- python 241018_muon_renorm.py muon_sgd 0.0001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.0003 -- python 241018_muon_renorm.py adam 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.0003 -- python 241018_muon_renorm.py adam_b095 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.0003 -- python 241018_muon_renorm.py adam_b0995 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.0003 -- python 241018_muon_renorm.py muon_momentum08 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.0003 -- python 241018_muon_renorm.py muon_momentum085 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.0003 -- python 241018_muon_renorm.py muon_momentum09 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.0003 -- python 241018_muon_renorm.py muon_momentum095 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.0003 -- python 241018_muon_renorm.py muon_momentum099 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.0003 -- python 241018_muon_renorm.py muon_no_momentum 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.0003 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.0003 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.0003 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.0003 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.0003 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.0003 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.0003 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.0003 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.0003 -- python 241018_muon_renorm.py muon_proper 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.0003 -- python 241018_muon_renorm.py muon_sched10 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.0003 -- python 241018_muon_renorm.py muon_sched14 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.0003 -- python 241018_muon_renorm.py muon_sched5 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.0003 -- python 241018_muon_renorm.py muon_sched8 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.0003 -- python 241018_muon_renorm.py muon_sgd 0.0003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.0005 -- python 241018_muon_renorm.py adam 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.0005 -- python 241018_muon_renorm.py adam_b095 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.0005 -- python 241018_muon_renorm.py adam_b0995 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.0005 -- python 241018_muon_renorm.py muon_momentum08 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.0005 -- python 241018_muon_renorm.py muon_momentum085 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.0005 -- python 241018_muon_renorm.py muon_momentum09 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.0005 -- python 241018_muon_renorm.py muon_momentum095 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.0005 -- python 241018_muon_renorm.py muon_momentum099 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.0005 -- python 241018_muon_renorm.py muon_no_momentum 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.0005 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.0005 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.0005 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.0005 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.0005 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.0005 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.0005 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.0005 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.0005 -- python 241018_muon_renorm.py muon_proper 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.0005 -- python 241018_muon_renorm.py muon_sched10 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.0005 -- python 241018_muon_renorm.py muon_sched14 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.0005 -- python 241018_muon_renorm.py muon_sched5 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.0005 -- python 241018_muon_renorm.py muon_sched8 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.0005 -- python 241018_muon_renorm.py muon_sgd 0.0005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.0008 -- python 241018_muon_renorm.py adam 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.0008 -- python 241018_muon_renorm.py adam_b095 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.0008 -- python 241018_muon_renorm.py adam_b0995 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.0008 -- python 241018_muon_renorm.py muon_momentum08 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.0008 -- python 241018_muon_renorm.py muon_momentum085 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.0008 -- python 241018_muon_renorm.py muon_momentum09 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.0008 -- python 241018_muon_renorm.py muon_momentum095 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.0008 -- python 241018_muon_renorm.py muon_momentum099 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.0008 -- python 241018_muon_renorm.py muon_no_momentum 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.0008 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.0008 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.0008 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.0008 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.0008 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.0008 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.0008 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.0008 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.0008 -- python 241018_muon_renorm.py muon_proper 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.0008 -- python 241018_muon_renorm.py muon_sched10 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.0008 -- python 241018_muon_renorm.py muon_sched14 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.0008 -- python 241018_muon_renorm.py muon_sched5 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.0008 -- python 241018_muon_renorm.py muon_sched8 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.0008 -- python 241018_muon_renorm.py muon_sgd 0.0008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.001 -- python 241018_muon_renorm.py adam 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.001 -- python 241018_muon_renorm.py adam_b095 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.001 -- python 241018_muon_renorm.py adam_b0995 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.001 -- python 241018_muon_renorm.py muon_momentum08 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.001 -- python 241018_muon_renorm.py muon_momentum085 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.001 -- python 241018_muon_renorm.py muon_momentum09 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.001 -- python 241018_muon_renorm.py muon_momentum095 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.001 -- python 241018_muon_renorm.py muon_momentum099 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.001 -- python 241018_muon_renorm.py muon_no_momentum 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.001 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.001 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.001 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.001 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.001 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.001 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.001 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.001 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.001 -- python 241018_muon_renorm.py muon_proper 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.001 -- python 241018_muon_renorm.py muon_sched10 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.001 -- python 241018_muon_renorm.py muon_sched14 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.001 -- python 241018_muon_renorm.py muon_sched5 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.001 -- python 241018_muon_renorm.py muon_sched8 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.001 -- python 241018_muon_renorm.py muon_sgd 0.001 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.003 -- python 241018_muon_renorm.py adam 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.003 -- python 241018_muon_renorm.py adam_b095 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.003 -- python 241018_muon_renorm.py adam_b0995 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.003 -- python 241018_muon_renorm.py muon_momentum08 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.003 -- python 241018_muon_renorm.py muon_momentum085 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.003 -- python 241018_muon_renorm.py muon_momentum09 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.003 -- python 241018_muon_renorm.py muon_momentum095 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.003 -- python 241018_muon_renorm.py muon_momentum099 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.003 -- python 241018_muon_renorm.py muon_no_momentum 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.003 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.003 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.003 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.003 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.003 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.003 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.003 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.003 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.003 -- python 241018_muon_renorm.py muon_proper 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.003 -- python 241018_muon_renorm.py muon_sched10 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.003 -- python 241018_muon_renorm.py muon_sched14 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.003 -- python 241018_muon_renorm.py muon_sched5 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.003 -- python 241018_muon_renorm.py muon_sched8 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.003 -- python 241018_muon_renorm.py muon_sgd 0.003 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.005 -- python 241018_muon_renorm.py adam 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.005 -- python 241018_muon_renorm.py adam_b095 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.005 -- python 241018_muon_renorm.py adam_b0995 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.005 -- python 241018_muon_renorm.py muon_momentum08 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.005 -- python 241018_muon_renorm.py muon_momentum085 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.005 -- python 241018_muon_renorm.py muon_momentum09 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.005 -- python 241018_muon_renorm.py muon_momentum095 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.005 -- python 241018_muon_renorm.py muon_momentum099 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.005 -- python 241018_muon_renorm.py muon_no_momentum 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.005 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.005 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.005 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.005 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.005 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.005 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.005 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.005 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.005 -- python 241018_muon_renorm.py muon_proper 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.005 -- python 241018_muon_renorm.py muon_sched10 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.005 -- python 241018_muon_renorm.py muon_sched14 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.005 -- python 241018_muon_renorm.py muon_sched5 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.005 -- python 241018_muon_renorm.py muon_sched8 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.005 -- python 241018_muon_renorm.py muon_sgd 0.005 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.008 -- python 241018_muon_renorm.py adam 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.008 -- python 241018_muon_renorm.py adam_b095 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.008 -- python 241018_muon_renorm.py adam_b0995 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.008 -- python 241018_muon_renorm.py muon_momentum08 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.008 -- python 241018_muon_renorm.py muon_momentum085 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.008 -- python 241018_muon_renorm.py muon_momentum09 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.008 -- python 241018_muon_renorm.py muon_momentum095 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.008 -- python 241018_muon_renorm.py muon_momentum099 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.008 -- python 241018_muon_renorm.py muon_no_momentum 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.008 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.008 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.008 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.008 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.008 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.008 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.008 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.008 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.008 -- python 241018_muon_renorm.py muon_proper 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.008 -- python 241018_muon_renorm.py muon_sched10 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.008 -- python 241018_muon_renorm.py muon_sched14 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.008 -- python 241018_muon_renorm.py muon_sched5 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.008 -- python 241018_muon_renorm.py muon_sched8 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.008 -- python 241018_muon_renorm.py muon_sgd 0.008 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.01 -- python 241018_muon_renorm.py adam 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.01 -- python 241018_muon_renorm.py adam_b095 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.01 -- python 241018_muon_renorm.py adam_b0995 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.01 -- python 241018_muon_renorm.py muon_momentum08 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.01 -- python 241018_muon_renorm.py muon_momentum085 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.01 -- python 241018_muon_renorm.py muon_momentum09 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.01 -- python 241018_muon_renorm.py muon_momentum095 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.01 -- python 241018_muon_renorm.py muon_momentum099 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.01 -- python 241018_muon_renorm.py muon_no_momentum 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.01 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.01 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.01 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.01 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.01 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.01 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.01 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.01 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.01 -- python 241018_muon_renorm.py muon_proper 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.01 -- python 241018_muon_renorm.py muon_sched10 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.01 -- python 241018_muon_renorm.py muon_sched14 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.01 -- python 241018_muon_renorm.py muon_sched5 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.01 -- python 241018_muon_renorm.py muon_sched8 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.01 -- python 241018_muon_renorm.py muon_sgd 0.01 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.03 -- python 241018_muon_renorm.py adam 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.03 -- python 241018_muon_renorm.py adam_b095 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.03 -- python 241018_muon_renorm.py adam_b0995 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.03 -- python 241018_muon_renorm.py muon_momentum08 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.03 -- python 241018_muon_renorm.py muon_momentum085 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.03 -- python 241018_muon_renorm.py muon_momentum09 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.03 -- python 241018_muon_renorm.py muon_momentum095 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.03 -- python 241018_muon_renorm.py muon_momentum099 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.03 -- python 241018_muon_renorm.py muon_no_momentum 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.03 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.03 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.03 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.03 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.03 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.03 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.03 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.03 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.03 -- python 241018_muon_renorm.py muon_proper 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.03 -- python 241018_muon_renorm.py muon_sched10 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.03 -- python 241018_muon_renorm.py muon_sched14 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.03 -- python 241018_muon_renorm.py muon_sched5 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.03 -- python 241018_muon_renorm.py muon_sched8 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.03 -- python 241018_muon_renorm.py muon_sgd 0.03 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.05 -- python 241018_muon_renorm.py adam 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.05 -- python 241018_muon_renorm.py adam_b095 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.05 -- python 241018_muon_renorm.py adam_b0995 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.05 -- python 241018_muon_renorm.py muon_momentum08 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.05 -- python 241018_muon_renorm.py muon_momentum085 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.05 -- python 241018_muon_renorm.py muon_momentum09 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.05 -- python 241018_muon_renorm.py muon_momentum095 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.05 -- python 241018_muon_renorm.py muon_momentum099 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.05 -- python 241018_muon_renorm.py muon_no_momentum 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.05 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.05 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.05 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.05 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.05 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.05 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.05 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.05 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.05 -- python 241018_muon_renorm.py muon_proper 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.05 -- python 241018_muon_renorm.py muon_sched10 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.05 -- python 241018_muon_renorm.py muon_sched14 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.05 -- python 241018_muon_renorm.py muon_sched5 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.05 -- python 241018_muon_renorm.py muon_sched8 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.05 -- python 241018_muon_renorm.py muon_sgd 0.05 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.08 -- python 241018_muon_renorm.py adam 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.08 -- python 241018_muon_renorm.py adam_b095 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.08 -- python 241018_muon_renorm.py adam_b0995 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.08 -- python 241018_muon_renorm.py muon_momentum08 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.08 -- python 241018_muon_renorm.py muon_momentum085 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.08 -- python 241018_muon_renorm.py muon_momentum09 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.08 -- python 241018_muon_renorm.py muon_momentum095 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.08 -- python 241018_muon_renorm.py muon_momentum099 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.08 -- python 241018_muon_renorm.py muon_no_momentum 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.08 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.08 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.08 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.08 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.08 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.08 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.08 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.08 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.08 -- python 241018_muon_renorm.py muon_proper 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.08 -- python 241018_muon_renorm.py muon_sched10 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.08 -- python 241018_muon_renorm.py muon_sched14 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.08 -- python 241018_muon_renorm.py muon_sched5 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.08 -- python 241018_muon_renorm.py muon_sched8 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.08 -- python 241018_muon_renorm.py muon_sgd 0.08 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.1 -- python 241018_muon_renorm.py adam 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.1 -- python 241018_muon_renorm.py adam_b095 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.1 -- python 241018_muon_renorm.py adam_b0995 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.1 -- python 241018_muon_renorm.py muon_momentum08 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.1 -- python 241018_muon_renorm.py muon_momentum085 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.1 -- python 241018_muon_renorm.py muon_momentum09 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.1 -- python 241018_muon_renorm.py muon_momentum095 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.1 -- python 241018_muon_renorm.py muon_momentum099 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.1 -- python 241018_muon_renorm.py muon_no_momentum 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.1 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.1 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.1 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.1 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.1 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.1 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.1 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.1 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.1 -- python 241018_muon_renorm.py muon_proper 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.1 -- python 241018_muon_renorm.py muon_sched10 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.1 -- python 241018_muon_renorm.py muon_sched14 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.1 -- python 241018_muon_renorm.py muon_sched5 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.1 -- python 241018_muon_renorm.py muon_sched8 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.1 -- python 241018_muon_renorm.py muon_sgd 0.1 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.3 -- python 241018_muon_renorm.py adam 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.3 -- python 241018_muon_renorm.py adam_b095 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.3 -- python 241018_muon_renorm.py adam_b0995 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.3 -- python 241018_muon_renorm.py muon_momentum08 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.3 -- python 241018_muon_renorm.py muon_momentum085 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.3 -- python 241018_muon_renorm.py muon_momentum09 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.3 -- python 241018_muon_renorm.py muon_momentum095 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.3 -- python 241018_muon_renorm.py muon_momentum099 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.3 -- python 241018_muon_renorm.py muon_no_momentum 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.3 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.3 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.3 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.3 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.3 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.3 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.3 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.3 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.3 -- python 241018_muon_renorm.py muon_proper 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.3 -- python 241018_muon_renorm.py muon_sched10 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.3 -- python 241018_muon_renorm.py muon_sched14 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.3 -- python 241018_muon_renorm.py muon_sched5 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.3 -- python 241018_muon_renorm.py muon_sched8 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.3 -- python 241018_muon_renorm.py muon_sgd 0.3 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_0.5 -- python 241018_muon_renorm.py adam 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b095_0.5 -- python 241018_muon_renorm.py adam_b095 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 adam_b0995_0.5 -- python 241018_muon_renorm.py adam_b0995 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum08_0.5 -- python 241018_muon_renorm.py muon_momentum08 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum085_0.5 -- python 241018_muon_renorm.py muon_momentum085 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum09_0.5 -- python 241018_muon_renorm.py muon_momentum09 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum095_0.5 -- python 241018_muon_renorm.py muon_momentum095 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_momentum099_0.5 -- python 241018_muon_renorm.py muon_momentum099 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_no_momentum_0.5 -- python 241018_muon_renorm.py muon_no_momentum 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbavgmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_glbmaxmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_momentum_0.5 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_fro_target_unit_0.5 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbavgmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_glbmaxmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_momentum_0.5 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_jb_target_unit_0.5 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbavgmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_glbmaxmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_momentum_0.5 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_rms_target_unit_0.5 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbavgmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_glbmaxmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_momentum_0.5 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_norm_spec_target_unit_0.5 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_proper_0.5 -- python 241018_muon_renorm.py muon_proper 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched10_0.5 -- python 241018_muon_renorm.py muon_sched10 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched14_0.5 -- python 241018_muon_renorm.py muon_sched14 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched5_0.5 -- python 241018_muon_renorm.py muon_sched5 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sched8_0.5 -- python 241018_muon_renorm.py muon_sched8 0.5 0
-python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -e py312 muon_sgd_0.5 -- python 241018_muon_renorm.py muon_sgd 0.5 0
+set +e
+
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.0001 -- python 241018_muon_renorm.py adam 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.0001 -- python 241018_muon_renorm.py adam_b095 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.0001 -- python 241018_muon_renorm.py adam_b0995 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.0001 -- python 241018_muon_renorm.py muon_momentum08 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.0001 -- python 241018_muon_renorm.py muon_momentum085 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.0001 -- python 241018_muon_renorm.py muon_momentum09 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.0001 -- python 241018_muon_renorm.py muon_momentum095 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.0001 -- python 241018_muon_renorm.py muon_momentum099 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.0001 -- python 241018_muon_renorm.py muon_no_momentum 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.0001 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.0001 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.0001 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.0001 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.0001 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.0001 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.0001 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.0001 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.0001 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.0001 -- python 241018_muon_renorm.py muon_proper 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.0001 -- python 241018_muon_renorm.py muon_sched10 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.0001 -- python 241018_muon_renorm.py muon_sched14 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.0001 -- python 241018_muon_renorm.py muon_sched5 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.0001 -- python 241018_muon_renorm.py muon_sched8 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.0001 -- python 241018_muon_renorm.py muon_sgd 0.0001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.0003 -- python 241018_muon_renorm.py adam 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.0003 -- python 241018_muon_renorm.py adam_b095 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.0003 -- python 241018_muon_renorm.py adam_b0995 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.0003 -- python 241018_muon_renorm.py muon_momentum08 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.0003 -- python 241018_muon_renorm.py muon_momentum085 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.0003 -- python 241018_muon_renorm.py muon_momentum09 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.0003 -- python 241018_muon_renorm.py muon_momentum095 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.0003 -- python 241018_muon_renorm.py muon_momentum099 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.0003 -- python 241018_muon_renorm.py muon_no_momentum 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.0003 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.0003 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.0003 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.0003 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.0003 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.0003 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.0003 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.0003 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.0003 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.0003 -- python 241018_muon_renorm.py muon_proper 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.0003 -- python 241018_muon_renorm.py muon_sched10 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.0003 -- python 241018_muon_renorm.py muon_sched14 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.0003 -- python 241018_muon_renorm.py muon_sched5 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.0003 -- python 241018_muon_renorm.py muon_sched8 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.0003 -- python 241018_muon_renorm.py muon_sgd 0.0003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.0005 -- python 241018_muon_renorm.py adam 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.0005 -- python 241018_muon_renorm.py adam_b095 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.0005 -- python 241018_muon_renorm.py adam_b0995 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.0005 -- python 241018_muon_renorm.py muon_momentum08 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.0005 -- python 241018_muon_renorm.py muon_momentum085 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.0005 -- python 241018_muon_renorm.py muon_momentum09 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.0005 -- python 241018_muon_renorm.py muon_momentum095 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.0005 -- python 241018_muon_renorm.py muon_momentum099 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.0005 -- python 241018_muon_renorm.py muon_no_momentum 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.0005 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.0005 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.0005 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.0005 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.0005 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.0005 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.0005 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.0005 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.0005 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.0005 -- python 241018_muon_renorm.py muon_proper 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.0005 -- python 241018_muon_renorm.py muon_sched10 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.0005 -- python 241018_muon_renorm.py muon_sched14 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.0005 -- python 241018_muon_renorm.py muon_sched5 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.0005 -- python 241018_muon_renorm.py muon_sched8 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.0005 -- python 241018_muon_renorm.py muon_sgd 0.0005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.0008 -- python 241018_muon_renorm.py adam 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.0008 -- python 241018_muon_renorm.py adam_b095 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.0008 -- python 241018_muon_renorm.py adam_b0995 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.0008 -- python 241018_muon_renorm.py muon_momentum08 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.0008 -- python 241018_muon_renorm.py muon_momentum085 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.0008 -- python 241018_muon_renorm.py muon_momentum09 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.0008 -- python 241018_muon_renorm.py muon_momentum095 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.0008 -- python 241018_muon_renorm.py muon_momentum099 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.0008 -- python 241018_muon_renorm.py muon_no_momentum 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.0008 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.0008 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.0008 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.0008 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.0008 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.0008 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.0008 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.0008 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.0008 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.0008 -- python 241018_muon_renorm.py muon_proper 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.0008 -- python 241018_muon_renorm.py muon_sched10 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.0008 -- python 241018_muon_renorm.py muon_sched14 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.0008 -- python 241018_muon_renorm.py muon_sched5 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.0008 -- python 241018_muon_renorm.py muon_sched8 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.0008 -- python 241018_muon_renorm.py muon_sgd 0.0008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.001 -- python 241018_muon_renorm.py adam 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.001 -- python 241018_muon_renorm.py adam_b095 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.001 -- python 241018_muon_renorm.py adam_b0995 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.001 -- python 241018_muon_renorm.py muon_momentum08 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.001 -- python 241018_muon_renorm.py muon_momentum085 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.001 -- python 241018_muon_renorm.py muon_momentum09 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.001 -- python 241018_muon_renorm.py muon_momentum095 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.001 -- python 241018_muon_renorm.py muon_momentum099 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.001 -- python 241018_muon_renorm.py muon_no_momentum 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.001 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.001 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.001 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.001 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.001 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.001 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.001 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.001 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.001 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.001 -- python 241018_muon_renorm.py muon_proper 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.001 -- python 241018_muon_renorm.py muon_sched10 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.001 -- python 241018_muon_renorm.py muon_sched14 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.001 -- python 241018_muon_renorm.py muon_sched5 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.001 -- python 241018_muon_renorm.py muon_sched8 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.001 -- python 241018_muon_renorm.py muon_sgd 0.001 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.003 -- python 241018_muon_renorm.py adam 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.003 -- python 241018_muon_renorm.py adam_b095 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.003 -- python 241018_muon_renorm.py adam_b0995 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.003 -- python 241018_muon_renorm.py muon_momentum08 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.003 -- python 241018_muon_renorm.py muon_momentum085 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.003 -- python 241018_muon_renorm.py muon_momentum09 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.003 -- python 241018_muon_renorm.py muon_momentum095 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.003 -- python 241018_muon_renorm.py muon_momentum099 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.003 -- python 241018_muon_renorm.py muon_no_momentum 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.003 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.003 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.003 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.003 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.003 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.003 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.003 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.003 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.003 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.003 -- python 241018_muon_renorm.py muon_proper 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.003 -- python 241018_muon_renorm.py muon_sched10 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.003 -- python 241018_muon_renorm.py muon_sched14 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.003 -- python 241018_muon_renorm.py muon_sched5 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.003 -- python 241018_muon_renorm.py muon_sched8 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.003 -- python 241018_muon_renorm.py muon_sgd 0.003 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.005 -- python 241018_muon_renorm.py adam 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.005 -- python 241018_muon_renorm.py adam_b095 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.005 -- python 241018_muon_renorm.py adam_b0995 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.005 -- python 241018_muon_renorm.py muon_momentum08 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.005 -- python 241018_muon_renorm.py muon_momentum085 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.005 -- python 241018_muon_renorm.py muon_momentum09 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.005 -- python 241018_muon_renorm.py muon_momentum095 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.005 -- python 241018_muon_renorm.py muon_momentum099 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.005 -- python 241018_muon_renorm.py muon_no_momentum 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.005 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.005 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.005 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.005 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.005 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.005 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.005 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.005 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.005 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.005 -- python 241018_muon_renorm.py muon_proper 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.005 -- python 241018_muon_renorm.py muon_sched10 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.005 -- python 241018_muon_renorm.py muon_sched14 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.005 -- python 241018_muon_renorm.py muon_sched5 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.005 -- python 241018_muon_renorm.py muon_sched8 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.005 -- python 241018_muon_renorm.py muon_sgd 0.005 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.008 -- python 241018_muon_renorm.py adam 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.008 -- python 241018_muon_renorm.py adam_b095 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.008 -- python 241018_muon_renorm.py adam_b0995 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.008 -- python 241018_muon_renorm.py muon_momentum08 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.008 -- python 241018_muon_renorm.py muon_momentum085 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.008 -- python 241018_muon_renorm.py muon_momentum09 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.008 -- python 241018_muon_renorm.py muon_momentum095 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.008 -- python 241018_muon_renorm.py muon_momentum099 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.008 -- python 241018_muon_renorm.py muon_no_momentum 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.008 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.008 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.008 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.008 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.008 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.008 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.008 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.008 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.008 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.008 -- python 241018_muon_renorm.py muon_proper 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.008 -- python 241018_muon_renorm.py muon_sched10 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.008 -- python 241018_muon_renorm.py muon_sched14 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.008 -- python 241018_muon_renorm.py muon_sched5 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.008 -- python 241018_muon_renorm.py muon_sched8 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.008 -- python 241018_muon_renorm.py muon_sgd 0.008 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.01 -- python 241018_muon_renorm.py adam 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.01 -- python 241018_muon_renorm.py adam_b095 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.01 -- python 241018_muon_renorm.py adam_b0995 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.01 -- python 241018_muon_renorm.py muon_momentum08 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.01 -- python 241018_muon_renorm.py muon_momentum085 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.01 -- python 241018_muon_renorm.py muon_momentum09 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.01 -- python 241018_muon_renorm.py muon_momentum095 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.01 -- python 241018_muon_renorm.py muon_momentum099 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.01 -- python 241018_muon_renorm.py muon_no_momentum 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.01 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.01 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.01 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.01 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.01 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.01 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.01 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.01 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.01 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.01 -- python 241018_muon_renorm.py muon_proper 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.01 -- python 241018_muon_renorm.py muon_sched10 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.01 -- python 241018_muon_renorm.py muon_sched14 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.01 -- python 241018_muon_renorm.py muon_sched5 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.01 -- python 241018_muon_renorm.py muon_sched8 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.01 -- python 241018_muon_renorm.py muon_sgd 0.01 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.03 -- python 241018_muon_renorm.py adam 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.03 -- python 241018_muon_renorm.py adam_b095 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.03 -- python 241018_muon_renorm.py adam_b0995 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.03 -- python 241018_muon_renorm.py muon_momentum08 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.03 -- python 241018_muon_renorm.py muon_momentum085 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.03 -- python 241018_muon_renorm.py muon_momentum09 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.03 -- python 241018_muon_renorm.py muon_momentum095 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.03 -- python 241018_muon_renorm.py muon_momentum099 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.03 -- python 241018_muon_renorm.py muon_no_momentum 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.03 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.03 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.03 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.03 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.03 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.03 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.03 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.03 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.03 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.03 -- python 241018_muon_renorm.py muon_proper 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.03 -- python 241018_muon_renorm.py muon_sched10 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.03 -- python 241018_muon_renorm.py muon_sched14 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.03 -- python 241018_muon_renorm.py muon_sched5 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.03 -- python 241018_muon_renorm.py muon_sched8 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.03 -- python 241018_muon_renorm.py muon_sgd 0.03 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.05 -- python 241018_muon_renorm.py adam 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.05 -- python 241018_muon_renorm.py adam_b095 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.05 -- python 241018_muon_renorm.py adam_b0995 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.05 -- python 241018_muon_renorm.py muon_momentum08 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.05 -- python 241018_muon_renorm.py muon_momentum085 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.05 -- python 241018_muon_renorm.py muon_momentum09 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.05 -- python 241018_muon_renorm.py muon_momentum095 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.05 -- python 241018_muon_renorm.py muon_momentum099 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.05 -- python 241018_muon_renorm.py muon_no_momentum 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.05 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.05 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.05 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.05 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.05 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.05 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.05 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.05 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.05 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.05 -- python 241018_muon_renorm.py muon_proper 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.05 -- python 241018_muon_renorm.py muon_sched10 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.05 -- python 241018_muon_renorm.py muon_sched14 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.05 -- python 241018_muon_renorm.py muon_sched5 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.05 -- python 241018_muon_renorm.py muon_sched8 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.05 -- python 241018_muon_renorm.py muon_sgd 0.05 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.08 -- python 241018_muon_renorm.py adam 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.08 -- python 241018_muon_renorm.py adam_b095 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.08 -- python 241018_muon_renorm.py adam_b0995 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.08 -- python 241018_muon_renorm.py muon_momentum08 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.08 -- python 241018_muon_renorm.py muon_momentum085 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.08 -- python 241018_muon_renorm.py muon_momentum09 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.08 -- python 241018_muon_renorm.py muon_momentum095 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.08 -- python 241018_muon_renorm.py muon_momentum099 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.08 -- python 241018_muon_renorm.py muon_no_momentum 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.08 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.08 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.08 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.08 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.08 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.08 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.08 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.08 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.08 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.08 -- python 241018_muon_renorm.py muon_proper 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.08 -- python 241018_muon_renorm.py muon_sched10 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.08 -- python 241018_muon_renorm.py muon_sched14 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.08 -- python 241018_muon_renorm.py muon_sched5 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.08 -- python 241018_muon_renorm.py muon_sched8 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.08 -- python 241018_muon_renorm.py muon_sgd 0.08 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.1 -- python 241018_muon_renorm.py adam 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.1 -- python 241018_muon_renorm.py adam_b095 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.1 -- python 241018_muon_renorm.py adam_b0995 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.1 -- python 241018_muon_renorm.py muon_momentum08 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.1 -- python 241018_muon_renorm.py muon_momentum085 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.1 -- python 241018_muon_renorm.py muon_momentum09 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.1 -- python 241018_muon_renorm.py muon_momentum095 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.1 -- python 241018_muon_renorm.py muon_momentum099 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.1 -- python 241018_muon_renorm.py muon_no_momentum 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.1 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.1 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.1 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.1 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.1 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.1 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.1 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.1 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.1 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.1 -- python 241018_muon_renorm.py muon_proper 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.1 -- python 241018_muon_renorm.py muon_sched10 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.1 -- python 241018_muon_renorm.py muon_sched14 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.1 -- python 241018_muon_renorm.py muon_sched5 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.1 -- python 241018_muon_renorm.py muon_sched8 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.1 -- python 241018_muon_renorm.py muon_sgd 0.1 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.3 -- python 241018_muon_renorm.py adam 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.3 -- python 241018_muon_renorm.py adam_b095 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.3 -- python 241018_muon_renorm.py adam_b0995 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.3 -- python 241018_muon_renorm.py muon_momentum08 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.3 -- python 241018_muon_renorm.py muon_momentum085 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.3 -- python 241018_muon_renorm.py muon_momentum09 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.3 -- python 241018_muon_renorm.py muon_momentum095 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.3 -- python 241018_muon_renorm.py muon_momentum099 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.3 -- python 241018_muon_renorm.py muon_no_momentum 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.3 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.3 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.3 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.3 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.3 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.3 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.3 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.3 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.3 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.3 -- python 241018_muon_renorm.py muon_proper 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.3 -- python 241018_muon_renorm.py muon_sched10 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.3 -- python 241018_muon_renorm.py muon_sched14 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.3 -- python 241018_muon_renorm.py muon_sched5 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.3 -- python 241018_muon_renorm.py muon_sched8 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.3 -- python 241018_muon_renorm.py muon_sgd 0.3 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_0.5 -- python 241018_muon_renorm.py adam 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b095_0.5 -- python 241018_muon_renorm.py adam_b095 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 adam_b0995_0.5 -- python 241018_muon_renorm.py adam_b0995 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum08_0.5 -- python 241018_muon_renorm.py muon_momentum08 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum085_0.5 -- python 241018_muon_renorm.py muon_momentum085 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum09_0.5 -- python 241018_muon_renorm.py muon_momentum09 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum095_0.5 -- python 241018_muon_renorm.py muon_momentum095 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_momentum099_0.5 -- python 241018_muon_renorm.py muon_momentum099 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_no_momentum_0.5 -- python 241018_muon_renorm.py muon_no_momentum 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbavgmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_fro_target_glbavgmomentum 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_glbmaxmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_fro_target_glbmaxmomentum 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_momentum_0.5 -- python 241018_muon_renorm.py muon_norm_fro_target_momentum 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_fro_target_unit_0.5 -- python 241018_muon_renorm.py muon_norm_fro_target_unit 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbavgmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_jb_target_glbavgmomentum 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_glbmaxmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_jb_target_glbmaxmomentum 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_momentum_0.5 -- python 241018_muon_renorm.py muon_norm_jb_target_momentum 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_jb_target_unit_0.5 -- python 241018_muon_renorm.py muon_norm_jb_target_unit 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbavgmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_rms_target_glbavgmomentum 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_glbmaxmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_rms_target_glbmaxmomentum 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_momentum_0.5 -- python 241018_muon_renorm.py muon_norm_rms_target_momentum 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_rms_target_unit_0.5 -- python 241018_muon_renorm.py muon_norm_rms_target_unit 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbavgmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_spec_target_glbavgmomentum 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_glbmaxmomentum_0.5 -- python 241018_muon_renorm.py muon_norm_spec_target_glbmaxmomentum 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_momentum_0.5 -- python 241018_muon_renorm.py muon_norm_spec_target_momentum 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_norm_spec_target_unit_0.5 -- python 241018_muon_renorm.py muon_norm_spec_target_unit 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_proper_0.5 -- python 241018_muon_renorm.py muon_proper 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched10_0.5 -- python 241018_muon_renorm.py muon_sched10 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched14_0.5 -- python 241018_muon_renorm.py muon_sched14 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched5_0.5 -- python 241018_muon_renorm.py muon_sched5 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sched8_0.5 -- python 241018_muon_renorm.py muon_sched8 0.5 0
+python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl -e py312 muon_sgd_0.5 -- python 241018_muon_renorm.py muon_sgd 0.5 0

@@ -211,7 +211,7 @@ class Muon(torch.optim.Optimizer):
                     elif group['norm_kind'] == 'jbnorm_exact':
                         gnorm = (g.size(0) / g.size(1))**0.5 * torch.ge(g.norm(), 0.9, out=g.new_empty(()))
                 else:
-                    assert False, f'unknown norm kind {group['renorm_kind']}'
+                    assert False, f"unknown norm kind {group['renorm_kind']}"
 
                 state['last_update'] = (g, rawgnorm, gnorm)
 

@@ -456,7 +456,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_norm_spec_target_momentum=       (functools.partial(Muon, norm_kind='spectral', target_norm='momentum'),                      [r'muon norm-match (spectral)',
                                                                                                                                         r'(normalize each $||\Delta W_i||_2$ to match $||\text{momentum}_i||_2$)']),
     muon_norm_jb_target_momentum=         (functools.partial(Muon, norm_kind='jbnorm', target_norm='momentum'),                        [r'muon norm-match (good norm, $\text{rms}\rightarrow\text{rms}$)',
-                                                                                                                                        r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match $||\text{momentum}_i||_{\text{rms}\rightarrow\text{rms}}$'])
+                                                                                                                                        r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match $||\text{momentum}_i||_{\text{rms}\rightarrow\text{rms}}$']),
 
 
     muon_norm_rms_target_glbavgmomentum=  (functools.partial(Muon, norm_kind='rms', target_norm='glbavgmomentum'),                     [r'muon norm-match (rms, as if flattened as a vector)',

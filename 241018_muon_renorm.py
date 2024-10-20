@@ -408,9 +408,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
                                                                                                                                  r'($\beta_1$=0.9$\rightarrow$0.95)']),
     adam_b0995=                           ('adam_b0995',                                                                        [r'adam',
                                                                                                                                  r'($\beta_1$=0.9$\rightarrow$0.995)']),
-    # muon=                                 (functools.partial(Muon, backend='newtonschulz5'),                                    [r'muon']),
-    muon_norm_rms_target_unit=            (functools.partial(Muon, norm_kind='rms', target_norm='unit'),                        [r'muon (default, rms)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_\text{rms}$ to be 1)']),
+    muon=                                 (functools.partial(Muon, backend='newtonschulz5'),                                    [r'muon']),
 
     muon_sgd=                             (functools.partial(Muon, backend='sgd'),                                              [r'SGD',
                                                                                                                                  r'(i.e., muon w/o orthogonalization)']),
@@ -433,11 +431,13 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_sched14=                         (functools.partial(Muon, backend='newtonschulz5_sched14', backend_steps=14),          [r'muon w scheduled 14-step NS iter',
                                                                                                                                  r'(default$\rightarrow$naive)']),
 
+    muon_norm_rms_target_unit=            (functools.partial(Muon, norm_kind='rms', target_norm='unit'),                        [r'muon (default, rms)',
+                                                                                                                                 r'(normalize each $||\Delta W_i||_\text{rms}$ to be 1)']),
     muon_norm_fro_target_unit=            (functools.partial(Muon, norm_kind='fro', target_norm='unit'),                        [r'muon (frobenius)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_F$ to be 1)']),
     muon_norm_spec_target_unit=           (functools.partial(Muon, norm_kind='spectral', target_norm='unit'),                   [r'muon (spectral)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_2$ to be 1)']),
-    muon_norm_jb_target_unit=             (functools.partial(Muon, norm_kind='jbnorm', target_norm='unit'),                     [r'muon ($\text{rms}\rightarrow	ext{rms}$, good norm)',
+    muon_norm_jb_target_unit=             (functools.partial(Muon, norm_kind='jbnorm', target_norm='unit'),                     [r'muon ($\text{rms}\rightarrow\text{rms}$)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to be 1)']),
 
 
@@ -547,17 +547,25 @@ if __name__ == '__main__':
     seed = int(seed)
     print(optim_kind, lr, seed)
 
+    if optim_kind == 'muon':
+        actual_optim_kind = 'muon_norm_rms_target_unit'
+        file = f'241018_300steps_bzs2048/orth_{optim_kind}_lr{lr:g}_seed{seed}.pth'
+        actual_file = f'241018_300steps_bzs2048/orth_{actual_optim_kind}_lr{lr:g}_seed{seed}.pth'
+        os.link(actual_file, file)
+        print(f'linked {actual_file} to {file}')
+        sys.exit()
+
+    file = f'241018_300steps_bzs2048/orth_{optim_kind}_lr{lr:g}_seed{seed}.pth'
+    if os.path.exists(file):
+        print(f'skipping {file}')
+        sys.exit()
+
     torch.manual_seed(seed + 21436)
     torch.cuda.manual_seed(seed + 21436)
     np.random.seed(seed + 21436)
     random.seed(seed + 21436)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
-
-    file = f'241018_300steps_bzs2048/orth_{optim_kind}_lr{lr:g}_seed{seed}.pth'
-    if os.path.exists(file):
-        print(f'skipping {file}')
-        sys.exit()
 
     with open(file + '.running', 'wb') as f:
         f.write(b'')

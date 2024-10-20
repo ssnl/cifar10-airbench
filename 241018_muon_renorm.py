@@ -400,6 +400,30 @@ def make_model():
     return model
 
 
+def orth_init(model):
+    import torch.nn as nn
+    @torch.no_grad()
+    def init(m):
+        if isinstance(m, nn.Linear):
+            fan_out = m.weight.size(0)
+            fan_in = m.weight.size(1)
+            dtype = m.weight.dtype
+            m.to(torch.float32)
+            nn.init.orthogonal_(m.weight)
+            m.weight.mul_(
+                (fan_out / fan_in) ** 0.5
+            )
+            if m.bias is not None:
+                nn.init.zeros_(m.bias)
+            m.to(dtype)
+    model.apply(init)
+    return model
+
+
+# torch.save([orth_init(model).state_dict()], 'orth_init_weights.pth')
+
+
+
 # name -> (optim_cls, desc)
 OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     adam=                                 ('adam',                                                                              [r'adam',
@@ -413,13 +437,6 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_sgd=                             (functools.partial(Muon, backend='sgd'),                                              [r'SGD',
                                                                                                                                  r'(i.e., muon w/o orthogonalization)']),
 
-    muon_momentum08=                      (functools.partial(Muon, backend='newtonschulz5', momentum=0.8),                      [r'muon momentum 0.95$\rightarrow$0.8']),
-    muon_momentum085=                     (functools.partial(Muon, backend='newtonschulz5', momentum=0.85),                     [r'muon momentum 0.95$\rightarrow$0.85']),
-    muon_momentum09=                      (functools.partial(Muon, backend='newtonschulz5', momentum=0.9),                      [r'muon momentum 0.95$\rightarrow$0.9']),
-    muon_momentum095=                     (functools.partial(Muon, backend='newtonschulz5', momentum=0.95),                     [r'muon momentum 0.95$\rightarrow$0.95']),
-    muon_momentum099=                     (functools.partial(Muon, backend='newtonschulz5', momentum=0.99),                     [r'muon momentum 0.95$\rightarrow$0.99']),
-
-    muon_no_momentum=                     (functools.partial(Muon, backend='newtonschulz5', nesterov=False),                    [r'muon no momentum']),
     muon_proper=                          (functools.partial(Muon, backend='newtonschulz5_proper'),                             [r'muon w naive simple cubic NS iter',
                                                                                                                                  r'(still 5 steps)']),
     muon_sched5=                          (functools.partial(Muon, backend='newtonschulz5_sched5', backend_steps=5),            [r'muon w scheduled 5-step NS iter',
@@ -430,6 +447,13 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
                                                                                                                                  r'(default$\rightarrow$naive)']),
     muon_sched14=                         (functools.partial(Muon, backend='newtonschulz5_sched14', backend_steps=14),          [r'muon w scheduled 14-step NS iter',
                                                                                                                                  r'(default$\rightarrow$naive)']),
+
+    muon_momentum08=                      (functools.partial(Muon, backend='newtonschulz5', momentum=0.8),                      [r'muon momentum 0.95$\rightarrow$0.8']),
+    muon_momentum085=                     (functools.partial(Muon, backend='newtonschulz5', momentum=0.85),                     [r'muon momentum 0.95$\rightarrow$0.85']),
+    muon_momentum09=                      (functools.partial(Muon, backend='newtonschulz5', momentum=0.9),                      [r'muon momentum 0.95$\rightarrow$0.9']),
+    muon_momentum095=                     (functools.partial(Muon, backend='newtonschulz5', momentum=0.95),                     [r'muon momentum 0.95$\rightarrow$0.95']),
+    muon_momentum099=                     (functools.partial(Muon, backend='newtonschulz5', momentum=0.99),                     [r'muon momentum 0.95$\rightarrow$0.99']),
+    muon_no_momentum=                     (functools.partial(Muon, backend='newtonschulz5', nesterov=False),                    [r'muon no momentum']),
 
     muon_norm_rms_target_unit=            (functools.partial(Muon, norm_kind='rms', target_norm='unit'),                        [r'muon (default, rms)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_\text{rms}$ to be 1)']),

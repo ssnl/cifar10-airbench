@@ -404,11 +404,14 @@ def make_model():
 OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     adam=                                 ('adam',                                                                              [r'adam',
                                                                                                                                  r'(default $\beta_1$=0.9)']),
-    adam_b095=                            ('adam_b095',                                                                         [r'adam_b095',
+    adam_b095=                            ('adam_b095',                                                                         [r'adam',
                                                                                                                                  r'($\beta_1$=0.9$\rightarrow$0.95)']),
-    adam_b0995=                           ('adam_b0995',                                                                        [r'adam_b0995',
+    adam_b0995=                           ('adam_b0995',                                                                        [r'adam',
                                                                                                                                  r'($\beta_1$=0.9$\rightarrow$0.995)']),
     # muon=                                 (functools.partial(Muon, backend='newtonschulz5'),                                    [r'muon']),
+    muon_norm_rms_target_unit=            (functools.partial(Muon, norm_kind='rms', target_norm='unit'),                        [r'muon (default, rms)',
+                                                                                                                                 r'(normalize each $||\Delta W_i||_\text{rms}$ to be 1)']),
+
     muon_sgd=                             (functools.partial(Muon, backend='sgd'),                                              [r'SGD',
                                                                                                                                  r'(i.e., muon w/o orthogonalization)']),
 
@@ -430,8 +433,6 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_sched14=                         (functools.partial(Muon, backend='newtonschulz5_sched14', backend_steps=14),          [r'muon w scheduled 14-step NS iter',
                                                                                                                                  r'(default$\rightarrow$naive)']),
 
-    muon_norm_rms_target_unit=            (functools.partial(Muon, norm_kind='rms', target_norm='unit'),                        [r'muon (default, rms, as if flattened as a vector)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_\text{rms}$ to be 1)']),
     muon_norm_fro_target_unit=            (functools.partial(Muon, norm_kind='fro', target_norm='unit'),                        [r'muon (frobenius)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_F$ to be 1)']),
     muon_norm_spec_target_unit=           (functools.partial(Muon, norm_kind='spectral', target_norm='unit'),                   [r'muon (spectral)',
@@ -440,17 +441,17 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
                                                                                                                                  r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to be 1)']),
 
 
-    muon_norm_rms_target_momentum=        (functools.partial(Muon, norm_kind='rms', target_norm='momentum'),                    [r'muon norm-match (rms, as if flattened as a vector)',
+    muon_norm_rms_target_momentum=        (functools.partial(Muon, norm_kind='rms', target_norm='momentum'),                    [r'muon norm-match (rms)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_\text{rms}$ to match $||\text{momentum}_i||_\text{rms}$)']),
     muon_norm_fro_target_momentum=        (functools.partial(Muon, norm_kind='fro', target_norm='momentum'),                    [r'muon norm-match (frobenius)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_F$ to match $||\text{momentum}_i||_F$)']),
     muon_norm_spec_target_momentum=       (functools.partial(Muon, norm_kind='spectral', target_norm='momentum'),               [r'muon norm-match (spectral)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_2$ to match $||\text{momentum}_i||_2$)']),
-    muon_norm_jb_target_momentum=         (functools.partial(Muon, norm_kind='jbnorm', target_norm='momentum'),                 [r'muon norm-match ($\text{rms}\rightarrow	ext{rms}$, good norm)',
+    muon_norm_jb_target_momentum=         (functools.partial(Muon, norm_kind='jbnorm', target_norm='momentum'),                 [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match $||\text{momentum}_i||_{\text{rms}\rightarrow\text{rms}}$']),
 
 
-    muon_norm_rms_target_glbavgmomentum=  (functools.partial(Muon, norm_kind='rms', target_norm='globalavg_momentum'),          [r'muon norm-match (rms, as if flattened as a vector)',
+    muon_norm_rms_target_glbavgmomentum=  (functools.partial(Muon, norm_kind='rms', target_norm='globalavg_momentum'),          [r'muon norm-match (rms)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_\text{rms}$ to match modula-inspired $||\text{momentum}||_M$,',
                                                                                                                                  r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_\text{rms}$)']),
     muon_norm_fro_target_glbavgmomentum=  (functools.partial(Muon, norm_kind='fro', target_norm='globalavg_momentum'),          [r'muon norm-match (frobenius)',
@@ -459,11 +460,11 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_norm_spec_target_glbavgmomentum= (functools.partial(Muon, norm_kind='spectral', target_norm='globalavg_momentum'),     [r'muon norm-match (spectral)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_2$ to match modula-inspired $||\text{momentum}||_M$,',
                                                                                                                                  r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_2$)']),
-    muon_norm_jb_target_glbavgmomentum=   (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalavg_momentum'),       [r'muon norm-match ($\text{rms}\rightarrow	ext{rms}$, good norm)',
+    muon_norm_jb_target_glbavgmomentum=   (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalavg_momentum'),       [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
                                                                                                                                  r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}$)']),
 
-    muon_norm_rms_target_glbmaxmomentum=  (functools.partial(Muon, norm_kind='rms', target_norm='globalmax_momentum'),          [r'muon norm-match (rms, as if flattened as a vector)',
+    muon_norm_rms_target_glbmaxmomentum=  (functools.partial(Muon, norm_kind='rms', target_norm='globalmax_momentum'),          [r'muon norm-match (rms)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_\text{rms}$ to match modula-inspired $||\text{momentum}||_M$,',
                                                                                                                                  r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_\text{rms}$)']),
     muon_norm_fro_target_glbmaxmomentum=  (functools.partial(Muon, norm_kind='fro', target_norm='globalmax_momentum'),          [r'muon norm-match (frobenius)',
@@ -472,7 +473,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_norm_spec_target_glbmaxmomentum= (functools.partial(Muon, norm_kind='spectral', target_norm='globalmax_momentum'),     [r'muon norm-match (spectral)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_2$ to match modula-inspired $||\text{momentum}||_M$,',
                                                                                                                                  r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_2$)']),
-    muon_norm_jb_target_glbmaxmomentum=   (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalmax_momentum'),       [r'muon norm-match ($\text{rms}\rightarrow	ext{rms}$, good norm)',
+    muon_norm_jb_target_glbmaxmomentum=   (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalmax_momentum'),       [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
                                                                                                                                  r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
                                                                                                                                  r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}$)']),
 

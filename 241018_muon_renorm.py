@@ -124,7 +124,7 @@ class Muon(torch.optim.Optimizer):
         backend: The chosen backend for the orthogonalization step. (recommended: 'newtonschulz5')
         backend_steps: The number of iteration steps to use in the backend, if it is iterative.
     """
-    def __init__(self, params, lr=3e-4, momentum=0.95, beta2=0.999, nesterov=True, backend='newtonschulz5', backend_steps=5,
+    def __init__(self, params, lr=3e-4, momentum=0.95, beta2=0.999, nesterov='pre_ns', backend='newtonschulz5', backend_steps=5,
                  norm_kind='rms', target_norm='unit'):
         defaults = dict(lr=lr, momentum=momentum, beta2=beta2, nesterov=nesterov, backend=backend, backend_steps=backend_steps,
                         norm_kind=norm_kind, target_norm=target_norm)
@@ -149,7 +149,7 @@ class Muon(torch.optim.Optimizer):
                 if 'stept' not in state:
                     state['stept'] = 0
                 state['stept'] += 1
-                if group['nesterov']:
+                if group['nesterov'] == 'pre_ns':
                     # m = beta1 * m + g
                     # g = g + m * beta1
                     # ----
@@ -224,6 +224,17 @@ class Muon(torch.optim.Optimizer):
                     if p.grad is None:
                         continue
                     self.state[p]['last_update'] += (1, )
+            elif group['target_norm'] == 'ema_gradnorm':
+                for p in group['params']:
+                    if p.grad is None:
+                        continue
+                    state = self.state[p]
+                    if 'ema_gradnorm' not in state:
+                        state['ema_gradnorm'] = p.grad.new_zeros(())
+                    torch.lerp(state['ema_gradnorm'], rawgnorm_fn(*self.state[p]['last_update']), 1 - group['beta2'], out=state['ema_gradnorm'])
+                    target_norm = state['ema_gradnorm'] / (1 - group['beta2']**state['stept'])
+                    self.state[p]['last_update'] += (target_norm, )
+
             elif group['target_norm'] == 'momentum':
                 for p in group['params']:
                     if p.grad is None:
@@ -253,6 +264,12 @@ class Muon(torch.optim.Optimizer):
                 if p.grad is None:
                     continue
                 g, rawgnorm, gnorm, target_norm = self.state[p]['last_update']
+                if group['nesterov'] == 'post_ns':
+                    if 'momentum_buffer' not in state:
+                        state['momentum_buffer'] = torch.zeros_like(g)
+                    buf = state['momentum_buffer']
+                    buf.mul_(momentum).add_(g)
+                    g = g.add(buf, alpha=momentum)
                 p.data.add_(g, alpha=-lr * (target_norm / gnorm))
 
 Result = namedtuple('Result', ['steps', 'train_accs', 'eval_accs', 'model_ws', 'state_dict'])

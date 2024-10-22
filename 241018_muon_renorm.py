@@ -221,44 +221,46 @@ class NormInterface:
 
 
 @torch.compile
-def _right_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7):
+def _right_preconditioner_from_zerothpower(g, g0, sqrt_dim: float, dtype=torch.float32, eps=1e-7):
     # return V S-1 V.T
     vsv = (g0.T @ g).to(dtype)
-    vsv = vsv / vsv.norm() * vsv.size(0)**0.5
+    vsv = vsv / vsv.norm() * sqrt_dim
     vsv.diagonal(dim1=-2, dim2=-1).add_(eps)
     L, info = torch.linalg.cholesky_ex(vsv)
     if info.item() != 0:
         raise RuntimeError(f"cholesky_ex failed with info {info}")
     inv = torch.cholesky_inverse(L).to(g.dtype)
-    return inv / inv.norm() * inv.size(0)**0.5
+    return inv / inv.norm() * sqrt_dim
 
 def right_preconditioner_from_zerothpower_with_retry(g, g0, eps=1e-7):
     dtype = torch.float32
+    sqrt_dim = g.size(1)**0.5
     while True:
         try:
-            return _right_preconditioner_from_zerothpower(g, g0, dtype=dtype, eps=eps)
+            return _right_preconditioner_from_zerothpower(g, g0, sqrt_dim, dtype=dtype, eps=eps)
         except RuntimeError:
             if dtype == torch.float64:
                 return None
             dtype = torch.float64
 
 @torch.compile
-def _left_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7):
+def _left_preconditioner_from_zerothpower(g, g0, sqrt_dim: float, dtype=torch.float32, eps=1e-7):
     # return U S-1 U.T
     usu = (g @ g0.T).to(dtype)
-    usu = usu / usu.norm() * usu.size(0)**0.5
+    usu = usu / usu.norm() * sqrt_dim
     usu.diagonal(dim1=-2, dim2=-1).add_(eps)
     L, info = torch.linalg.cholesky_ex(usu)
     if info.item() != 0:
         raise RuntimeError(f"cholesky_ex failed with info {info}")
     inv = torch.cholesky_inverse(L).to(g.dtype)
-    return inv / inv.norm() * inv.size(0)**0.5
+    return inv / inv.norm() * sqrt_dim
 
 def left_preconditioner_from_zerothpower_with_retry(g, g0, eps=1e-7):
     dtype = torch.float32
+    sqrt_dim = g.size(0)**0.5
     while True:
         try:
-            return _left_preconditioner_from_zerothpower(g, g0, dtype=dtype, eps=eps)
+            return _left_preconditioner_from_zerothpower(g, g0, sqrt_dim, dtype=dtype, eps=eps)
         except RuntimeError:
             if dtype == torch.float64:
                 return None

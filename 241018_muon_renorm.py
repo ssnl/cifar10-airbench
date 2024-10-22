@@ -56,7 +56,7 @@ def _zeropower_via_newtonschulz5(G, steps=5, eps=1e-7, dtype=torch.bfloat16,
         X = a * X + b * B + c * A @ B
     if G.size(0) > G.size(1):
         X = X.T
-        return X.to(G.dtype)
+    return X.to(G.dtype)
 
 zeropower_via_newtonschulz5 = functools.wraps(_zeropower_via_newtonschulz5)(torch.compile(_zeropower_via_newtonschulz5))
 
@@ -94,11 +94,28 @@ class NormInterface:
     state: dict
     grad: torch.Tensor                   # p.grad
     rawg: torch.Tensor                   # possibly momentum-averaged grad
-    g: torch.Tensor                      # zeropowered rawg
+    g: torch.Tensor                      # possibly momentum-averaged rawg^0
     rawgnorm_fro: torch.Tensor           # ||rawg||_fro
+    momentum_kind: str
     zeropower_backend: str
     eps: float
     cached_norms: Dict[Tuple[str, str, bool], torch.Tensor] = dataclasses.field(default_factory=dict)
+
+    @property
+    def fan_in(self):
+        return self.g.size(1)
+
+    @property
+    def fan_out(self):
+        return self.g.size(0)
+
+    @property
+    def min_fan(self):
+        return min(self.fan_in, self.fan_out)
+
+    @property
+    def max_fan(self):
+        return max(self.fan_in, self.fan_out)
 
     def __call__(self, tensor_kind: str, norm_kind: str, dual: bool = False) -> torch.Tensor:
         cache_key = (tensor_kind, norm_kind, dual)
@@ -114,25 +131,9 @@ class NormInterface:
             return self(tensor_kind, dual_norm_kind, dual=False)
 
         assert tensor_kind in ('rawg', 'g', 'grad')
-        if norm_kind == 'rms_exact':
-            # fro to rms
-            if tensor_kind == 'rawg':
-                return self.rawgnorm_fro / (self.rawg.numel()**0.5)
-            elif tensor_kind == 'g':
-                return self.g.norm() / (self.g.numel()**0.5)
-            else:
-                return self.grad.norm() / (self.grad.numel()**0.5)
-        elif norm_kind == 'rms':
-            # fro to rms
-            if tensor_kind == 'rawg':
-                return self.rawgnorm_fro / (self.rawg.numel()**0.5)
-            elif tensor_kind == 'g':
-                assert self.zeropower_backend not in ('svd', 'sign'), "rms (est) norm not supported for svd or sign"
-                # currently have ||DW||_fro     ~= sqrt(min(fan_in, fan_out))
-                #                ||DW||_rms_fro ~= 1/sqrt(max(fan_in, fan_out))
-                return 1 / max(self.g.size(0), self.g.size(1))**0.5
-            else:
-                return self.grad.norm() / (self.grad.numel()**0.5)
+        if norm_kind in {'rms_exact', 'rms'}:
+            denom = self.rawg.numel() ** 0.5
+            return self(tensor_kind, norm_kind.replace('rms', 'fro'), dual=dual) / denom
         elif norm_kind == 'fro_exact':
             if tensor_kind == 'rawg':
                 return self.rawgnorm_fro
@@ -144,26 +145,29 @@ class NormInterface:
             if tensor_kind == 'rawg':
                 return self.rawgnorm_fro
             elif tensor_kind == 'g':
-                return min(self.g.size(0), self.g.size(1))**0.5
+                assert self.zeropower_backend not in ('svd', 'sign'), "fro norm of g not supported for svd or sign"
+                assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "fro norm of g not supported for post-ns"
+                # currently have ||DW||_fro     ~= sqrt(min(fan_in, fan_out))
+                return self.min_fan**0.5
             else:
                 return self.grad.norm()
         elif norm_kind in {'jbnorm', 'jbnorm_exact'}:
             # ||W|| := sqrt(fan_out / fan_in) * ||W||_2
-            scale = (self.g.size(0) / self.g.size(1))**0.5
+            scale = (self.fan_out / self.fan_in)**0.5
             return self(tensor_kind, norm_kind.replace('jbnorm', 'spectral'), dual=dual) * scale
         elif norm_kind in ('spectral', 'spectral_exact'):
             # initialize power iterations on rawg (momentum/grad)
             # ref: https://github.com/jxbz/modula/blob/e274a352551ec4c6055b7fc0086db7a516863578/modula/atom.py#L32
             #      https://github.com/pytorch/pytorch/blob/d7e0e1dbc453bac099f747dfb65ad75767c3e1d7/torch/nn/utils/spectral_norm.py#L96
             if tensor_kind == 'g':
-                assert self.zeropower_backend not in ('svd', 'sign'), "spectral norm not supported for svd or sign"
+                assert self.zeropower_backend not in ('svd', 'sign'), "spectral norm of g not supported for svd or sign"
+                assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "spectral norm of g not supported for post-ns"
                 if norm_kind == 'spectral':
                     # g should only have binary singular values, just assume 1! if it is 0, then scaling it with 1 is still 0
                     return 1
                 elif norm_kind == 'spectral_exact':
                     # g should only have binary singular values... having at least 1 non-zero means that frobenius norm is at least 1 = \sqrt{ \sum_i s_i^2 }
                     return torch.ge(self.g.norm(), 0.9, out=self.g.new_empty(()))
-                assert False, f"unknown norm kind {norm_kind}"
 
             tensor = dict(rawg=self.rawg, grad=self.grad)[tensor_kind]
             if f'{tensor_kind}_u' not in self.state:
@@ -179,16 +183,17 @@ class NormInterface:
                 F.normalize(v, dim=0, eps=self.eps, out=v)
                 torch.mv(tensor.T, v, out=u)
                 F.normalize(u, dim=0, eps=self.eps, out=u)
-                return torch.dot(v, torch.mv(tensor, u))
+            return torch.dot(v, torch.mv(tensor, u))
         elif norm_kind in {'jbnuclear', 'jbnuclear_exact'}:
-            scale = (self.g.size(0) / self.g.size(1))**0.5
+            scale = (self.fan_out / self.fan_in)**0.5
             return self(tensor_kind, norm_kind.replace('jbnuclear', 'nuclear'), dual=dual) * scale
         elif norm_kind in {'nuclear', 'nuclear_exact'}:
             if tensor_kind == 'rawg':
-                assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm not supported for svd or sign"
+                assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm of rawg not supported for svd or sign"
                 return (self.g.T @ self.g).trace()
             elif tensor_kind == 'g':
-                assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm not supported for svd or sign"
+                assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm of g not supported for svd or sign"
+                assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "nuclear (est) norm of g not supported for post-ns"
                 return self(tensor_kind, norm_kind.replace('nuclear', 'fro'), dual=dual)
             else:
                 assert False, f"{norm_kind} not implemented for tensor_kind {tensor_kind}"
@@ -272,6 +277,9 @@ class Muon(torch.optim.Optimizer):
                 g = rawg / (rawgnorm_fro + eps) # ensure top singular value <= 1
                 g = zeropower_backend(g, steps=group['backend_steps'], dtype=g.dtype, normalize=False)
 
+                if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
+                    g = self._apply_momentum(state, g, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')
+
                 state['last_update'] = dict(grad=p.grad, rawg=rawg, g=g, rawgnorm_fro=rawgnorm_fro)
 
             # renormalize update
@@ -341,8 +349,6 @@ class Muon(torch.optim.Optimizer):
                 state = self.state[p]
                 last_update = state['last_update']
                 scale = last_update['target_norm'] / norm_interface('g', norm_kind, dual=False)  # see anthology proposition 1. unit norm, scale to ||g||^dagger
-                if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
-                    g = self._apply_momentum(state, g, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')
                 p.data.add_(g, alpha=-lr * scale)
 
 Result = namedtuple('Result', ['steps', 'train_accs', 'eval_accs', 'model_ws', 'state_dict'])

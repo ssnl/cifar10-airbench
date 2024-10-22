@@ -215,7 +215,7 @@ class NormInterface:
             elif tensor_kind == 'g':
                 assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm of g not supported for svd or sign"
                 assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "nuclear (est) norm of g not supported for post-ns which breaks g=rawg0"
-                return self(tensor_kind, norm_kind.replace('nuclear', 'fro'), dual=dual)
+                return self(tensor_kind, norm_kind.replace('nuclear', 'fro'), dual=dual) ** 2
             else:
                 assert False, f"{norm_kind} not implemented for tensor_kind {tensor_kind}"
         else:

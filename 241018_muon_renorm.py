@@ -190,7 +190,11 @@ class NormInterface:
         elif norm_kind in {'nuclear', 'nuclear_exact'}:
             if tensor_kind == 'rawg':
                 assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm of rawg not supported for svd or sign"
-                return (self.g.T @ self.rawg).trace()
+                assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "nuclear (est) norm of g not supported for post-ns"
+                if self.g.shape[0] > self.g.shape[1]:
+                    return (self.g.T @ self.rawg).trace()
+                else:
+                    return (self.rawg @ self.g.T).trace()
             elif tensor_kind == 'g':
                 assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm of g not supported for svd or sign"
                 assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "nuclear (est) norm of g not supported for post-ns"
@@ -702,6 +706,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
 EQUIV_MAPS: Mapping[str, str] = dict(
     muon_pre_ns_nesterov='muon',
     muon_norm_rms_target_unit='muon',
+    muon_momentum095='muon',
 )
 
 

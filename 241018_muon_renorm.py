@@ -669,11 +669,23 @@ def orth_init(model):
 OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     adam=                                                           ('adam',                                                                                                          [r'adam',
                                                                                                                                                                                        r'(default $\beta_1$=0.9)']),
+    adam_b09=                                                       ('adam',                                                                                                          [r'adam']),
     adam_b095=                                                      ('adam_b095',                                                                                                     [r'adam',
                                                                                                                                                                                        r'($\beta_1$=0.9$\rightarrow$0.95)']),
     adam_b0995=                                                     ('adam_b0995',                                                                                                    [r'adam',
                                                                                                                                                                                        r'($\beta_1$=0.9$\rightarrow$0.995)']),
     muon=                                                           (functools.partial(Muon, backend='newtonschulz5'),                                                                [r'muon']),
+
+    muon_1step=                                                     (functools.partial(Muon, backend='newtonschulz5', backend_steps=1),                                               [r'muon w 1-step NS iter']),
+    muon_2step=                                                     (functools.partial(Muon, backend='newtonschulz5', backend_steps=2),                                               [r'muon w 2-step NS iter']),
+    muon_1step_precond50=                                           (functools.partial(Muon, backend='newtonschulz5', backend_steps=1,
+                                                                                       precondition_backend='newtonschulz5_sched10', precondition_backend_steps=10,
+                                                                                       precondition_kind='min_dim', compute_precondition_freq=50, precondition_beta2=0.95),           [r'muon w 1-step preconditioned NS iter',
+                                                                                                                                                                                       r'(compute precondition every 50 steps)']),
+    muon_2step_precond50=                                            (functools.partial(Muon, backend='newtonschulz5', backend_steps=2,
+                                                                                        precondition_backend='newtonschulz5_sched10', precondition_backend_steps=10,
+                                                                                        precondition_kind='min_dim', compute_precondition_freq=50, precondition_beta2=0.95),          [r'muon w 2-step preconditioned NS iter',
+                                                                                                                                                                                       r'(compute precondition every 50 steps)']),
 
     muon_pre_ns=                                                    (functools.partial(Muon, momentum_kind='pre_ns'),                                                                 [r'muon w pre-ns ema']),
 
@@ -734,6 +746,10 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
                                                                                                                                                                                        r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match $||\text{momentum}_i||_{\text{rms}\rightarrow\text{rms}}$']),
     muon_norm_jb_target_momentum_dual=                              (functools.partial(Muon, norm_kind='jbnorm', target_norm='momentum_dual'),                                         [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
                                                                                                                                                                                        r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match $||\text{momentum}_i||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
+    muon_2step_precond50_norm_jb_target_momentum_dual=               (functools.partial(Muon, norm_kind='jbnorm', target_norm='momentum_dual', backend_steps=2,
+                                                                                        precondition_backend='newtonschulz5_sched10', precondition_backend_steps=10,
+                                                                                        precondition_kind='min_dim', compute_precondition_freq=50, precondition_beta2=0.95),          [r'muon w 2-step preconditioned NS iter & norm-match ($\text{rms}\rightarrow\text{rms}$)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match $||\text{momentum}_i||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
     muon_pre_ns_norm_jb_target_momentum_dual=                       (functools.partial(Muon, norm_kind='jbnorm', target_norm='momentum_dual', momentum_kind='pre_ns'),                [r'muon w pre-ns ema & norm-match ($\text{rms}\rightarrow\text{rms}$)',
                                                                                                                                                                                        r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match $||\text{momentum}_i^\text{ema}||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
 
@@ -772,6 +788,11 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_norm_jb_target_glbavgmomentum_dual=                        (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalavg_momentum_dual'),                              [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
                                                                                                                                                                                        r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
                                                                                                                                                                                        r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
+    muon_2step_precond50_norm_jb_target_glbavgmomentum_dual=        (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalavg_momentum_dual', backend_steps=2,
+                                                                                       precondition_backend='newtonschulz5_sched10', precondition_backend_steps=10,
+                                                                                       precondition_kind='min_dim', compute_precondition_freq=50, precondition_beta2=0.95),           [r'muon w 2-step preconditioned NS iter & norm-match ($\text{rms}\rightarrow\text{rms}$)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
     muon_pre_ns_norm_jb_target_glbavgmomentum_dual=                 (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalavg_momentum_dual', momentum_kind='pre_ns'),      [r'muon w pre-ns ema & norm-match ($\text{rms}\rightarrow\text{rms}$)',
                                                                                                                                                                                        r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
                                                                                                                                                                                        r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
@@ -792,6 +813,11 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
                                                                                                                                                                                        r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
                                                                                                                                                                                        r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}$)']),
     muon_norm_jb_target_glbmaxmomentum_dual=                        (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalmax_momentum_dual'),                              [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
+    muon_2step_precond50_norm_jb_target_glbmaxmomentum_dual=        (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalmax_momentum_dual', backend_steps=2,
+                                                                                       precondition_backend='newtonschulz5_sched10', precondition_backend_steps=10,
+                                                                                       precondition_kind='min_dim', compute_precondition_freq=50, precondition_beta2=0.95),           [r'muon w 2-step preconditioned NS iter & norm-match ($\text{rms}\rightarrow\text{rms}$)',
                                                                                                                                                                                        r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
                                                                                                                                                                                        r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
     muon_pre_ns_norm_jb_target_glbmaxmomentum_dual=                 (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalmax_momentum_dual', momentum_kind='pre_ns'),      [r'muon w pre-ns ema & norm-match ($\text{rms}\rightarrow\text{rms}$)',
@@ -864,6 +890,7 @@ EQUIV_MAPS: Mapping[str, str] = dict(
     muon_pre_ns_nesterov='muon',
     muon_norm_rms_target_unit='muon',
     muon_momentum095='muon',
+    adam_b09='adam',
 )
 
 

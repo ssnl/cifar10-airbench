@@ -281,7 +281,6 @@ class Muon(torch.optim.Optimizer):
                     continue
                 state = self.state[p]
                 norms[p] = NormInterface(state,
-                                         **state['last_update'],
                                          zeropower_backend=group['backend'],
                                          eps=eps,
                                          **state['last_update'],

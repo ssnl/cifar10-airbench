@@ -359,7 +359,8 @@ class Muon(torch.optim.Optimizer):
                 if precondition_kind is not None and (preconditioner:= state.get('preconditioner', None)) is not None:
                     # regress to idt
                     if group['precondition_beta2'] != 1:
-                        preconditioner.lerp_(torch.eye(preconditioner.shape[0], device=preconditioner.device, dtype=preconditioner.dtype), 1 - group['precondition_beta2'])
+                        preconditioner.mul_(group['precondition_beta2'])
+                        preconditioner.diagonal(dim1=-2, dim2=-1).add_(1 - group['precondition_beta2'])
                     if precondition_kind == 'left':
                         rawg = preconditioner @ rawg
                     elif precondition_kind == 'right':

@@ -111,7 +111,7 @@ class NormInterface:
             dual_norm_kind = dict(spectral='nuclear', jbnorm='jbnuclear', spectral_exact='nuclear_exact', jbnorm_exact='jbnuclear_exact').get(norm_kind, None)
             if dual_norm_kind is None:
                 raise ValueError(f"dual norm kind {norm_kind} not supported")
-            return self.compute_norm(tensor_kind, dual_norm_kind, dual=False)
+            return self(tensor_kind, dual_norm_kind, dual=False)
 
         assert tensor_kind in ('rawg', 'g', 'grad')
         if norm_kind == 'rms_exact':
@@ -150,7 +150,7 @@ class NormInterface:
         elif norm_kind in {'jbnorm', 'jbnorm_exact'}:
             # ||W|| := sqrt(fan_out / fan_in) * ||W||_2
             scale = (self.g.size(0) / self.g.size(1))**0.5
-            return self.compute_norm(tensor_kind, norm_kind.replace('jbnorm', 'spectral'), dual=dual) * scale
+            return self(tensor_kind, norm_kind.replace('jbnorm', 'spectral'), dual=dual) * scale
         elif norm_kind in ('spectral', 'spectral_exact'):
             # initialize power iterations on rawg (momentum/grad)
             # ref: https://github.com/jxbz/modula/blob/e274a352551ec4c6055b7fc0086db7a516863578/modula/atom.py#L32
@@ -182,14 +182,14 @@ class NormInterface:
                 return torch.dot(v, torch.mv(tensor, u))
         elif norm_kind in {'jbnuclear', 'jbnuclear_exact'}:
             scale = (self.g.size(0) / self.g.size(1))**0.5
-            return self.compute_norm(tensor_kind, norm_kind.replace('jbnuclear', 'nuclear'), dual=dual) * scale
+            return self(tensor_kind, norm_kind.replace('jbnuclear', 'nuclear'), dual=dual) * scale
         elif norm_kind in {'nuclear', 'nuclear_exact'}:
             if tensor_kind == 'rawg':
                 assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm not supported for svd or sign"
                 return (self.g.T @ self.g).trace()
             elif tensor_kind == 'g':
                 assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm not supported for svd or sign"
-                return self.compute_norm(tensor_kind, norm_kind.replace('nuclear', 'fro'), dual=dual)
+                return self(tensor_kind, norm_kind.replace('nuclear', 'fro'), dual=dual)
             else:
                 assert False, f"{norm_kind} not implemented for tensor_kind {tensor_kind}"
         else:

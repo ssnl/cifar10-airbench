@@ -678,6 +678,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
 
     muon_1step=                                                     (functools.partial(Muon, backend='newtonschulz5', backend_steps=1),                                               [r'muon w 1-step NS iter']),
     muon_2step=                                                     (functools.partial(Muon, backend='newtonschulz5', backend_steps=2),                                               [r'muon w 2-step NS iter']),
+    muon_3step=                                                     (functools.partial(Muon, backend='newtonschulz5', backend_steps=3),                                               [r'muon w 3-step NS iter']),
     muon_1step_precond50=                                           (functools.partial(Muon, backend='newtonschulz5', backend_steps=1,
                                                                                        precondition_backend='newtonschulz5_sched10', precondition_backend_steps=10,
                                                                                        precondition_kind='min_dim', compute_precondition_freq=50, precondition_beta2=0.95),           [r'muon w 1-step preconditioned NS iter',
@@ -685,6 +686,10 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_2step_precond50=                                            (functools.partial(Muon, backend='newtonschulz5', backend_steps=2,
                                                                                         precondition_backend='newtonschulz5_sched10', precondition_backend_steps=10,
                                                                                         precondition_kind='min_dim', compute_precondition_freq=50, precondition_beta2=0.95),          [r'muon w 2-step preconditioned NS iter',
+                                                                                                                                                                                       r'(compute precondition every 50 steps)']),
+    muon_3step_precond50=                                            (functools.partial(Muon, backend='newtonschulz5', backend_steps=3,
+                                                                                        precondition_backend='newtonschulz5_sched10', precondition_backend_steps=10,
+                                                                                        precondition_kind='min_dim', compute_precondition_freq=50, precondition_beta2=0.95),          [r'muon w 3-step preconditioned NS iter',
                                                                                                                                                                                        r'(compute precondition every 50 steps)']),
 
     muon_pre_ns=                                                    (functools.partial(Muon, momentum_kind='pre_ns'),                                                                 [r'muon w pre-ns ema']),

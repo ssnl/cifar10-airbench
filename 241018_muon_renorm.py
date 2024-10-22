@@ -226,10 +226,11 @@ def _right_preconditioner_from_zerothpower(g, g0, sqrt_dim: float, dtype=torch.f
     vsv = (g0.T @ g).to(dtype)
     vsv = vsv / vsv.norm()
     vsv.diagonal(dim1=-2, dim2=-1).add_(eps)
-    L, info = torch.linalg.cholesky_ex(vsv)
-    if info.item() != 0:
-        raise RuntimeError(f"cholesky_ex failed with info {info}")
-    inv = torch.cholesky_inverse(L).to(g.dtype)
+    inv = torch.linalg.pinv(vsv)
+    # L, info = torch.linalg.cholesky_ex(vsv)
+    # if info.item() != 0:
+    #     raise RuntimeError(f"cholesky_ex failed with info {info}")
+    # inv = torch.cholesky_inverse(L).to(g.dtype)
     return inv / inv.norm() * sqrt_dim
 
 def right_preconditioner_from_zerothpower_with_retry(g, g0, eps=1e-7):
@@ -249,10 +250,11 @@ def _left_preconditioner_from_zerothpower(g, g0, sqrt_dim: float, dtype=torch.fl
     usu = (g @ g0.T).to(dtype)
     usu = usu / usu.norm()
     usu.diagonal(dim1=-2, dim2=-1).add_(eps)
-    L, info = torch.linalg.cholesky_ex(usu)
-    if info.item() != 0:
-        raise RuntimeError(f"cholesky_ex failed with info {info}")
-    inv = torch.cholesky_inverse(L).to(g.dtype)
+    inv = torch.linalg.pinv(usu)
+    # L, info = torch.linalg.cholesky_ex(usu)
+    # if info.item() != 0:
+    #     raise RuntimeError(f"cholesky_ex failed with info {info}")
+    # inv = torch.cholesky_inverse(L).to(g.dtype)
     return inv / inv.norm() * sqrt_dim
 
 def left_preconditioner_from_zerothpower_with_retry(g, g0, eps=1e-7):

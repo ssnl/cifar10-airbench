@@ -919,6 +919,16 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     #                                                                                                                                                                                           r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
 )
 
+for k in list(OPTIM_MAP.keys()):
+    if 'precond' in k:
+        del OPTIM_MAP[k]
+    elif '_1step' in k:
+        del OPTIM_MAP[k]
+    elif '_2step' in k:
+        del OPTIM_MAP[k]
+    elif '_3step' in k:
+        del OPTIM_MAP[k]
+
 EQUIV_MAPS: Mapping[str, str] = dict(
     muon_pre_ns_nesterov='muon',
     muon_norm_rms_target_unit='muon',

@@ -224,6 +224,7 @@ class NormInterface:
 def _right_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7):
     # return V S-1 V.T
     vsv = (g0.T @ g).to(dtype)
+    vsv = vsv / vsv.norm()
     vsv.diagonal(dim1=-2, dim2=-1).add_(eps)
     L, info = torch.linalg.cholesky_ex(vsv)
     if info.item() != 0:
@@ -245,6 +246,7 @@ def right_preconditioner_from_zerothpower_with_retry(g, g0, eps=1e-7):
 def _left_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7):
     # return U S-1 U.T
     usu = (g @ g0.T).to(dtype)
+    usu = usu / usu.norm()
     usu.diagonal(dim1=-2, dim2=-1).add_(eps)
     L, info = torch.linalg.cholesky_ex(usu)
     if info.item() != 0:
@@ -293,7 +295,7 @@ class Muon(torch.optim.Optimizer):
         defaults = dict(lr=lr, momentum=momentum, beta2=beta2, momentum_kind=momentum_kind, backend=backend, backend_steps=backend_steps,
                         norm_kind=norm_kind, target_norm=target_norm, eps=eps, compute_precondition_freq=compute_precondition_freq, precondition_kind=precondition_kind)
         assert momentum_kind in {'pre_ns', 'pre_ns_nesterov', 'post_ns', 'post_ns_nesterov', None}
-        assert precondition_kind in {'left', 'right', 'min_dim', None}
+        assert precondition_kind in {'left', 'left_lstsq' 'right', 'min_dim', None}
         super().__init__(params, defaults)
 
     def _apply_momentum(self, state, x: torch.Tensor, momentum, *, is_nesterov):
@@ -363,7 +365,7 @@ class Muon(torch.optim.Optimizer):
                     # rawg/rawgnorm_fro has singular values in [0, 1]
                     # now the preconditioner is generally (rawg0.T @ rawg + eps I)^{-1}
                     # note that scaling preconditioner doesn't matter for the 0th power
-                    # so we can also do (rawg0.T @ rawg / C + eps I)^{-1}
+                    # so we can also do (rawg0.T @ rawg / C1 + eps I)^{-1} / C2
                     if precondition_kind == 'left':
                         new_preconditioner = left_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-3)
                     elif precondition_kind == 'right':

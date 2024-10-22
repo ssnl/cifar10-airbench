@@ -190,7 +190,7 @@ class NormInterface:
         elif norm_kind in {'nuclear', 'nuclear_exact'}:
             if tensor_kind == 'rawg':
                 assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm of rawg not supported for svd or sign"
-                return (self.g.T @ self.g).trace()
+                return (self.g.T @ self.rawg).trace()
             elif tensor_kind == 'g':
                 assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm of g not supported for svd or sign"
                 assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "nuclear (est) norm of g not supported for post-ns"

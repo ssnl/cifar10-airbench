@@ -306,7 +306,7 @@ class Muon(torch.optim.Optimizer):
                         norm_kind=norm_kind, target_norm=target_norm, eps=eps, compute_precondition_freq=compute_precondition_freq,
                         precondition_backend=precondition_backend, precondition_backend_steps=precondition_backend_steps,
                         precondition_kind=precondition_kind, precondition_beta2=precondition_beta2)
-        assert momentum_kind in {'pre_ns', 'pre_ns_nesterov', 'post_ns', 'post_ns_nesterov', None}
+        assert momentum_kind in {'pre_ns', 'pre_ns_nesterov', 'post_ns', 'post_ns_nesterov', 'post_ns_dual_ema', 'post_ns_dual_ema_nesterov', None}
         assert precondition_kind in {'left', 'left_lstsq' 'right', 'min_dim', None}
         super().__init__(params, defaults)
 
@@ -333,6 +333,9 @@ class Muon(torch.optim.Optimizer):
             eps = group['eps']
             lr = group['lr']
             momentum = group['momentum']
+
+            # renormalize update
+            norms = {}
 
             for p in group['params']:
                 # grad      := p.grad
@@ -402,25 +405,27 @@ class Muon(torch.optim.Optimizer):
                         state['preconditioner'] = right_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-3)
 
                 # post-ns momentum
+                # we may need to access norms here so let's instantiate NormInterface, even if we don't have the final g. We will just update in-place.
                 g = rawg0
-                if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
-                    g = self._apply_momentum(state, rawg0, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')
-
                 state['last_update'] = dict(grad=p.grad, rawg=rawg, cond_rawg=cond_rawg, rawg0=rawg0, g=g, rawgnorm_fro=rawg.norm())
-
-            # renormalize update
-            norms = {}
-            for p in group['params']:
-                if p.grad is None:
-                    continue
-                state = self.state[p]
-                norms[p] = NormInterface(
+                norms[p] = norm_interface = NormInterface(
                     state,
                     zeropower_backend=group['backend'],
                     momentum_kind=group['momentum_kind'],
                     eps=eps,
                     **state['last_update'],
                 )
+                if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
+                    g = self._apply_momentum(state, rawg0, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')
+                elif group['momentum_kind'] in {'post_ns_dual_ema', 'post_ns_dual_ema_nesterov'}:
+                    # g := ema(||rawg||^\dagger * rawg^0)
+                    gnorm_dual = norm_interface('rawg', group['norm_kind'], dual=True)
+                    g = self._apply_momentum(state, gnorm_dual * rawg0, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_dual_ema_nesterov')
+
+                # update norm_interface and state['last_update']
+                state['last_update']['g'] = g
+                norms[p].g = g
+
 
             norm_kind = group['norm_kind']
             target_norm = group['target_norm']

@@ -296,11 +296,14 @@ class Muon(torch.optim.Optimizer):
     """
     def __init__(self, params, lr=3e-4, momentum=0.95, beta2=0.999, momentum_kind='pre_ns_nesterov', backend='newtonschulz5',
                  backend_steps=5, norm_kind='rms', target_norm='unit', eps=1e-7,
-                 compute_precondition_freq=20, precondition_backend_steps=10, precondition_kind=None,
+                 compute_precondition_freq=20,
+                 precondition_backend=None, precondition_backend_steps=10,
+                 precondition_kind=None,
                  precondition_beta2=0.999):
         defaults = dict(lr=lr, momentum=momentum, beta2=beta2, momentum_kind=momentum_kind, backend=backend, backend_steps=backend_steps,
                         norm_kind=norm_kind, target_norm=target_norm, eps=eps, compute_precondition_freq=compute_precondition_freq,
-                        precondition_backend_steps=precondition_backend_steps, precondition_kind=precondition_kind, precondition_beta2=precondition_beta2)
+                        precondition_backend=precondition_backend, precondition_backend_steps=precondition_backend_steps,
+                        precondition_kind=precondition_kind, precondition_beta2=precondition_beta2)
         assert momentum_kind in {'pre_ns', 'pre_ns_nesterov', 'post_ns', 'post_ns_nesterov', None}
         assert precondition_kind in {'left', 'left_lstsq' 'right', 'min_dim', None}
         super().__init__(params, defaults)
@@ -328,7 +331,6 @@ class Muon(torch.optim.Optimizer):
             eps = group['eps']
             lr = group['lr']
             momentum = group['momentum']
-            zeropower_backend = zeropower_backends[group['backend']]
 
             for p in group['params']:
                 # rawg: grad or momentum grad
@@ -366,9 +368,15 @@ class Muon(torch.optim.Optimizer):
 
                 do_update_preconditioner = precondition_kind is not None and stept > 0 and stept % group['compute_precondition_freq'] == 0
 
-                backend_steps = group['backend_steps'] if not do_update_preconditioner else group['precondition_backend_steps']
+                backend_steps = group['backend_steps']
+                if do_update_preconditioner:
+                    if group['precondition_backend'] is not None:
+                        backend = group['precondition_backend']
+                    if group['precondition_backend_steps'] is not None:
+                        backend_steps = group['precondition_backend_steps']
+
                 rawgnorm_fro = rawg.norm()
-                rawg0 = zeropower_backend(rawg, steps=backend_steps, dtype=rawg.dtype, G_fro=rawgnorm_fro)
+                rawg0 = zeropower_backends[backend](rawg, steps=backend_steps, dtype=rawg.dtype, G_fro=rawgnorm_fro)
 
                 # update preconditioner
                 if do_update_preconditioner:

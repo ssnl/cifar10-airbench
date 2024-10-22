@@ -334,9 +334,9 @@ class Muon(torch.optim.Optimizer):
                 if precondition_kind is not None and stept > 0 and stept % group['compute_precondition_freq'] == 0:
                     assert group['backend'] not in {'sgd', 'sign'}, "preconditioner not supported for sgd or sign"
                     if precondition_kind == 'left':
-                        state['preconditioner'] = left_preconditioner_from_zerothpower(rawg0, rawg, eps=eps)
+                        state['preconditioner'] = left_preconditioner_from_zerothpower(rawg, rawg0, eps=eps)
                     elif precondition_kind == 'right':
-                        state['preconditioner'] = right_preconditioner_from_zerothpower(rawg0, rawg, eps=eps)
+                        state['preconditioner'] = right_preconditioner_from_zerothpower(rawg, rawg0, eps=eps)
 
                 if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
                     g = self._apply_momentum(state, rawg0, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')

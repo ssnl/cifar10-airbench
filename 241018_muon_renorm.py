@@ -226,7 +226,7 @@ def _right_preconditioner_from_zerothpower(g, g0, sqrt_dim: float, dtype=torch.f
     vsv = (g0.T @ g).to(dtype)
     vsv = vsv / vsv.norm()
     vsv.diagonal(dim1=-2, dim2=-1).add_(eps)
-    inv = torch.linalg.pinv(vsv)
+    inv = torch.linalg.pinv(vsv, hermitian=True).to(g.dtype)
     # L, info = torch.linalg.cholesky_ex(vsv)
     # if info.item() != 0:
     #     raise RuntimeError(f"cholesky_ex failed with info {info}")
@@ -250,7 +250,7 @@ def _left_preconditioner_from_zerothpower(g, g0, sqrt_dim: float, dtype=torch.fl
     usu = (g @ g0.T).to(dtype)
     usu = usu / usu.norm()
     usu.diagonal(dim1=-2, dim2=-1).add_(eps)
-    inv = torch.linalg.pinv(usu)
+    inv = torch.linalg.pinv(usu, hermitian=True).to(g.dtype)
     # L, info = torch.linalg.cholesky_ex(usu)
     # if info.item() != 0:
     #     raise RuntimeError(f"cholesky_ex failed with info {info}")

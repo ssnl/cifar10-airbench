@@ -365,9 +365,14 @@ class Muon(torch.optim.Optimizer):
                     # note that scaling preconditioner doesn't matter for the 0th power
                     # so we can also do (rawg0.T @ rawg / C + eps I)^{-1}
                     if precondition_kind == 'left':
-                        state['preconditioner'] = left_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-5)
+                        new_preconditioner = left_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-5)
                     elif precondition_kind == 'right':
-                        state['preconditioner'] = right_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-5)
+                        new_preconditioner = right_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-5)
+                    if new_preconditioner is None and (preconditioner:= state.get('preconditioner', None)) is not None:
+                        # regress to idt
+                        preconditioner.lerp_(torch.eye(preconditioner.shape[0], device=preconditioner.device, dtype=preconditioner.dtype), 1 - group['beta2'] ** group['compute_precondition_freq'])
+                    else:
+                        state['preconditioner'] = new_preconditioner
 
                 if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
                     g = self._apply_momentum(state, rawg0, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')

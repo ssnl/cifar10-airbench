@@ -349,6 +349,24 @@ class Muon(torch.optim.Optimizer):
                         torch.lerp(state['ema_momentum_norm'], norm_interface('rawg', norm_kind, dual=use_dual), 1 - group['beta2'], out=state['ema_momentum_norm'])
                         self.state[p]['last_update']['target_norm'] = state['ema_momentum_norm'] / (1 - group['beta2']**state['stept'])
 
+                elif target_norm == 'ema_grad_norm2_sqrt':
+                    # target_norm = ema(||grad||^2)^0.5
+                    for p, norm_interface in norms.items():
+                        state = self.state[p]
+                        if 'ema_grad_norm2' not in state:
+                            state['ema_grad_norm2'] = p.grad.new_zeros(())
+                        torch.lerp(state['ema_grad_norm2'], norm_interface('grad', norm_kind, dual=use_dual)**2, 1 - group['beta2'], out=state['ema_grad_norm2'])
+                        self.state[p]['last_update']['target_norm'] = (state['ema_grad_norm2'] / (1 - group['beta2']**state['stept']))**0.5
+
+                elif target_norm == 'ema_momentum_norm2_sqrt':
+                    # target_norm = ema(||momentum||^2)^0.5
+                    for p, norm_interface in norms.items():
+                        state = self.state[p]
+                        if 'ema_momentum_norm' not in state:
+                            state['ema_momentum_norm2'] = p.grad.new_zeros(())
+                        torch.lerp(state['ema_momentum_norm2'], norm_interface('rawg', norm_kind, dual=use_dual)**2, 1 - group['beta2'], out=state['ema_momentum_norm2'])
+                        self.state[p]['last_update']['target_norm'] = (state['ema_momentum_norm2'] / (1 - group['beta2']**state['stept']))**0.5
+
                 elif target_norm == 'momentum':
                     # target_norm = ||momentum||
                     for p, norm_interface in norms.items():

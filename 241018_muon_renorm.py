@@ -124,9 +124,9 @@ class Muon(torch.optim.Optimizer):
         backend: The chosen backend for the orthogonalization step. (recommended: 'newtonschulz5')
         backend_steps: The number of iteration steps to use in the backend, if it is iterative.
     """
-    def __init__(self, params, lr=3e-4, momentum=0.95, beta2=0.999, nesterov='pre_ns', backend='newtonschulz5', backend_steps=5,
+    def __init__(self, params, lr=3e-4, momentum=0.95, beta2=0.999, momentum_kind='pre_ns_nesterov', backend='newtonschulz5', backend_steps=5,
                  norm_kind='rms', target_norm='unit'):
-        defaults = dict(lr=lr, momentum=momentum, beta2=beta2, nesterov=nesterov, backend=backend, backend_steps=backend_steps,
+        defaults = dict(lr=lr, momentum=momentum, beta2=beta2, momentum_kind=momentum_kind, backend=backend, backend_steps=backend_steps,
                         norm_kind=norm_kind, target_norm=target_norm)
         super().__init__(params, defaults)
 
@@ -149,7 +149,7 @@ class Muon(torch.optim.Optimizer):
                 if 'stept' not in state:
                     state['stept'] = 0
                 state['stept'] += 1
-                if group['nesterov'] == 'pre_ns':
+                if group['momentum_kind'] in ('pre_ns', 'pre_ns_nesterov'):
                     # m = beta1 * m + g
                     # g = g + m * beta1
                     # ----
@@ -159,8 +159,12 @@ class Muon(torch.optim.Optimizer):
                     if 'momentum_buffer' not in state:
                         state['momentum_buffer'] = torch.zeros_like(rawg)
                     buf = state['momentum_buffer']
-                    buf.mul_(momentum).add_(rawg)
-                    rawg = rawg.add(buf, alpha=momentum)
+                    if group['momentum_kind'] == 'pre_ns_nesterov':
+                        buf.mul_(momentum).add_(rawg)
+                        rawg = rawg.add(buf, alpha=momentum)
+                    else:
+                        torch.lerp(buf, rawg, 1 - momentum, out=buf)
+                        rawg = buf / (1 - momentum ** state['stept'])
                 else:
                     rawg = rawg.clone()
 
@@ -265,12 +269,16 @@ class Muon(torch.optim.Optimizer):
                     continue
                 state = self.state[p]
                 g, rawgnorm, gnorm, target_norm = state['last_update']
-                if group['nesterov'] == 'post_ns':
+                if group['momentum_kind'] in ('post_ns', 'post_ns_nesterov'):
                     if 'momentum_buffer' not in state:
                         state['momentum_buffer'] = torch.zeros_like(g)
                     buf = state['momentum_buffer']
-                    buf.mul_(momentum).add_(g)
-                    g = g.add(buf, alpha=momentum)
+                    if group['momentum_kind'] == 'post_ns_nesterov':
+                        buf.mul_(momentum).add_(g)
+                        g = g.add(buf, alpha=momentum)
+                    else:
+                        torch.lerp(buf, g, 1 - momentum, out=buf)
+                        g = buf / (1 - momentum ** state['stept'])
                 p.data.add_(g, alpha=-lr * (target_norm / gnorm))
 
 Result = namedtuple('Result', ['steps', 'train_accs', 'eval_accs', 'model_ws', 'state_dict'])
@@ -451,6 +459,13 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     adam_b0995=                           ('adam_b0995',                                                                        [r'adam',
                                                                                                                                  r'($\beta_1$=0.9$\rightarrow$0.995)']),
     muon=                                 (functools.partial(Muon, backend='newtonschulz5'),                                    [r'muon']),
+
+    muon_pre_ns=                          (functools.partial(Muon, momentum_kind='pre_ns'),                                     [r'muon pre-ns']),
+
+    muon_post_ns=                         (functools.partial(Muon, momentum_kind='post_ns'),                                    [r'muon post-ns']),
+
+    muon_post_ns_nesterov=                (functools.partial(Muon, momentum_kind='post_ns_nesterov'),                           [r'muon post-ns nesterov']),
+
 
     muon_sgd=                             (functools.partial(Muon, backend='sgd'),                                              [r'SGD',
                                                                                                                                  r'(i.e., muon w/o orthogonalization)']),

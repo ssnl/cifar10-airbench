@@ -368,6 +368,7 @@ class Muon(torch.optim.Optimizer):
 
                 do_update_preconditioner = precondition_kind is not None and stept > 0 and stept % group['compute_precondition_freq'] == 0
 
+                backend = group['backend']
                 backend_steps = group['backend_steps']
                 if do_update_preconditioner:
                     if group['precondition_backend'] is not None:

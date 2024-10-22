@@ -365,9 +365,9 @@ class Muon(torch.optim.Optimizer):
                     # note that scaling preconditioner doesn't matter for the 0th power
                     # so we can also do (rawg0.T @ rawg / C + eps I)^{-1}
                     if precondition_kind == 'left':
-                        new_preconditioner = left_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-5)
+                        new_preconditioner = left_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-3)
                     elif precondition_kind == 'right':
-                        new_preconditioner = right_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-5)
+                        new_preconditioner = right_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-3)
                     if new_preconditioner is None and (preconditioner:= state.get('preconditioner', None)) is not None:
                         # regress to idt
                         preconditioner.lerp_(torch.eye(preconditioner.shape[0], device=preconditioner.device, dtype=preconditioner.dtype), 1 - group['beta2'] ** group['compute_precondition_freq'])

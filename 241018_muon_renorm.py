@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 import functools
+import dataclasses
 import math
 import random
 
@@ -55,7 +56,7 @@ def _zeropower_via_newtonschulz5(G, steps=5, eps=1e-7, dtype=torch.bfloat16,
         X = a * X + b * B + c * A @ B
     if G.size(0) > G.size(1):
         X = X.T
-    return X.to(G.dtype)
+        return X.to(G.dtype)
 
 zeropower_via_newtonschulz5 = functools.wraps(_zeropower_via_newtonschulz5)(torch.compile(_zeropower_via_newtonschulz5))
 
@@ -87,17 +88,113 @@ zeropower_backends = dict(
     newtonschulz5_sched14=functools.partial(zeropower_via_newtonschulz5, steps=14, abc=make_schedule(10, 2, 2)),
 )
 
-def make_cached_func(fn: Callable[[], Any]) -> Callable[[], Any]:
-    called = False
-    res = None
-    @functools.wraps(fn)
-    def cached_fn():
-        nonlocal called, res
-        if not called:
-            res = fn()
-            called = True
-        return res
-    return cached_fn
+
+@dataclasses.dataclass
+class NormInterface:
+    state: dict
+    grad: torch.Tensor                   # p.grad
+    rawg: torch.Tensor                   # possibly momentum-averaged grad
+    g: torch.Tensor                      # zeropowered rawg
+    rawgnorm_fro: torch.Tensor           # ||rawg||_fro
+    zeropower_backend: str
+    eps: float
+    cached_norms: Dict[Tuple[str, str, bool], torch.Tensor] = dataclasses.field(default_factory=dict)
+
+    def __call__(self, tensor_kind: str, norm_kind: str, dual: bool = False) -> torch.Tensor:
+        cache_key = (tensor_kind, norm_kind, dual)
+        if cache_key not in self.cached_norms:
+            self.cached_norms[cache_key] = self._compute_norm(tensor_kind, norm_kind, dual)
+        return self.cached_norms[cache_key]
+
+    def _compute_norm(self, tensor_kind: str, norm_kind: str, dual: bool = False):
+        if dual:
+            dual_norm_kind = dict(spectral='nuclear', jbnorm='jbnuclear', spectral_exact='nuclear_exact', jbnorm_exact='jbnuclear_exact').get(norm_kind, None)
+            if dual_norm_kind is None:
+                raise ValueError(f"dual norm kind {norm_kind} not supported")
+            return self.compute_norm(tensor_kind, dual_norm_kind, dual=False)
+
+        assert tensor_kind in ('rawg', 'g', 'grad')
+        if norm_kind == 'rms_exact':
+            # fro to rms
+            if tensor_kind == 'rawg':
+                return self.rawgnorm_fro / (self.rawg.numel()**0.5)
+            elif tensor_kind == 'g':
+                return self.g.norm() / (self.g.numel()**0.5)
+            else:
+                return self.grad.norm() / (self.grad.numel()**0.5)
+        elif norm_kind == 'rms':
+            # fro to rms
+            if tensor_kind == 'rawg':
+                return self.rawgnorm_fro / (self.rawg.numel()**0.5)
+            elif tensor_kind == 'g':
+                assert self.zeropower_backend not in ('svd', 'sign'), "rms (est) norm not supported for svd or sign"
+                # currently have ||DW||_fro     ~= sqrt(min(fan_in, fan_out))
+                #                ||DW||_rms_fro ~= 1/sqrt(max(fan_in, fan_out))
+                return 1 / max(self.g.size(0), self.g.size(1))**0.5
+            else:
+                return self.grad.norm() / (self.grad.numel()**0.5)
+        elif norm_kind == 'fro_exact':
+            if tensor_kind == 'rawg':
+                return self.rawgnorm_fro
+            elif tensor_kind == 'g':
+                return self.g.norm()
+            else:
+                return self.grad.norm()
+        elif norm_kind == 'fro':
+            if tensor_kind == 'rawg':
+                return self.rawgnorm_fro
+            elif tensor_kind == 'g':
+                return min(self.g.size(0), self.g.size(1))**0.5
+            else:
+                return self.grad.norm()
+        elif norm_kind in {'jbnorm', 'jbnorm_exact'}:
+            # ||W|| := sqrt(fan_out / fan_in) * ||W||_2
+            scale = (self.g.size(0) / self.g.size(1))**0.5
+            return self.compute_norm(tensor_kind, norm_kind.replace('jbnorm', 'spectral'), dual=dual) * scale
+        elif norm_kind in ('spectral', 'spectral_exact'):
+            # initialize power iterations on rawg (momentum/grad)
+            # ref: https://github.com/jxbz/modula/blob/e274a352551ec4c6055b7fc0086db7a516863578/modula/atom.py#L32
+            #      https://github.com/pytorch/pytorch/blob/d7e0e1dbc453bac099f747dfb65ad75767c3e1d7/torch/nn/utils/spectral_norm.py#L96
+            if tensor_kind == 'g':
+                assert self.zeropower_backend not in ('svd', 'sign'), "spectral norm not supported for svd or sign"
+                if norm_kind == 'spectral':
+                    # g should only have binary singular values, just assume 1! if it is 0, then scaling it with 1 is still 0
+                    return 1
+                elif norm_kind == 'spectral_exact':
+                    # g should only have binary singular values... having at least 1 non-zero means that frobenius norm is at least 1 = \sqrt{ \sum_i s_i^2 }
+                    return torch.ge(self.g.norm(), 0.9, out=self.g.new_empty(()))
+                assert False, f"unknown norm kind {norm_kind}"
+
+            tensor = dict(rawg=self.rawg, grad=self.grad)[tensor_kind]
+            if f'{tensor_kind}_u' not in self.state:
+                self.state[f'{tensor_kind}_u'] = F.normalize(torch.randn_like(tensor[0]), dim=0, eps=self.eps)
+                self.state[f'{tensor_kind}_v'] = torch.empty_like(tensor[:, 0])
+                niter = 5
+            else:
+                niter = 1
+            u = self.state[f'{tensor_kind}_u']
+            v = self.state[f'{tensor_kind}_v']
+            for _ in range(niter):
+                torch.mv(tensor, u, out=v)
+                F.normalize(v, dim=0, eps=self.eps, out=v)
+                torch.mv(tensor.T, v, out=u)
+                F.normalize(u, dim=0, eps=self.eps, out=u)
+                return torch.dot(v, torch.mv(tensor, u))
+        elif norm_kind in {'jbnuclear', 'jbnuclear_exact'}:
+            scale = (self.g.size(0) / self.g.size(1))**0.5
+            return self.compute_norm(tensor_kind, norm_kind.replace('jbnuclear', 'nuclear'), dual=dual) * scale
+        elif norm_kind in {'nuclear', 'nuclear_exact'}:
+            if tensor_kind == 'rawg':
+                assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm not supported for svd or sign"
+                return (self.g.T @ self.g).trace()
+            elif tensor_kind == 'g':
+                assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm not supported for svd or sign"
+                return self.compute_norm(tensor_kind, norm_kind.replace('nuclear', 'fro'), dual=dual)
+            else:
+                assert False, f"{norm_kind} not implemented for tensor_kind {tensor_kind}"
+        else:
+            assert False, f"unknown norm kind {norm_kind}"
+
 
 class Muon(torch.optim.Optimizer):
     r"""
@@ -124,15 +221,34 @@ class Muon(torch.optim.Optimizer):
         backend: The chosen backend for the orthogonalization step. (recommended: 'newtonschulz5')
         backend_steps: The number of iteration steps to use in the backend, if it is iterative.
     """
-    def __init__(self, params, lr=3e-4, momentum=0.95, beta2=0.999, momentum_kind='pre_ns_nesterov', backend='newtonschulz5', backend_steps=5,
-                 norm_kind='rms', target_norm='unit'):
+    def __init__(self, params, lr=3e-4, momentum=0.95, beta2=0.999, momentum_kind='pre_ns_nesterov', backend='newtonschulz5',
+                 backend_steps=5, norm_kind='rms', target_norm='unit', eps=1e-7):
         defaults = dict(lr=lr, momentum=momentum, beta2=beta2, momentum_kind=momentum_kind, backend=backend, backend_steps=backend_steps,
-                        norm_kind=norm_kind, target_norm=target_norm)
+                        norm_kind=norm_kind, target_norm=target_norm, eps=eps)
+        assert momentum_kind in {'pre_ns', 'pre_ns_nesterov', 'post_ns', 'post_ns_nesterov', None}
         super().__init__(params, defaults)
 
+    def _apply_momentum(self, state, x: torch.Tensor, momentum, *, is_nesterov):
+        # m = beta1 * m + g
+        # g = g + m * beta1
+        # ----
+        # equiv:
+        # g = g + beta1**2 * m + beta1 * g
+        #   = (1+beta1) g + beta1**2 m
+        if 'momentum_buffer' not in state:
+            state['momentum_buffer'] = torch.zeros_like(x)
+        buf = state['momentum_buffer']
+        if is_nesterov:
+            buf.mul_(momentum).add_(x)
+            return x.add(buf, alpha=momentum)
+        else:
+            torch.lerp(buf, x, 1 - momentum, out=buf)
+            return buf / (1 - momentum ** state['stept'])
+
+
     def step(self):
-        eps = 1e-7
         for group in self.param_groups:
+            eps = group['eps']
             lr = group['lr']
             momentum = group['momentum']
             zeropower_backend = zeropower_backends[group['backend']]
@@ -149,137 +265,86 @@ class Muon(torch.optim.Optimizer):
                 if 'stept' not in state:
                     state['stept'] = 0
                 state['stept'] += 1
-                if group['momentum_kind'] in ('pre_ns', 'pre_ns_nesterov'):
-                    # m = beta1 * m + g
-                    # g = g + m * beta1
-                    # ----
-                    # equiv:
-                    # g = g + beta1**2 * m + beta1 * g
-                    #   = (1+beta1) g + beta1**2 m
-                    if 'momentum_buffer' not in state:
-                        state['momentum_buffer'] = torch.zeros_like(rawg)
-                    buf = state['momentum_buffer']
-                    if group['momentum_kind'] == 'pre_ns_nesterov':
-                        buf.mul_(momentum).add_(rawg)
-                        rawg = rawg.add(buf, alpha=momentum)
-                    else:
-                        torch.lerp(buf, rawg, 1 - momentum, out=buf)
-                        rawg = buf / (1 - momentum ** state['stept'])
-                else:
-                    rawg = rawg.clone()
+                if group['momentum_kind'] in {'pre_ns', 'pre_ns_nesterov'}:
+                    rawg = self._apply_momentum(state, rawg, momentum, is_nesterov=group['momentum_kind'] == 'pre_ns_nesterov')
 
                 rawgnorm_fro = rawg.norm()
                 g = rawg / (rawgnorm_fro + eps) # ensure top singular value <= 1
                 g = zeropower_backend(g, steps=group['backend_steps'], dtype=g.dtype, normalize=False)
 
-                # compute ||rawg|| and ||g|| under norm_kind
-                if group['norm_kind'] == 'rms_exact':
-                    # fro to rms
-                    rawgnorm = rawgnorm_fro / (g.numel()**0.5)
-                    gnorm = g.norm() / (g.numel()**0.5)
-                elif group['norm_kind'] == 'rms':
-                    # fro to rms
-                    rawgnorm = rawgnorm_fro / (g.numel()**0.5)
-                    # currently have ||DW||_fro     ~= sqrt(min(fan_in, fan_out))
-                    #                ||DW||_rms_fro ~= 1/sqrt(max(fan_in, fan_out))
-                    gnorm = 1 / max(g.size(0), g.size(1))**0.5
-                elif group['norm_kind'] == 'fro':
-                    rawgnorm = rawgnorm_fro
-                    gnorm = g.norm()
-                elif group['norm_kind'] in ('spectral', 'spectral_exact', 'jbnorm', 'jbnorm_exact'):
-                    # initialize power iterations on rawg (momentum/grad)
-                    # ref: https://github.com/jxbz/modula/blob/e274a352551ec4c6055b7fc0086db7a516863578/modula/atom.py#L32
-                    if 'rawg_u' not in state:
-                        state['rawg_u'] = F.normalize(torch.randn_like(rawg[0]), dim=0, eps=eps)
-                        state['rawg_v'] = torch.empty_like(rawg[:, 0])
-                        niter = 5
-                    else:
-                        niter = 1
-                    u = state['rawg_u']
-                    v = state['rawg_v']
-                    for _ in range(niter):
-                        torch.mv(rawg, u, out=v)
-                        F.normalize(v, dim=0, eps=eps, out=v)
-                        torch.mv(rawg.T, v, out=u)
-                        F.normalize(u, dim=0, eps=eps, out=u)
-                    rawgnorm = torch.dot(v, torch.mv(rawg, u))
-                    if group['norm_kind'] == 'spectral':
-                        # g should only have binary singular values, just assume 1! if it is 0, then scaling it with 1 is still 0
-                        gnorm = 1
-                    elif group['norm_kind'] == 'spectral_exact':
-                        # g should only have binary singular values... having at least 1 non-zero means that frobenius norm is at least 1 = \sqrt{ \sum_i s_i^2 }
-                        gnorm = torch.ge(g.norm(), 0.9, out=g.new_empty(()))
-                    elif group['norm_kind'] == 'jbnorm':
-                        # ||W|| := sqrt(fan_out / fan_in) * ||W||_2
-                        gnorm = (g.size(0) / g.size(1))**0.5
-                    elif group['norm_kind'] == 'jbnorm_exact':
-                        gnorm = (g.size(0) / g.size(1))**0.5 * torch.ge(g.norm(), 0.9, out=g.new_empty(()))
-                else:
-                    assert False, f"unknown norm kind {group['renorm_kind']}"
+                state['last_update'] = dict(grad=p.grad, rawg=rawg, g=g, rawgnorm_fro=rawgnorm_fro)
 
-                state['last_update'] = (g, rawgnorm, gnorm)
-
-            # compute rawgnorm and gnorm
-            rawgnorm_fn = lambda g, rawgnorm, gnorm: rawgnorm
-            gnorm_fn = lambda g, rawgnorm, gnorm: gnorm
-
-            if group['target_norm'] == 'unit':
-                for p in group['params']:
-                    if p.grad is None:
-                        continue
-                    self.state[p]['last_update'] += (1, )
-            elif group['target_norm'] == 'ema_gradnorm':
-                for p in group['params']:
-                    if p.grad is None:
-                        continue
-                    state = self.state[p]
-                    if 'ema_gradnorm' not in state:
-                        state['ema_gradnorm'] = p.grad.new_zeros(())
-                    torch.lerp(state['ema_gradnorm'], rawgnorm_fn(*self.state[p]['last_update']), 1 - group['beta2'], out=state['ema_gradnorm'])
-                    target_norm = state['ema_gradnorm'] / (1 - group['beta2']**state['stept'])
-                    self.state[p]['last_update'] += (target_norm, )
-
-            elif group['target_norm'] == 'momentum':
-                for p in group['params']:
-                    if p.grad is None:
-                        continue
-                    g, rawgnorm, gnorm = self.state[p]['last_update']
-                    target_norm = rawgnorm_fn(g, rawgnorm, gnorm)
-                    self.state[p]['last_update'] += (target_norm, )
-            else:
-                if group['target_norm'] == 'globalavg_momentum':
-                    target_norm = (
-                        sum(rawgnorm_fn(*self.state[p]['last_update']) for p in group['params'] if p.grad is not None)
-                        /
-                        sum(1 for p in group['params'] if p.grad is not None)
-                    )
-                elif group['target_norm'] == 'globalmax_momentum':
-                    target_norm = max(rawgnorm_fn(*self.state[p]['last_update']) for p in group['params'] if p.grad is not None)
-                elif group['target_norm'] is None:
-                    target_norm = 1
-                else:
-                    assert False, f"unknown target_norm {group['target_norm']}"
-                for p in group['params']:
-                    if p.grad is None:
-                        continue
-                    self.state[p]['last_update'] += (target_norm, )
-
+            # renormalize update
+            norms = {}
             for p in group['params']:
                 if p.grad is None:
                     continue
                 state = self.state[p]
-                g, rawgnorm, gnorm, target_norm = state['last_update']
-                if group['momentum_kind'] in ('post_ns', 'post_ns_nesterov'):
-                    if 'momentum_buffer' not in state:
-                        state['momentum_buffer'] = torch.zeros_like(g)
-                    buf = state['momentum_buffer']
-                    if group['momentum_kind'] == 'post_ns_nesterov':
-                        buf.mul_(momentum).add_(g)
-                        g = g.add(buf, alpha=momentum)
+                norms[p] = NormInterface(state,
+                                         **state['last_update'],
+                                         zeropower_backend=group['backend'],
+                                         eps=eps,
+                                         **state['last_update'],
+                                         )
+
+            norm_kind = group['norm_kind']
+            target_norm = group['target_norm']
+
+            if target_norm == 'unit':
+                # target_norm = 1
+                for p, norm_interface in norms.items():
+                    self.state[p]['last_update']['target_norm'] = 1
+
+            else:
+                use_dual = target_norm.endswith('_dual')
+                if use_dual:
+                    target_norm = target_norm[:-5]
+
+                if target_norm == 'ema_grad_norm':
+                    # target_norm = ema(||grad||)
+                    for p, norm_interface in norms.items():
+                        state = self.state[p]
+                        if 'ema_grad_norm' not in state:
+                            state['ema_grad_norm'] = p.grad.new_zeros(())
+                        torch.lerp(state['ema_grad_norm'], norm_interface('grad', norm_kind, dual=use_dual), 1 - group['beta2'], out=state['ema_grad_norm'])
+                        self.state[p]['last_update']['target_norm'] = state['ema_grad_norm'] / (1 - group['beta2']**state['stept'])
+
+                elif target_norm == 'ema_momentum_norm':
+                    # target_norm = ema(||momentum||)
+                    for p, norm_interface in norms.items():
+                        state = self.state[p]
+                        if 'ema_momentum_norm' not in state:
+                            state['ema_momentum_norm'] = p.grad.new_zeros(())
+                        torch.lerp(state['ema_momentum_norm'], norm_interface('rawg', norm_kind, dual=use_dual), 1 - group['beta2'], out=state['ema_momentum_norm'])
+                        self.state[p]['last_update']['target_norm'] = state['ema_momentum_norm'] / (1 - group['beta2']**state['stept'])
+
+                elif group['target_norm'] == 'momentum':
+                    # target_norm = ||momentum||
+                    for p, norm_interface in norms.items():
+                        self.state[p]['last_update']['target_norm'] = norm_interface('rawg', norm_kind, dual=use_dual)
+
+                else:
+                    if group['target_norm'] == 'globalavg_momentum':
+                        target_norm = (
+                            sum(norm_interface('rawg', norm_kind, dual=use_dual) for _, norm_interface in norms.items())
+                            /
+                            len(norms)
+                        )
+                    elif group['target_norm'] == 'globalmax_momentum':
+                        target_norm = max(norm_interface('rawg', norm_kind, dual=use_dual) for _, norm_interface in norms.items())
                     else:
-                        torch.lerp(buf, g, 1 - momentum, out=buf)
-                        g = buf / (1 - momentum ** state['stept'])
-                p.data.add_(g, alpha=-lr * (target_norm / gnorm))
+                        assert False, f"unknown target_norm {group['target_norm']}"
+
+                    for p, norm_interface in norms.items():
+                        self.state[p]['last_update']['target_norm'] = target_norm
+
+            for p, norm_interface in norms.items():
+                state = self.state[p]
+                last_update = state['last_update']
+                scale = last_update['target_norm'] / norm_interface('g', norm_kind, dual=False)  # see anthology proposition 1. unit norm, scale to ||g||^dagger
+                if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
+                    g = self._apply_momentum(state, g, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')
+                p.data.add_(g, alpha=-lr * scale)
 
 Result = namedtuple('Result', ['steps', 'train_accs', 'eval_accs', 'model_ws', 'state_dict'])
 
@@ -332,7 +397,7 @@ def train_mnist(model, opt, nsteps=3000, log_nsteps=100,
             optim.Adam(model.parameters(), lr=lr, betas=(0.995, 0.999))
         )
     else:
-        raise ValueError(f"Unknown optimizer: {opt}")
+                                    raise ValueError(f"Unknown optimizer: {opt}")
 
     @torch.no_grad()
     def evaluate(model, loader):
@@ -452,152 +517,186 @@ def orth_init(model):
 
 # name -> (optim_cls, desc)
 OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
-    adam=                                 ('adam',                                                                              [r'adam',
-                                                                                                                                 r'(default $\beta_1$=0.9)']),
-    adam_b095=                            ('adam_b095',                                                                         [r'adam',
-                                                                                                                                 r'($\beta_1$=0.9$\rightarrow$0.95)']),
-    adam_b0995=                           ('adam_b0995',                                                                        [r'adam',
-                                                                                                                                 r'($\beta_1$=0.9$\rightarrow$0.995)']),
-    muon=                                 (functools.partial(Muon, backend='newtonschulz5'),                                    [r'muon']),
+    adam=                                                           ('adam',                                                                                                          [r'adam',
+                                                                                                                                                                                       r'(default $\beta_1$=0.9)']),
+    adam_b095=                                                      ('adam_b095',                                                                                                     [r'adam',
+                                                                                                                                                                                       r'($\beta_1$=0.9$\rightarrow$0.95)']),
+    adam_b0995=                                                     ('adam_b0995',                                                                                                    [r'adam',
+                                                                                                                                                                                       r'($\beta_1$=0.9$\rightarrow$0.995)']),
+    muon=                                                           (functools.partial(Muon, backend='newtonschulz5'),                                                                [r'muon']),
 
-    muon_pre_ns=                          (functools.partial(Muon, momentum_kind='pre_ns'),                                     [r'muon pre-ns']),
+    muon_pre_ns=                                                    (functools.partial(Muon, momentum_kind='pre_ns'),                                                                 [r'muon w pre-ns ema']),
 
-    muon_post_ns=                         (functools.partial(Muon, momentum_kind='post_ns'),                                    [r'muon post-ns']),
+    muon_post_ns=                                                   (functools.partial(Muon, momentum_kind='post_ns'),                                                                [r'muon w post-ns ema']),
 
-    muon_post_ns_nesterov=                (functools.partial(Muon, momentum_kind='post_ns_nesterov'),                           [r'muon post-ns nesterov']),
+    muon_pre_ns_nesterov=                                           (functools.partial(Muon, momentum_kind='pre_ns_nesterov'),                                                        [r'muon w pre-ns nesterov-type update']),
 
-
-    muon_sgd=                             (functools.partial(Muon, backend='sgd'),                                              [r'SGD',
-                                                                                                                                 r'(i.e., muon w/o orthogonalization)']),
-
-    muon_sign=                            (functools.partial(Muon, backend='sign'),                                             [r'sign-SGD',
-                                                                                                                                 r'(i.e., muon w/ sign instead of orthogonalization)']),
-
-    muon_proper=                          (functools.partial(Muon, backend='newtonschulz5_proper'),                             [r'muon w naive simple cubic NS iter',
-                                                                                                                                 r'(still 5 steps)']),
-    muon_sched5=                          (functools.partial(Muon, backend='newtonschulz5_sched5', backend_steps=5),            [r'muon w scheduled 5-step NS iter',
-                                                                                                                                 r'(default$\rightarrow$naive)']),
-    muon_sched8=                          (functools.partial(Muon, backend='newtonschulz5_sched8', backend_steps=8),            [r'muon w scheduled 8-step NS iter',
-                                                                                                                                 r'(default$\rightarrow$naive)']),
-    muon_sched10=                         (functools.partial(Muon, backend='newtonschulz5_sched10', backend_steps=10),          [r'muon w scheduled 10-step NS iter',
-                                                                                                                                 r'(default$\rightarrow$naive)']),
-    muon_sched14=                         (functools.partial(Muon, backend='newtonschulz5_sched14', backend_steps=14),          [r'muon w scheduled 14-step NS iter',
-                                                                                                                                 r'(default$\rightarrow$naive)']),
-
-    muon_momentum099=                     (functools.partial(Muon, backend='newtonschulz5', momentum=0.99),                     [r'muon momentum 0.95$\rightarrow$0.99']),
-    muon_momentum095=                     (functools.partial(Muon, backend='newtonschulz5', momentum=0.95),                     [r'muon momentum 0.95 (default)']),
-    muon_momentum09=                      (functools.partial(Muon, backend='newtonschulz5', momentum=0.9),                      [r'muon momentum 0.95$\rightarrow$0.9']),
-    muon_momentum085=                     (functools.partial(Muon, backend='newtonschulz5', momentum=0.85),                     [r'muon momentum 0.95$\rightarrow$0.85']),
-    muon_momentum08=                      (functools.partial(Muon, backend='newtonschulz5', momentum=0.8),                      [r'muon momentum 0.95$\rightarrow$0.8']),
-    muon_no_momentum=                     (functools.partial(Muon, backend='newtonschulz5', nesterov=False),                    [r'muon no momentum']),
-
-    muon_norm_rms_target_unit=            (functools.partial(Muon, norm_kind='rms', target_norm='unit'),                        [r'muon (default, rms)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_\text{rms}$ to be 1)']),
-    muon_norm_fro_target_unit=            (functools.partial(Muon, norm_kind='fro', target_norm='unit'),                        [r'muon (frobenius)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_F$ to be 1)']),
-    muon_norm_spec_target_unit=           (functools.partial(Muon, norm_kind='spectral', target_norm='unit'),                   [r'muon (spectral)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_2$ to be 1)']),
-    muon_norm_jb_target_unit=             (functools.partial(Muon, norm_kind='jbnorm', target_norm='unit'),                     [r'muon ($\text{rms}\rightarrow\text{rms}$)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to be 1)']),
+    muon_post_ns_nesterov=                                          (functools.partial(Muon, momentum_kind='post_ns_nesterov'),                                                       [r'muon w post-ns nesterov-type update']),
 
 
-    muon_norm_rms_target_momentum=        (functools.partial(Muon, norm_kind='rms', target_norm='momentum'),                    [r'muon norm-match (rms)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_\text{rms}$ to match $||\text{momentum}_i||_\text{rms}$)']),
-    muon_norm_fro_target_momentum=        (functools.partial(Muon, norm_kind='fro', target_norm='momentum'),                    [r'muon norm-match (frobenius)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_F$ to match $||\text{momentum}_i||_F$)']),
-    muon_norm_spec_target_momentum=       (functools.partial(Muon, norm_kind='spectral', target_norm='momentum'),               [r'muon norm-match (spectral)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_2$ to match $||\text{momentum}_i||_2$)']),
-    muon_norm_jb_target_momentum=         (functools.partial(Muon, norm_kind='jbnorm', target_norm='momentum'),                 [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match $||\text{momentum}_i||_{\text{rms}\rightarrow\text{rms}}$']),
+    muon_sgd=                                                       (functools.partial(Muon, backend='sgd'),                                                                          [r'SGD',
+                                                                                                                                                                                       r'(i.e., muon w/o orthogonalization)']),
+
+    muon_sign=                                                      (functools.partial(Muon, backend='sign'),                                                                         [r'sign-SGD',
+                                                                                                                                                                                       r'(i.e., muon w/ sign instead of orthogonalization)']),
+
+    muon_proper=                                                    (functools.partial(Muon, backend='newtonschulz5_proper'),                                                         [r'muon w naive simple cubic NS iter',
+                                                                                                                                                                                       r'(still 5 steps)']),
+    muon_sched5=                                                    (functools.partial(Muon, backend='newtonschulz5_sched5', backend_steps=5),                                        [r'muon w scheduled 5-step NS iter',
+                                                                                                                                                                                       r'(default$\rightarrow$naive)']),
+    muon_sched8=                                                    (functools.partial(Muon, backend='newtonschulz5_sched8', backend_steps=8),                                        [r'muon w scheduled 8-step NS iter',
+                                                                                                                                                                                       r'(default$\rightarrow$naive)']),
+    muon_sched10=                                                   (functools.partial(Muon, backend='newtonschulz5_sched10', backend_steps=10),                                      [r'muon w scheduled 10-step NS iter',
+                                                                                                                                                                                       r'(default$\rightarrow$naive)']),
+    muon_sched14=                                                   (functools.partial(Muon, backend='newtonschulz5_sched14', backend_steps=14),                                      [r'muon w scheduled 14-step NS iter',
+                                                                                                                                                                                       r'(default$\rightarrow$naive)']),
+
+    muon_momentum099=                                               (functools.partial(Muon, backend='newtonschulz5', momentum=0.99),                                                 [r'muon momentum 0.95$\rightarrow$0.99']),
+    muon_momentum095=                                               (functools.partial(Muon, backend='newtonschulz5', momentum=0.95),                                                 [r'muon momentum 0.95 (default)']),
+    muon_momentum09=                                                (functools.partial(Muon, backend='newtonschulz5', momentum=0.9),                                                  [r'muon momentum 0.95$\rightarrow$0.9']),
+    muon_momentum085=                                               (functools.partial(Muon, backend='newtonschulz5', momentum=0.85),                                                 [r'muon momentum 0.95$\rightarrow$0.85']),
+    muon_momentum08=                                                (functools.partial(Muon, backend='newtonschulz5', momentum=0.8),                                                  [r'muon momentum 0.95$\rightarrow$0.8']),
+    muon_no_momentum=                                               (functools.partial(Muon, backend='newtonschulz5', momentum_kind=None),                                            [r'muon no momentum']),
+
+    muon_norm_rms_target_unit=                                      (functools.partial(Muon, norm_kind='rms', target_norm='unit'),                                                    [r'muon (default, rms)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_\text{rms}$ to be 1)']),
+    muon_norm_fro_target_unit=                                      (functools.partial(Muon, norm_kind='fro', target_norm='unit'),                                                    [r'muon (frobenius)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_F$ to be 1)']),
+    muon_norm_fro_exact_target_unit=                                (functools.partial(Muon, norm_kind='fro_exact', target_norm='unit'),                                              [r'muon (frobenius, exactly computed on NS outputs)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_F$ to be 1)']),
+    muon_norm_spec_target_unit=                                     (functools.partial(Muon, norm_kind='spectral', target_norm='unit'),                                               [r'muon (spectral)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_2$ to be 1)']),
+    muon_norm_jb_target_unit=                                       (functools.partial(Muon, norm_kind='jbnorm', target_norm='unit'),                                                 [r'muon ($\text{rms}\rightarrow\text{rms}$)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to be 1)']),
 
 
-    muon_norm_rms_target_glbavgmomentum=  (functools.partial(Muon, norm_kind='rms', target_norm='globalavg_momentum'),          [r'muon norm-match (rms)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_\text{rms}$ to match modula-inspired $||\text{momentum}||_M$,',
-                                                                                                                                 r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_\text{rms}$)']),
-    muon_norm_fro_target_glbavgmomentum=  (functools.partial(Muon, norm_kind='fro', target_norm='globalavg_momentum'),          [r'muon norm-match (frobenius)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_F$ to match modula-inspired $||\text{momentum}||_M$,',
-                                                                                                                                 r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_F$)']),
-    muon_norm_spec_target_glbavgmomentum= (functools.partial(Muon, norm_kind='spectral', target_norm='globalavg_momentum'),     [r'muon norm-match (spectral)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_2$ to match modula-inspired $||\text{momentum}||_M$,',
-                                                                                                                                 r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_2$)']),
-    muon_norm_jb_target_glbavgmomentum=   (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalavg_momentum'),       [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
-                                                                                                                                 r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}$)']),
+    muon_norm_rms_target_momentum=                                  (functools.partial(Muon, norm_kind='rms', target_norm='momentum'),                                                [r'muon norm-match (rms)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_\text{rms}$ to match $||\text{momentum}_i||_\text{rms}$)']),
+    muon_norm_fro_target_momentum=                                  (functools.partial(Muon, norm_kind='fro', target_norm='momentum'),                                                [r'muon norm-match (frobenius)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_F$ to match $||\text{momentum}_i||_F$)']),
+    muon_norm_fro_exact_target_momentum=                            (functools.partial(Muon, norm_kind='fro_exact', target_norm='momentum'),                                          [r'muon norm-match (frobenius, exactly computed on NS outputs)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_F$ to match $||\text{momentum}_i||_F$)']),
+    muon_norm_spec_target_momentum=                                 (functools.partial(Muon, norm_kind='spectral', target_norm='momentum'),                                           [r'muon norm-match (spectral)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_2$ to match $||\text{momentum}_i||_2$)']),
+    muon_norm_jb_target_momentum=                                   (functools.partial(Muon, norm_kind='jbnorm', target_norm='momentum'),                                             [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match $||\text{momentum}_i||_{\text{rms}\rightarrow\text{rms}}$']),
+    muon_norm_jb_target_momentum_dual=                              (functools.partial(Muon, norm_kind='jbnorm', target_norm='momentum_dual'),                                         [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match $||\text{momentum}_i||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
+    muon_pre_ns_norm_jb_target_momentum_dual=                       (functools.partial(Muon, norm_kind='jbnorm', target_norm='momentum_dual', momentum_kind='pre_ns'),                [r'muon w pre-ns ema & norm-match ($\text{rms}\rightarrow\text{rms}$)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match $||\text{momentum}_i^\text{ema}||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
 
-    muon_norm_rms_target_glbmaxmomentum=  (functools.partial(Muon, norm_kind='rms', target_norm='globalmax_momentum'),          [r'muon norm-match (rms)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_\text{rms}$ to match modula-inspired $||\text{momentum}||_M$,',
-                                                                                                                                 r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_\text{rms}$)']),
-    muon_norm_fro_target_glbmaxmomentum=  (functools.partial(Muon, norm_kind='fro', target_norm='globalmax_momentum'),          [r'muon norm-match (frobenius)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_F$ to match modula-inspired $||\text{momentum}||_M$,',
-                                                                                                                                 r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_F$)']),
-    muon_norm_spec_target_glbmaxmomentum= (functools.partial(Muon, norm_kind='spectral', target_norm='globalmax_momentum'),     [r'muon norm-match (spectral)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_2$ to match modula-inspired $||\text{momentum}||_M$,',
-                                                                                                                                 r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_2$)']),
-    muon_norm_jb_target_glbmaxmomentum=   (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalmax_momentum'),       [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
-                                                                                                                                 r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
-                                                                                                                                 r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}$)']),
 
-    # muon_renorm_fro=                (functools.partial(Muon, renormalize='momentum', renorm_kind='fro'),                               [r'muon renorm',
-    #                                                                                                                                     r'($||\Delta W||_F$ match $||\text{momentum}||_F$)']),
-    # muon_renorm_spec=               (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral'),                          [r'muon renorm',
-    #                                                                                                                                     r'($||\Delta W||_2$ match $||\text{momentum}||_2$)']),
+    muon_norm_rms_target_glbavgmomentum=                            (functools.partial(Muon, norm_kind='rms', target_norm='globalavg_momentum'),                                      [r'muon norm-match (rms)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_\text{rms}$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_\text{rms}$)']),
+    muon_norm_fro_target_glbavgmomentum=                            (functools.partial(Muon, norm_kind='fro', target_norm='globalavg_momentum'),                                      [r'muon norm-match (frobenius)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_F$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_F$)']),
+    muon_norm_fro_exact_target_glbavgmomentum=                      (functools.partial(Muon, norm_kind='fro_exact', target_norm='globalavg_momentum'),                                [r'muon norm-match (frobenius, exactly computed on NS outputs)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_F$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_F$)']),
+    muon_norm_spec_target_glbavgmomentum=                           (functools.partial(Muon, norm_kind='spectral', target_norm='globalavg_momentum'),                                 [r'muon norm-match (spectral)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_2$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_2$)']),
+    muon_norm_jb_target_glbavgmomentum=                             (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalavg_momentum'),                                   [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}$)']),
+    muon_norm_jb_target_glbavgmomentum_dual=                        (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalavg_momentum_dual'),                              [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
+    muon_pre_ns_norm_jb_target_glbavgmomentum_dual=                 (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalavg_momentum_dual', momentum_kind='pre_ns'),      [r'muon w pre-ns ema & norm-match ($\text{rms}\rightarrow\text{rms}$)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
 
-    # muon_renorm_glbsfro=            (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='fro'),                     [r'muon renorm',
-    #                                                                                                                                     r'(modula-inspired $||\mathcal{W}||_M := \sum_i\ s_i\ ||W_i||_F$,',
-    #                                                                                                                                     r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
+    muon_norm_rms_target_glbmaxmomentum=                            (functools.partial(Muon, norm_kind='rms', target_norm='globalmax_momentum'),                                      [r'muon norm-match (rms)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_\text{rms}$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_\text{rms}$)']),
+    muon_norm_fro_target_glbmaxmomentum=                            (functools.partial(Muon, norm_kind='fro', target_norm='globalmax_momentum'),                                      [r'muon norm-match (frobenius)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_F$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_F$)']),
+    muon_norm_fro_exact_target_glbmaxmomentum=                      (functools.partial(Muon, norm_kind='fro_exact', target_norm='globalmax_momentum'),                                [r'muon norm-match (frobenius, exactly computed on NS outputs)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_F$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_F$)']),
+    muon_norm_spec_target_glbmaxmomentum=                           (functools.partial(Muon, norm_kind='spectral', target_norm='globalmax_momentum'),                                 [r'muon norm-match (spectral)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_2$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_2$)']),
+    muon_norm_jb_target_glbmaxmomentum=                             (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalmax_momentum'),                                   [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}$)']),
+    muon_norm_jb_target_glbmaxmomentum_dual=                        (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalmax_momentum_dual'),                              [r'muon norm-match ($\text{rms}\rightarrow\text{rms}$)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
+    muon_pre_ns_norm_jb_target_glbmaxmomentum_dual=                 (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalmax_momentum_dual', momentum_kind='pre_ns'),      [r'muon w pre-ns ema & norm-match ($\text{rms}\rightarrow\text{rms}$)',
+                                                                                                                                                                                       r'(normalize each $||\Delta W_i||_{\text{rms}\rightarrow\text{rms}}$ to match modula-inspired $||\text{momentum}||_M$,',
+                                                                                                                                                                                       r'where $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_{\text{rms}\rightarrow\text{rms}}^\dagger$)']),
 
-    # muon_renorm_glbmfro=            (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='fro'),                     [r'muon renorm',
-    #                                                                                                                                     r'(modula-inspired $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_F$,',
-    #                                                                                                                                     r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
+    # muon_renorm_fro=                                          (functools.partial(Muon, renormalize='momentum', renorm_kind='fro'),                                                           [r'muon renorm',
+    #                                                                                                                                                                                           r'($||\Delta W||_F$ match $||\text{momentum}||_F$)']),
+    # muon_renorm_spec=                                         (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral'),                                                      [r'muon renorm',
+    #                                                                                                                                                                                           r'($||\Delta W||_2$ match $||\text{momentum}||_2$)']),
 
-    # muon_renorm_glbsspec=           (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='spectral'),                [r'muon renorm',
-    #                                                                                                                                     r'(modula-inspired $||\mathcal{W}||_M := \sum_i\ s_i\ ||W_i||_2$,',
-    #                                                                                                                                     r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
+    # muon_renorm_glbsfro=                                      (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='fro'),                                                 [r'muon renorm',
+    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \sum_i\ s_i\ ||W_i||_F$,',
+    #                                                                                                                                                                                           r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
 
-    # muon_renorm_glbmspec=           (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='spectral'),                [r'muon renorm',
-    #                                                                                                                                     r'(modula-inspired $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_2$,',
-    #                                                                                                                                     r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
+    # muon_renorm_glbmfro=                                      (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='fro'),                                                 [r'muon renorm',
+    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_F$,',
+    #                                                                                                                                                                                           r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
 
-    # muon_noscale=                   (functools.partial(Muon, scale=None),                                                              [r'muon no scale']),
-    # muon_jbscale=                   (functools.partial(Muon, scale='jxbz'),                                                            [r'muon scale to unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$*$||\Delta W||_2$',
-    #                                                                                                                                     r'(default is unit $||\Delta W||_\text{RMS}$)']),
+    # muon_renorm_glbsspec=                                     (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='spectral'),                                            [r'muon renorm',
+    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \sum_i\ s_i\ ||W_i||_2$,',
+    #                                                                                                                                                                                           r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
 
-    # muon_renorm_fro_noscale=        (functools.partial(Muon, renormalize='momentum', renorm_kind='fro', scale=None),                   [r'muon renorm',
-    #                                                                                                                                     r'($||\Delta W||_F$ match $||\text{momentum}||$)',
-    #                                                                                                                                     r'+ no scale']),
+    # muon_renorm_glbmspec=                                     (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='spectral'),                                            [r'muon renorm',
+    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_2$,',
+    #                                                                                                                                                                                           r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
 
-    # muon_renorm_spec_noscale=       (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral', scale=None),              [r'muon renorm',
-    #                                                                                                                                     r'($||\Delta W||_2$ match $||\text{momentum}||$)',
-    #                                                                                                                                     r'+ no scale']),
+    # muon_noscale=                                             (functools.partial(Muon, scale=None),                                                                                          [r'muon no scale']),
+    # muon_jbscale=                                             (functools.partial(Muon, scale='jxbz'),                                                                                        [r'muon scale to unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$*$||\Delta W||_2$',
+    #                                                                                                                                                                                           r'(default is unit $||\Delta W||_\text{RMS}$)']),
 
-    # muon_renorm_fro_jbscale=        (functools.partial(Muon, renormalize='momentum', renorm_kind='fro', scale='jxbz'),                 [r'muon renorm',
-    #                                                                                                                                     r'($||\Delta W||_F$ match $||\text{momentum}||$)',
-    #                                                                                                                                     r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
+    # muon_renorm_fro_noscale=                                  (functools.partial(Muon, renormalize='momentum', renorm_kind='fro', scale=None),                                               [r'muon renorm',
+    #                                                                                                                                                                                           r'($||\Delta W||_F$ match $||\text{momentum}||$)',
+    #                                                                                                                                                                                           r'+ no scale']),
 
-    # muon_renorm_spec_jbscale=       (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral', scale='jxbz'),            [r'muon renorm',
-    #                                                                                                                                     r'($||\Delta W||_2$ match $||\text{momentum}||$)',
-    #                                                                                                                                     r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
+    # muon_renorm_spec_noscale=                                 (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral', scale=None),                                          [r'muon renorm',
+    #                                                                                                                                                                                           r'($||\Delta W||_2$ match $||\text{momentum}||$)',
+    #                                                                                                                                                                                           r'+ no scale']),
 
-    # muon_renorm_glbsfro_jbscale=    (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='fro', scale='jxbz'),       [r'muon renorm',
-    #                                                                                                                                     r'(modula-inspired $||\mathcal{W}||_M := \sum_i\ s_i\ ||W_i||_F$,',
-    #                                                                                                                                     r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
-    #                                                                                                                                     r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
+    # muon_renorm_fro_jbscale=                                  (functools.partial(Muon, renormalize='momentum', renorm_kind='fro', scale='jxbz'),                                             [r'muon renorm',
+    #                                                                                                                                                                                           r'($||\Delta W||_F$ match $||\text{momentum}||$)',
+    #                                                                                                                                                                                           r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
 
-    # muon_renorm_glbmfro_jbscale=    (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='fro', scale='jxbz'),       [r'muon renorm',
-    #                                                                                                                                     r'(modula-inspired $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_F$,',
-    #                                                                                                                                     r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
-    #                                                                                                                                     r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
+    # muon_renorm_spec_jbscale=                                 (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral', scale='jxbz'),                                        [r'muon renorm',
+    #                                                                                                                                                                                           r'($||\Delta W||_2$ match $||\text{momentum}||$)',
+    #                                                                                                                                                                                           r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
 
-    # muon_renorm_glbsspec_jbscale=   (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='spectral', scale='jxbz'),  [r'muon renorm',
-    #                                                                                                                                     r'(modula-inspired $||\mathcal{W}||_M := \sum_i\ s_i\ ||W_i||_2$,',
-    #                                                                                                                                     r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
-    #                                                                                                                                     r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
+    # muon_renorm_glbsfro_jbscale=                              (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='fro', scale='jxbz'),                                   [r'muon renorm',
+    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \sum_i\ s_i\ ||W_i||_F$,',
+    #                                                                                                                                                                                           r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
+    #                                                                                                                                                                                           r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
 
-    # muon_renorm_glbmspec_jbscale=   (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='spectral', scale='jxbz'),  [r'muon renorm',
-    #                                                                                                                                     r'(modula-inspired $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_2$,',
-    #                                                                                                                                     r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
-    #                                                                                                                                     r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
+    # muon_renorm_glbmfro_jbscale=                              (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='fro', scale='jxbz'),                                   [r'muon renorm',
+    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_F$,',
+    #                                                                                                                                                                                           r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
+    #                                                                                                                                                                                           r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
+
+    # muon_renorm_glbsspec_jbscale=                             (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='spectral', scale='jxbz'),                              [r'muon renorm',
+    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \sum_i\ s_i\ ||W_i||_2$,',
+    #                                                                                                                                                                                           r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
+    #                                                                                                                                                                                           r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
+
+    # muon_renorm_glbmspec_jbscale=                             (functools.partial(Muon, renormalize='globalmax_momentum', renorm_kind='spectral', scale='jxbz'),                              [r'muon renorm',
+    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_2$,',
+    #                                                                                                                                                                                           r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
+    #                                                                                                                                                                                           r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
 )
+
+EQUIV_MAPS: Mapping[str, str] = dict(
+    muon_pre_ns_nesterov='muon',
+    muon_norm_rms_target_unit='muon',
+)
+
 
 if __name__ == '__main__':
     import sys
@@ -607,32 +706,34 @@ if __name__ == '__main__':
     seed = int(seed)
     print(optim_kind, lr, seed)
 
-    if optim_kind == 'muon':
-        actual_optim_kind = 'muon_norm_rms_target_unit'
-        file = f'241018_300steps_bzs2048/orth_{optim_kind}_lr{lr:g}_seed{seed}.pth'
-        actual_file = f'241018_300steps_bzs2048/orth_{actual_optim_kind}_lr{lr:g}_seed{seed}.pth'
-        os.link(actual_file, file)
-        print(f'linked {actual_file} to {file}')
-        sys.exit()
-
     file = f'241018_300steps_bzs2048/orth_{optim_kind}_lr{lr:g}_seed{seed}.pth'
+
     if os.path.exists(file):
         print(f'skipping {file}')
         sys.exit()
 
-    torch.manual_seed(seed + 21436)
-    torch.cuda.manual_seed(seed + 21436)
-    np.random.seed(seed + 21436)
-    random.seed(seed + 21436)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = False
+    def run():
+        if optim_kind in EQUIV_MAPS:
+            actual_optim_kind = EQUIV_MAPS[optim_kind]
+            actual_file = f'241018_300steps_bzs2048/orth_{actual_optim_kind}_lr{lr:g}_seed{seed}.pth'
+            os.symlink(actual_file, file)
+            print(f'linked {actual_file} to {file}')
+            return
 
-    with open(file + '.running', 'wb') as f:
-        f.write(b'')
+        torch.manual_seed(seed + 21436)
+        torch.cuda.manual_seed(seed + 21436)
+        np.random.seed(seed + 21436)
+        random.seed(seed + 21436)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
 
-    print(f'training {file}')
-    model = make_model()
-    model.load_state_dict(torch.load('orth_init_weights.pth', weights_only=False)[seed])
-    res = train_mnist(model, opt=OPTIM_MAP[optim_kind][0], w_save_key=None, lr=lr, nsteps=500, log_nsteps=5, batch_size=2048)
-    torch.save(res._asdict(), file)
-    print(f'saved {file}')
+        print(f'training {file}')
+        model = make_model()
+        model.load_state_dict(torch.load('orth_init_weights.pth', weights_only=False)[seed])
+        res = train_mnist(model, opt=OPTIM_MAP[optim_kind][0], w_save_key=None, lr=lr, nsteps=500, log_nsteps=5, batch_size=2048)
+        torch.save(res._asdict(), file)
+        print(f'saved {file}')
+
+    with open(file + '.running', 'w') as f:
+        run()
+        f.write('0')

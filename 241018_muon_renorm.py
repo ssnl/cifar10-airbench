@@ -295,9 +295,10 @@ class Muon(torch.optim.Optimizer):
         backend_steps: The number of iteration steps to use in the backend, if it is iterative.
     """
     def __init__(self, params, lr=3e-4, momentum=0.95, beta2=0.999, momentum_kind='pre_ns_nesterov', backend='newtonschulz5',
-                 backend_steps=5, norm_kind='rms', target_norm='unit', eps=1e-7, compute_precondition_freq=20, precondition_kind=None):
+                 backend_steps=5, norm_kind='rms', target_norm='unit', eps=1e-7, compute_precondition_freq=20, precondition_backend_steps=10, precondition_kind=None):
         defaults = dict(lr=lr, momentum=momentum, beta2=beta2, momentum_kind=momentum_kind, backend=backend, backend_steps=backend_steps,
-                        norm_kind=norm_kind, target_norm=target_norm, eps=eps, compute_precondition_freq=compute_precondition_freq, precondition_kind=precondition_kind)
+                        norm_kind=norm_kind, target_norm=target_norm, eps=eps, compute_precondition_freq=compute_precondition_freq,
+                        precondition_backend_steps=precondition_backend_steps, precondition_kind=precondition_kind)
         assert momentum_kind in {'pre_ns', 'pre_ns_nesterov', 'post_ns', 'post_ns_nesterov', None}
         assert precondition_kind in {'left', 'left_lstsq' 'right', 'min_dim', None}
         super().__init__(params, defaults)
@@ -360,11 +361,14 @@ class Muon(torch.optim.Optimizer):
                     else:
                         assert False, f"unknown precondition_kind {group['precondition_kind']}"
 
+                do_update_preconditioner = precondition_kind is not None and stept > 0 and stept % group['compute_precondition_freq'] == 0
+
+                backend_steps = group['backend_steps'] if not do_update_preconditioner else group['precondition_backend_steps']
                 rawgnorm_fro = rawg.norm()
-                rawg0 = zeropower_backend(rawg, steps=group['backend_steps'], dtype=rawg.dtype, G_fro=rawgnorm_fro)
+                rawg0 = zeropower_backend(rawg, steps=backend_steps, dtype=rawg.dtype, G_fro=rawgnorm_fro)
 
                 # update preconditioner
-                if precondition_kind is not None and stept > 0 and stept % group['compute_precondition_freq'] == 0:
+                if do_update_preconditioner:
                     assert group['backend'] not in {'sgd', 'sign'}, "preconditioner not supported for sgd or sign"
                     # here we don something "hacky" to pick eps
                     # let's assume that rawg0 has singular values in [0.95, 1.05]

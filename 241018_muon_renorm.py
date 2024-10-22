@@ -228,7 +228,8 @@ def _right_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7)
     L, info = torch.linalg.cholesky_ex(vsv)
     if info.item() != 0:
         raise RuntimeError(f"cholesky_ex failed with info {info}")
-    return torch.cholesky_inverse(L).to(g.dtype)
+    inv = torch.cholesky_inverse(L).to(g.dtype)
+    return inv / (inv.norm() + 1e-7)
 
 def right_preconditioner_from_zerothpower_with_retry(g, g0, eps=1e-7):
     dtype = torch.float32
@@ -248,7 +249,8 @@ def _left_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7):
     L, info = torch.linalg.cholesky_ex(usu)
     if info.item() != 0:
         raise RuntimeError(f"cholesky_ex failed with info {info}")
-    return torch.cholesky_inverse(L).to(g.dtype)
+    inv = torch.cholesky_inverse(L).to(g.dtype)
+    return inv / (inv.norm() + 1e-7)
 
 def left_preconditioner_from_zerothpower_with_retry(g, g0, eps=1e-7):
     dtype = torch.float32

@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import functools
 import dataclasses
 import math
+import time
 import random
 
 
@@ -489,7 +490,7 @@ class Muon(torch.optim.Optimizer):
                 scale = last_update['target_norm'] / norm_interface('g', norm_kind, dual=False)  # see anthology proposition 1. unit norm, scale to ||g||^dagger
                 p.data.add_(norm_interface.g, alpha=-lr * scale)
 
-Result = namedtuple('Result', ['steps', 'train_accs', 'eval_accs', 'model_ws', 'state_dict'])
+Result = namedtuple('Result', ['steps', 'train_accs', 'eval_accs', 'model_ws', 'state_dict', 'losses_all_steps', 'time_all_steps'])
 
 class CallBackProtocol(Protocol):
     def __call__(self, step: int, model: nn.Module, optimizers: list[torch.optim.Optimizer], data: torch.Tensor, target: torch.Tensor, loss: torch.Tensor) -> None: ...
@@ -557,6 +558,8 @@ def train_mnist(model, opt, nsteps=3000, log_nsteps=100,
         return correct / total
 
     # Training loop
+    losses_all_steps = []
+    time_all_steps = []
     steps = []
     model_ws = []
     train_accs = []
@@ -594,15 +597,19 @@ def train_mnist(model, opt, nsteps=3000, log_nsteps=100,
 
     model.train()
     for step, (data, target) in tqdm(enumerate(inf_train_loader, start=1), total=nsteps, disable=True):
+        t0 = time.time()
         data, target = data.to(device, dtype), target.to(device)
 
         model.zero_grad()
         output = model(data.flatten(1))
         loss = F.cross_entropy(output, target)
+        losses_all_steps.append(loss.item())
         (loss * loss_scale).backward()
 
         for optimizer in optimizers:
             optimizer.step()
+
+        time_all_steps.append(time.time() - t0)
 
         if post_step_callback is not None:
             post_step_callback(step, model, optimizers, data, target, loss)
@@ -616,7 +623,7 @@ def train_mnist(model, opt, nsteps=3000, log_nsteps=100,
 
     print("Training completed!")
 
-    return Result(steps, train_accs, eval_accs, model_ws, model.state_dict())
+    return Result(steps, train_accs, eval_accs, model_ws, model.state_dict(), losses_all_steps, time_all_steps)
 
 
 def make_model():

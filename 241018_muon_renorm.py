@@ -229,7 +229,7 @@ def _right_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7)
     if info.item() != 0:
         raise RuntimeError(f"cholesky_ex failed with info {info}")
     inv = torch.cholesky_inverse(L).to(g.dtype)
-    return inv / (inv.norm() + 1e-7)
+    return inv / inv.norm()
 
 def right_preconditioner_from_zerothpower_with_retry(g, g0, eps=1e-7):
     dtype = torch.float32
@@ -250,7 +250,7 @@ def _left_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7):
     if info.item() != 0:
         raise RuntimeError(f"cholesky_ex failed with info {info}")
     inv = torch.cholesky_inverse(L).to(g.dtype)
-    return inv / (inv.norm() + 1e-7)
+    return inv / inv.norm()
 
 def left_preconditioner_from_zerothpower_with_retry(g, g0, eps=1e-7):
     dtype = torch.float32
@@ -365,9 +365,9 @@ class Muon(torch.optim.Optimizer):
                     # note that scaling preconditioner doesn't matter for the 0th power
                     # so we can also do (rawg0.T @ rawg / C + eps I)^{-1}
                     if precondition_kind == 'left':
-                        state['preconditioner'] = left_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-2)
+                        state['preconditioner'] = left_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-4)
                     elif precondition_kind == 'right':
-                        state['preconditioner'] = right_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-2)
+                        state['preconditioner'] = right_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-4)
 
                 if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
                     g = self._apply_momentum(state, rawg0, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')

@@ -161,7 +161,7 @@ class NormInterface:
                 return self.rawgnorm_fro
             elif tensor_kind == 'g':
                 assert self.zeropower_backend not in ('svd', 'sign'), "fro norm of g not supported for svd or sign"
-                assert self.momentum_kind in {'pre_ns', 'pre_ns_nesterov'}, "fro norm of g not supported for post-ns"
+                assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "fro norm of g not supported for post-ns which breaks g=rawg0"
                 # currently have ||DW||_fro     ~= sqrt(min(fan_in, fan_out))
                 return self.min_fan**0.5
             else:
@@ -176,7 +176,7 @@ class NormInterface:
             #      https://github.com/pytorch/pytorch/blob/d7e0e1dbc453bac099f747dfb65ad75767c3e1d7/torch/nn/utils/spectral_norm.py#L96
             if tensor_kind == 'g':
                 assert self.zeropower_backend not in ('svd', 'sign'), "spectral norm of g not supported for svd or sign"
-                assert self.momentum_kind in {'pre_ns', 'pre_ns_nesterov'}, "spectral norm of g not supported for post-ns"
+                assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "spectral norm of g not supported for post-ns which breaks g=rawg0"
                 if norm_kind == 'spectral':
                     # g should only have binary singular values, just assume 1! if it is 0, then scaling it with 1 is still 0
                     return 1
@@ -214,7 +214,7 @@ class NormInterface:
                     return (self.rawg @ self.rawg0.T).trace()
             elif tensor_kind == 'g':
                 assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm of g not supported for svd or sign"
-                assert self.momentum_kind in {'pre_ns', 'pre_ns_nesterov'}, "nuclear (est) norm of g not supported for post-ns"
+                assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "nuclear (est) norm of g not supported for post-ns which breaks g=rawg0"
                 return self(tensor_kind, norm_kind.replace('nuclear', 'fro'), dual=dual)
             else:
                 assert False, f"{norm_kind} not implemented for tensor_kind {tensor_kind}"

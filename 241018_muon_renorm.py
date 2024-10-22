@@ -25,12 +25,12 @@ import os
 # -----------------------------------------------------------------------------
 # Muon optimizer
 
-def zeropower_via_svd(G, steps=None):
-    U, S, V = G.svd()
-    return U @ V.T
+def zeropower_via_svd(G, steps=None, dtype=torch.float32, **kwargs):
+    U, S, V = G.to(dtype).svd()
+    return (U @ V.T).to(G.dtype)
 
 def _zeropower_via_newtonschulz5(G, steps=5, eps=1e-7, dtype=torch.bfloat16,
-                                 abc: torch.Tensor = torch.tensor((3.4445, -4.7750,  2.0315)), normalize=True):
+                                 abc: torch.Tensor = torch.tensor((3.4445, -4.7750,  2.0315)), G_fro: Optional[torch.Tensor] = None):
     r"""
     Newton-Schulz iteration to compute the zeroth power / orthogonalization of G. We opt to use a
     quintic iteration whose coefficients are selected to maximize the slope at zero. For the purpose
@@ -41,11 +41,10 @@ def _zeropower_via_newtonschulz5(G, steps=5, eps=1e-7, dtype=torch.bfloat16,
     performance at all relative to UV^T, where USV^T = G is the SVD.
     """
     assert len(G.shape) == 2
-    if normalize:
-        denom = G.norm() + eps
-        X = G.to(dtype) / denom # ensure top singular value <= 1
-    else:
-        X = G.to(dtype)
+    if G_fro is None:
+        G_fro = G.norm()
+    denom = G_fro + eps
+    X = G.to(dtype) / denom # ensure top singular value <= 1
     abc = abc.expand(steps, 3).to(G.device, dtype)
     # a, b, c = abc
     if G.size(0) > G.size(1):
@@ -221,6 +220,24 @@ class NormInterface:
             assert False, f"unknown norm kind {norm_kind}"
 
 
+@torch.compile
+def right_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7):
+    # return V S-1 V.T
+    vsv = (g0.T @ g).to(dtype)
+    vsv.diagonal(dim1=-2, dim2=-1).add_(eps)
+    L = torch.linalg.cholesky(vsv)
+    return torch.cholesky_inverse(L).to(g.dtype)
+
+@torch.compile
+def left_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7):
+    # return U S-1 U.T
+    usu = (g @ g0.T).to(dtype)
+    usu.diagonal(dim1=-2, dim2=-1).add_(eps)
+    L = torch.linalg.cholesky(usu)
+    return torch.cholesky_inverse(L).to(g.dtype)
+
+
+
 class Muon(torch.optim.Optimizer):
     r"""
     Muon - MomentUm Orthogonalized by Newton-schulz
@@ -247,10 +264,11 @@ class Muon(torch.optim.Optimizer):
         backend_steps: The number of iteration steps to use in the backend, if it is iterative.
     """
     def __init__(self, params, lr=3e-4, momentum=0.95, beta2=0.999, momentum_kind='pre_ns_nesterov', backend='newtonschulz5',
-                 backend_steps=5, norm_kind='rms', target_norm='unit', eps=1e-7):
+                 backend_steps=5, norm_kind='rms', target_norm='unit', eps=1e-7, compute_precondition_freq=20, precondition_kind=None):
         defaults = dict(lr=lr, momentum=momentum, beta2=beta2, momentum_kind=momentum_kind, backend=backend, backend_steps=backend_steps,
-                        norm_kind=norm_kind, target_norm=target_norm, eps=eps)
+                        norm_kind=norm_kind, target_norm=target_norm, eps=eps, compute_precondition_freq=compute_precondition_freq, precondition_kind=precondition_kind)
         assert momentum_kind in {'pre_ns', 'pre_ns_nesterov', 'post_ns', 'post_ns_nesterov', None}
+        assert precondition_kind in {'left', 'right', 'min_dim', None}
         super().__init__(params, defaults)
 
     def _apply_momentum(self, state, x: torch.Tensor, momentum, *, is_nesterov):
@@ -290,12 +308,35 @@ class Muon(torch.optim.Optimizer):
                 if 'stept' not in state:
                     state['stept'] = 0
                 state['stept'] += 1
+                stept = state['stept']
+
                 if group['momentum_kind'] in {'pre_ns', 'pre_ns_nesterov'}:
                     rawg = self._apply_momentum(state, rawg, momentum, is_nesterov=group['momentum_kind'] == 'pre_ns_nesterov')
 
+                # apply preconditioner
+                arg_precondition_kind = group['precondition_kind']
+                if arg_precondition_kind == 'min_dim':
+                    precondition_kind = 'left' if p.shape[0] < p.shape[1] else 'right'
+                else:
+                    precondition_kind = arg_precondition_kind
+                if precondition_kind is not None and (preconditioner:= state.get('preconditioner', None)) is not None:
+                    if precondition_kind == 'left':
+                        rawg = preconditioner @ rawg
+                    elif precondition_kind == 'right':
+                        rawg = rawg @ preconditioner
+                    else:
+                        assert False, f"unknown precondition_kind {group['precondition_kind']}"
+
                 rawgnorm_fro = rawg.norm()
-                rawg0 = rawg / (rawgnorm_fro + eps) # ensure top singular value <= 1
-                rawg0 = zeropower_backend(rawg0, steps=group['backend_steps'], dtype=rawg.dtype, normalize=False)
+                rawg0 = zeropower_backend(rawg0, steps=group['backend_steps'], dtype=rawg.dtype, G_fro=rawgnorm_fro)
+
+                # update preconditioner
+                if precondition_kind is not None and stept > 0 and stept % group['compute_precondition_freq'] == 0:
+                    assert group['backend'] not in {'sgd', 'sign'}, "preconditioner not supported for sgd or sign"
+                    if precondition_kind == 'left':
+                        state['preconditioner'] = left_preconditioner_from_zerothpower(rawg0, rawg, dtype=rawg.dtype, eps=eps)
+                    elif precondition_kind == 'right':
+                        state['preconditioner'] = right_preconditioner_from_zerothpower(rawg0, rawg, dtype=rawg.dtype, eps=eps)
 
                 if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
                     g = self._apply_momentum(state, rawg0, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')
@@ -338,7 +379,7 @@ class Muon(torch.optim.Optimizer):
                         if 'ema_grad_norm' not in state:
                             state['ema_grad_norm'] = p.grad.new_zeros(())
                         torch.lerp(state['ema_grad_norm'], norm_interface('grad', norm_kind, dual=use_dual), 1 - group['beta2'], out=state['ema_grad_norm'])
-                        self.state[p]['last_update']['target_norm'] = state['ema_grad_norm'] / (1 - group['beta2']**state['stept'])
+                        self.state[p]['last_update']['target_norm'] = state['ema_grad_norm'] / (1 - group['beta2']**stept)
 
                 elif target_norm == 'ema_momentum_norm':
                     # target_norm = ema(||momentum||)
@@ -347,7 +388,7 @@ class Muon(torch.optim.Optimizer):
                         if 'ema_momentum_norm' not in state:
                             state['ema_momentum_norm'] = p.grad.new_zeros(())
                         torch.lerp(state['ema_momentum_norm'], norm_interface('rawg', norm_kind, dual=use_dual), 1 - group['beta2'], out=state['ema_momentum_norm'])
-                        self.state[p]['last_update']['target_norm'] = state['ema_momentum_norm'] / (1 - group['beta2']**state['stept'])
+                        self.state[p]['last_update']['target_norm'] = state['ema_momentum_norm'] / (1 - group['beta2']**stept)
 
                 elif target_norm == 'ema_grad_norm2_sqrt':
                     # target_norm = ema(||grad||^2)^0.5
@@ -356,7 +397,7 @@ class Muon(torch.optim.Optimizer):
                         if 'ema_grad_norm2' not in state:
                             state['ema_grad_norm2'] = p.grad.new_zeros(())
                         torch.lerp(state['ema_grad_norm2'], norm_interface('grad', norm_kind, dual=use_dual)**2, 1 - group['beta2'], out=state['ema_grad_norm2'])
-                        self.state[p]['last_update']['target_norm'] = (state['ema_grad_norm2'] / (1 - group['beta2']**state['stept']))**0.5
+                        self.state[p]['last_update']['target_norm'] = (state['ema_grad_norm2'] / (1 - group['beta2']**stept))**0.5
 
                 elif target_norm == 'ema_momentum_norm2_sqrt':
                     # target_norm = ema(||momentum||^2)^0.5
@@ -365,7 +406,7 @@ class Muon(torch.optim.Optimizer):
                         if 'ema_momentum_norm' not in state:
                             state['ema_momentum_norm2'] = p.grad.new_zeros(())
                         torch.lerp(state['ema_momentum_norm2'], norm_interface('rawg', norm_kind, dual=use_dual)**2, 1 - group['beta2'], out=state['ema_momentum_norm2'])
-                        self.state[p]['last_update']['target_norm'] = (state['ema_momentum_norm2'] / (1 - group['beta2']**state['stept']))**0.5
+                        self.state[p]['last_update']['target_norm'] = (state['ema_momentum_norm2'] / (1 - group['beta2']**stept))**0.5
 
                 elif target_norm == 'momentum':
                     # target_norm = ||momentum||

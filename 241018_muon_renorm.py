@@ -204,9 +204,13 @@ class NormInterface:
         elif norm_kind in {'nuclear', 'nuclear_exact'}:
             if tensor_kind == 'rawg':
                 if self.g.shape[0] > self.g.shape[1]:
+                    # (U V^T)^T U S V^T = V S V^T
+                    # trace(V S V^T) = trace(S)
                     return (self.rawg0.T @ self.rawg).trace()
                 else:
-                    return (self.rawg @ self.rawg0).trace()
+                    # U S V^T (U V^T)^T = U S U^T
+                    # trace(U S U^T) = trace(S)
+                    return (self.rawg @ self.rawg0.T).trace()
             elif tensor_kind == 'g':
                 assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm of g not supported for svd or sign"
                 assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "nuclear (est) norm of g not supported for post-ns"

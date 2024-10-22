@@ -317,19 +317,19 @@ class Muon(torch.optim.Optimizer):
                         torch.lerp(state['ema_momentum_norm'], norm_interface('rawg', norm_kind, dual=use_dual), 1 - group['beta2'], out=state['ema_momentum_norm'])
                         self.state[p]['last_update']['target_norm'] = state['ema_momentum_norm'] / (1 - group['beta2']**state['stept'])
 
-                elif group['target_norm'] == 'momentum':
+                elif target_norm == 'momentum':
                     # target_norm = ||momentum||
                     for p, norm_interface in norms.items():
                         self.state[p]['last_update']['target_norm'] = norm_interface('rawg', norm_kind, dual=use_dual)
 
                 else:
-                    if group['target_norm'] == 'globalavg_momentum':
+                    if target_norm == 'globalavg_momentum':
                         target_norm = (
                             sum(norm_interface('rawg', norm_kind, dual=use_dual) for _, norm_interface in norms.items())
                             /
                             len(norms)
                         )
-                    elif group['target_norm'] == 'globalmax_momentum':
+                    elif target_norm == 'globalmax_momentum':
                         target_norm = max(norm_interface('rawg', norm_kind, dual=use_dual) for _, norm_interface in norms.items())
                     else:
                         assert False, f"unknown target_norm {group['target_norm']}"

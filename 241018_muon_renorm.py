@@ -328,7 +328,7 @@ class Muon(torch.optim.Optimizer):
                         assert False, f"unknown precondition_kind {group['precondition_kind']}"
 
                 rawgnorm_fro = rawg.norm()
-                rawg0 = zeropower_backend(rawg0, steps=group['backend_steps'], dtype=rawg.dtype, G_fro=rawgnorm_fro)
+                rawg0 = zeropower_backend(rawg, steps=group['backend_steps'], dtype=rawg.dtype, G_fro=rawgnorm_fro)
 
                 # update preconditioner
                 if precondition_kind is not None and stept > 0 and stept % group['compute_precondition_freq'] == 0:

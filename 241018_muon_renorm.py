@@ -306,7 +306,7 @@ class Muon(torch.optim.Optimizer):
                         norm_kind=norm_kind, target_norm=target_norm, eps=eps, compute_precondition_freq=compute_precondition_freq,
                         precondition_backend=precondition_backend, precondition_backend_steps=precondition_backend_steps,
                         precondition_kind=precondition_kind, precondition_beta2=precondition_beta2)
-        assert momentum_kind in {'pre_ns', 'pre_ns_nesterov', 'post_ns', 'post_ns_nesterov', 'post_ns_dual_ema', 'post_ns_dual_ema_nesterov', None}
+        assert momentum_kind in {'pre_ns', 'pre_ns_nesterov', 'post_ns', 'post_ns_nesterov', 'post_norm_scale_ema', 'post_norm_scale_ema_nesterov', None}
         assert precondition_kind in {'left', 'left_lstsq' 'right', 'min_dim', None}
         super().__init__(params, defaults)
 

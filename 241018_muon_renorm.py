@@ -351,7 +351,7 @@ class Muon(torch.optim.Optimizer):
                 state = self.state[p]
                 last_update = state['last_update']
                 scale = last_update['target_norm'] / norm_interface('g', norm_kind, dual=False)  # see anthology proposition 1. unit norm, scale to ||g||^dagger
-                p.data.add_(g, alpha=-lr * scale)
+                p.data.add_(norm_interface.g, alpha=-lr * scale)
 
 Result = namedtuple('Result', ['steps', 'train_accs', 'eval_accs', 'model_ws', 'state_dict'])
 

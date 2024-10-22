@@ -127,23 +127,23 @@ class NormInterface:
 
     def _compute_norm(self, tensor_kind: str, norm_kind: str, dual: bool = False):
         if dual:
-            dual_norm_kind = dict(
-                spectral='nuclear',
-                nuclear='spectral',
-                jbnorm='jbnuclear',
-                jbnuclear='jbnorm',
-                spectral_exact='nuclear_exact',
-                nuclear_exact='spectral_exact',
-                jbnorm_exact='jbnuclear_exact',
-                jbnuclear_exact='jbnorm_exact',
-                fro='fro',
-                fro_exact='fro_exact',
-                rms='rms',
-                rms_exact='rms_exact',
-            ).get(norm_kind, None)
+            dual_norm_kind, mult = dict(
+                spectral=('nuclear', 1),
+                nuclear=('spectral', 1),
+                jbnorm=('jbnuclear', 1),
+                jbnuclear=('jbnorm', 1),
+                spectral_exact=('nuclear_exact', 1),
+                nuclear_exact=('spectral_exact', 1),
+                jbnorm_exact=('jbnuclear_exact', 1),
+                jbnuclear_exact=('jbnorm_exact', 1),
+                fro=('fro', 1),
+                fro_exact=('fro_exact', 1),
+                rms=('fro', self.rawg.numel()**0.5),
+                rms_exact=('fro_exact', self.rawg.numel()**0.5),
+            ).get(norm_kind, (None, None))
             if dual_norm_kind is None:
                 raise ValueError(f"dual norm kind {norm_kind} not supported")
-            return self(tensor_kind, dual_norm_kind, dual=False)
+            return self(tensor_kind, dual_norm_kind, dual=False) * mult
 
         assert tensor_kind in ('rawg', 'g', 'grad')
         if norm_kind in {'rms_exact', 'rms'}:

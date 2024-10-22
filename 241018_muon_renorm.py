@@ -94,7 +94,8 @@ class NormInterface:
     state: dict
     grad: torch.Tensor                   # p.grad
     rawg: torch.Tensor                   # possibly momentum-averaged grad
-    rawg0: torch.Tensor                  # rawg^0
+    cond_rawg: torch.Tensor              # possibly preconditioned rawg
+    rawg0: torch.Tensor                  # cond_rawg^0
     g: torch.Tensor                      # possibly momentum-averaged rawg^0
     rawgnorm_fro: torch.Tensor           # ||rawg||_fro
     momentum_kind: str
@@ -334,11 +335,14 @@ class Muon(torch.optim.Optimizer):
             momentum = group['momentum']
 
             for p in group['params']:
-                # rawg: grad or momentum grad
-                # g: after zeropower
+                # grad      := p.grad
+                # rawg      := maybe-pre-ns-momentum(grad)
+                # cond_rawg := maybe-preconditioner(rawg)
+                # rawg0     := zeropower(cond_rawg)
+                # g         := maybe-post-ns-momentum(rawg0)
 
-                rawg = p.grad
-                if rawg is None:
+                grad = p.grad
+                if grad is None:
                     continue
 
                 state = self.state[p]
@@ -347,10 +351,13 @@ class Muon(torch.optim.Optimizer):
                 state['stept'] += 1
                 stept = state['stept']
 
+                # pre-ns momentum
+                rawg = grad
                 if group['momentum_kind'] in {'pre_ns', 'pre_ns_nesterov'}:
                     rawg = self._apply_momentum(state, rawg, momentum, is_nesterov=group['momentum_kind'] == 'pre_ns_nesterov')
 
                 # apply preconditioner
+                cond_rawg = rawg
                 arg_precondition_kind = group['precondition_kind']
                 if arg_precondition_kind == 'min_dim':
                     precondition_kind = 'left' if p.shape[0] < p.shape[1] else 'right'
@@ -362,14 +369,13 @@ class Muon(torch.optim.Optimizer):
                         preconditioner.mul_(group['precondition_beta2'])
                         preconditioner.diagonal(dim1=-2, dim2=-1).add_(1 - group['precondition_beta2'])
                     if precondition_kind == 'left':
-                        rawg = preconditioner @ rawg
+                        cond_rawg = preconditioner @ cond_rawg
                     elif precondition_kind == 'right':
-                        rawg = rawg @ preconditioner
+                        cond_rawg = cond_rawg @ preconditioner
                     else:
                         assert False, f"unknown precondition_kind {group['precondition_kind']}"
 
                 do_update_preconditioner = precondition_kind is not None and stept > 0 and stept % group['compute_precondition_freq'] == 0
-
                 backend = group['backend']
                 backend_steps = group['backend_steps']
                 if do_update_preconditioner:
@@ -378,8 +384,8 @@ class Muon(torch.optim.Optimizer):
                     if group['precondition_backend_steps'] is not None:
                         backend_steps = group['precondition_backend_steps']
 
-                rawgnorm_fro = rawg.norm()
-                rawg0 = zeropower_backends[backend](rawg, steps=backend_steps, dtype=rawg.dtype, G_fro=rawgnorm_fro)
+                # cond_rawgnorm_fro = cond_rawg.norm()
+                rawg0 = zeropower_backends[backend](cond_rawg, steps=backend_steps, dtype=cond_rawg.dtype)
 
                 # update preconditioner
                 if do_update_preconditioner:
@@ -395,12 +401,12 @@ class Muon(torch.optim.Optimizer):
                     elif precondition_kind == 'right':
                         state['preconditioner'] = right_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-3)
 
+                # post-ns momentum
+                g = rawg0
                 if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
                     g = self._apply_momentum(state, rawg0, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')
-                else:
-                    g = rawg0
 
-                state['last_update'] = dict(grad=p.grad, rawg=rawg, rawg0=rawg0, g=g, rawgnorm_fro=rawgnorm_fro)
+                state['last_update'] = dict(grad=p.grad, rawg=rawg, cond_rawg=cond_rawg, rawg0=rawg0, g=g, rawgnorm_fro=rawg.norm())
 
             # renormalize update
             norms = {}

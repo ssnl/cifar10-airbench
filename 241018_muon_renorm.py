@@ -295,10 +295,12 @@ class Muon(torch.optim.Optimizer):
         backend_steps: The number of iteration steps to use in the backend, if it is iterative.
     """
     def __init__(self, params, lr=3e-4, momentum=0.95, beta2=0.999, momentum_kind='pre_ns_nesterov', backend='newtonschulz5',
-                 backend_steps=5, norm_kind='rms', target_norm='unit', eps=1e-7, compute_precondition_freq=20, precondition_backend_steps=10, precondition_kind=None):
+                 backend_steps=5, norm_kind='rms', target_norm='unit', eps=1e-7,
+                 compute_precondition_freq=20, precondition_backend_steps=10, precondition_kind=None,
+                 precondition_beta2=0.999):
         defaults = dict(lr=lr, momentum=momentum, beta2=beta2, momentum_kind=momentum_kind, backend=backend, backend_steps=backend_steps,
                         norm_kind=norm_kind, target_norm=target_norm, eps=eps, compute_precondition_freq=compute_precondition_freq,
-                        precondition_backend_steps=precondition_backend_steps, precondition_kind=precondition_kind)
+                        precondition_backend_steps=precondition_backend_steps, precondition_kind=precondition_kind, precondition_beta2=precondition_beta2)
         assert momentum_kind in {'pre_ns', 'pre_ns_nesterov', 'post_ns', 'post_ns_nesterov', None}
         assert precondition_kind in {'left', 'left_lstsq' 'right', 'min_dim', None}
         super().__init__(params, defaults)
@@ -353,7 +355,8 @@ class Muon(torch.optim.Optimizer):
                     precondition_kind = arg_precondition_kind
                 if precondition_kind is not None and (preconditioner:= state.get('preconditioner', None)) is not None:
                     # regress to idt
-                    preconditioner.lerp_(torch.eye(preconditioner.shape[0], device=preconditioner.device, dtype=preconditioner.dtype), 1 - group['beta2'] ** group['compute_precondition_freq'])
+                    if group['precondition_beta2'] != 1:
+                        preconditioner.lerp_(torch.eye(preconditioner.shape[0], device=preconditioner.device, dtype=preconditioner.dtype), 1 - group['precondition_beta2'])
                     if precondition_kind == 'left':
                         rawg = preconditioner @ rawg
                     elif precondition_kind == 'right':

@@ -263,7 +263,8 @@ class Muon(torch.optim.Optimizer):
             for p in group['params']:
                 if p.grad is None:
                     continue
-                g, rawgnorm, gnorm, target_norm = self.state[p]['last_update']
+                state = self.state[p]
+                g, rawgnorm, gnorm, target_norm = state['last_update']
                 if group['nesterov'] == 'post_ns':
                     if 'momentum_buffer' not in state:
                         state['momentum_buffer'] = torch.zeros_like(g)

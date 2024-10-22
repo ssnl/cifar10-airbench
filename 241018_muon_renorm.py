@@ -94,6 +94,7 @@ class NormInterface:
     state: dict
     grad: torch.Tensor                   # p.grad
     rawg: torch.Tensor                   # possibly momentum-averaged grad
+    rawg0: torch.Tensor                  # rawg^0
     g: torch.Tensor                      # possibly momentum-averaged rawg^0
     rawgnorm_fro: torch.Tensor           # ||rawg||_fro
     momentum_kind: str
@@ -125,7 +126,20 @@ class NormInterface:
 
     def _compute_norm(self, tensor_kind: str, norm_kind: str, dual: bool = False):
         if dual:
-            dual_norm_kind = dict(spectral='nuclear', jbnorm='jbnuclear', spectral_exact='nuclear_exact', jbnorm_exact='jbnuclear_exact').get(norm_kind, None)
+            dual_norm_kind = dict(
+                spectral='nuclear',
+                nuclear='spectral',
+                jbnorm='jbnuclear',
+                jbnuclear='jbnorm',
+                spectral_exact='nuclear_exact',
+                nuclear_exact='spectral_exact',
+                jbnorm_exact='jbnuclear_exact',
+                jbnuclear_exact='jbnorm_exact',
+                fro='fro',
+                fro_exact='fro_exact',
+                rms='rms',
+                rms_exact='rms_exact',
+            ).get(norm_kind, None)
             if dual_norm_kind is None:
                 raise ValueError(f"dual norm kind {norm_kind} not supported")
             return self(tensor_kind, dual_norm_kind, dual=False)
@@ -189,12 +203,10 @@ class NormInterface:
             return self(tensor_kind, norm_kind.replace('jbnuclear', 'nuclear'), dual=dual) * scale
         elif norm_kind in {'nuclear', 'nuclear_exact'}:
             if tensor_kind == 'rawg':
-                assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm of rawg not supported for svd or sign"
-                assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "nuclear (est) norm of g not supported for post-ns"
                 if self.g.shape[0] > self.g.shape[1]:
-                    return (self.g.T @ self.rawg).trace()
+                    return (self.rawg0.T @ self.rawg).trace()
                 else:
-                    return (self.rawg @ self.g.T).trace()
+                    return (self.rawg @ self.rawg0).trace()
             elif tensor_kind == 'g':
                 assert self.zeropower_backend not in ('svd', 'sign'), "nuclear (est) norm of g not supported for svd or sign"
                 assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "nuclear (est) norm of g not supported for post-ns"
@@ -278,13 +290,15 @@ class Muon(torch.optim.Optimizer):
                     rawg = self._apply_momentum(state, rawg, momentum, is_nesterov=group['momentum_kind'] == 'pre_ns_nesterov')
 
                 rawgnorm_fro = rawg.norm()
-                g = rawg / (rawgnorm_fro + eps) # ensure top singular value <= 1
-                g = zeropower_backend(g, steps=group['backend_steps'], dtype=g.dtype, normalize=False)
+                rawg0 = rawg / (rawgnorm_fro + eps) # ensure top singular value <= 1
+                rawg0 = zeropower_backend(rawg0, steps=group['backend_steps'], dtype=rawg.dtype, normalize=False)
 
                 if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
-                    g = self._apply_momentum(state, g, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')
+                    g = self._apply_momentum(state, rawg0, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')
+                else:
+                    g = rawg0
 
-                state['last_update'] = dict(grad=p.grad, rawg=rawg, g=g, rawgnorm_fro=rawgnorm_fro)
+                state['last_update'] = dict(grad=p.grad, rawg=rawg, rawg0=rawg0, g=g, rawgnorm_fro=rawgnorm_fro)
 
             # renormalize update
             norms = {}

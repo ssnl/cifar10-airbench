@@ -288,11 +288,13 @@ class Muon(torch.optim.Optimizer):
                 if p.grad is None:
                     continue
                 state = self.state[p]
-                norms[p] = NormInterface(state,
-                                         zeropower_backend=group['backend'],
-                                         eps=eps,
-                                         **state['last_update'],
-                                         )
+                norms[p] = NormInterface(
+                    state,
+                    zeropower_backend=group['backend'],
+                    momentum_kind=group['momentum_kind'],
+                    eps=eps,
+                    **state['last_update'],
+                )
 
             norm_kind = group['norm_kind']
             target_norm = group['target_norm']

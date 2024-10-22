@@ -200,8 +200,8 @@ class NormInterface:
                 F.normalize(u, dim=0, eps=self.eps, out=u)
             return torch.dot(v, torch.mv(tensor, u))
         elif norm_kind in {'jbnuclear', 'jbnuclear_exact'}:
-            scale = (self.fan_out / self.fan_in)**0.5
-            return self(tensor_kind, norm_kind.replace('jbnuclear', 'nuclear'), dual=dual) * scale
+            inv_scale = (self.fan_out / self.fan_in)**0.5
+            return self(tensor_kind, norm_kind.replace('jbnuclear', 'nuclear'), dual=dual) / inv_scale
         elif norm_kind in {'nuclear', 'nuclear_exact'}:
             if tensor_kind == 'rawg':
                 if self.g.shape[0] > self.g.shape[1]:
@@ -306,20 +306,20 @@ class Muon(torch.optim.Optimizer):
                         norm_kind=norm_kind, target_norm=target_norm, eps=eps, compute_precondition_freq=compute_precondition_freq,
                         precondition_backend=precondition_backend, precondition_backend_steps=precondition_backend_steps,
                         precondition_kind=precondition_kind, precondition_beta2=precondition_beta2)
-        assert momentum_kind in {'pre_ns', 'pre_ns_nesterov', 'post_ns', 'post_ns_nesterov', 'post_norm_scale_ema', 'post_norm_scale_ema_nesterov', None}
+        assert momentum_kind in {'pre_ns', 'pre_ns_nesterov', 'post_ns', 'post_ns_nesterov', 'post_norm_scale', 'post_norm_scale_nesterov', None}
         assert precondition_kind in {'left', 'left_lstsq' 'right', 'min_dim', None}
         super().__init__(params, defaults)
 
-    def _apply_momentum(self, state, x: torch.Tensor, momentum, *, is_nesterov):
+    def _apply_momentum(self, state, x: torch.Tensor, momentum, *, is_nesterov, prefix: str):
         # m = beta1 * m + g
         # g = g + m * beta1
         # ----
         # equiv:
         # g = g + beta1**2 * m + beta1 * g
         #   = (1+beta1) g + beta1**2 m
-        if 'momentum_buffer' not in state:
-            state['momentum_buffer'] = torch.zeros_like(x)
-        buf = state['momentum_buffer']
+        if f'{prefix}_momentum_buffer' not in state:
+            state[f'{prefix}_momentum_buffer'] = torch.zeros_like(x)
+        buf = state[f'{prefix}_momentum_buffer']
         if is_nesterov:
             buf.mul_(momentum).add_(x)
             return x.add(buf, alpha=momentum)
@@ -357,10 +357,11 @@ class Muon(torch.optim.Optimizer):
                 # pre-ns momentum
                 rawg = grad
                 if group['momentum_kind'] in {'pre_ns', 'pre_ns_nesterov'}:
-                    rawg = self._apply_momentum(state, rawg, momentum, is_nesterov=group['momentum_kind'] == 'pre_ns_nesterov')
+                    rawg = self._apply_momentum(state, rawg, momentum, is_nesterov=group['momentum_kind'] == 'pre_ns_nesterov', prefix='pre_ns')
 
                 # apply preconditioner
                 cond_rawg = rawg
+                cond_rawgnorm_fro = rawgnorm_fro = rawg.norm()
                 arg_precondition_kind = group['precondition_kind']
                 if arg_precondition_kind == 'min_dim':
                     precondition_kind = 'left' if p.shape[0] < p.shape[1] else 'right'
@@ -377,6 +378,7 @@ class Muon(torch.optim.Optimizer):
                         cond_rawg = cond_rawg @ preconditioner
                     else:
                         assert False, f"unknown precondition_kind {group['precondition_kind']}"
+                    cond_rawgnorm_fro = cond_rawg.norm()
 
                 do_update_preconditioner = precondition_kind is not None and stept > 0 and stept % group['compute_precondition_freq'] == 0
                 backend = group['backend']
@@ -387,8 +389,8 @@ class Muon(torch.optim.Optimizer):
                     if group['precondition_backend_steps'] is not None:
                         backend_steps = group['precondition_backend_steps']
 
-                # cond_rawgnorm_fro = cond_rawg.norm()
-                rawg0 = zeropower_backends[backend](cond_rawg, steps=backend_steps, dtype=cond_rawg.dtype)
+                # ns iter
+                rawg0 = zeropower_backends[backend](cond_rawg, steps=backend_steps, dtype=cond_rawg.dtype, eps=eps, G_fro=cond_rawgnorm_fro)
 
                 # update preconditioner
                 if do_update_preconditioner:
@@ -407,8 +409,8 @@ class Muon(torch.optim.Optimizer):
                 # post-ns momentum
                 g = rawg0
                 if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
-                    g = self._apply_momentum(state, rawg0, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')
-                state['last_update'] = dict(grad=p.grad, rawg=rawg, cond_rawg=cond_rawg, rawg0=rawg0, g=g, rawgnorm_fro=rawg.norm())
+                    g = self._apply_momentum(state, rawg0, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov', prefix='post_ns')
+                state['last_update'] = dict(grad=p.grad, rawg=rawg, cond_rawg=cond_rawg, rawg0=rawg0, g=g, rawgnorm_fro=rawgnorm_fro)
                 norms[p] = norm_interface = NormInterface(
                     state,
                     zeropower_backend=group['backend'],
@@ -492,10 +494,10 @@ class Muon(torch.optim.Optimizer):
                 scale = last_update['target_norm'] / norm_interface('g', norm_kind, dual=False)  # see anthology proposition 1. unit norm, scale to target_norm that could be the dual||g||^dagger
                 update = norm_interface.g * scale
 
-                if group['momentum_kind'] in {'post_norm_scale_ema', 'post_norm_scale_ema_nesterov'}:
-                    # e.g., use (momentum_kind='post_norm_scale_ema_*', target_norm='rawg_dual') to implement
+                if group['momentum_kind'] in {'post_norm_scale', 'post_norm_scale_nesterov'}:
+                    # e.g., use (momentum_kind='post_norm_scale_*', target_norm='rawg_dual') to implement
                     #      g := ema(||rawg||^\dagger * rawg^0 / ||rawg^0||)
-                    update = self._apply_momentum(state, update, momentum, is_nesterov=group['momentum_kind'] == 'post_norm_scale_ema_nesterov')
+                    update = self._apply_momentum(state, update, momentum, is_nesterov=group['momentum_kind'] == 'post_norm_scale_nesterov', prefix='post_norm_scale')
 
                 state['last_update']['update'] = update
                 p.data.add_(update, alpha=-lr)

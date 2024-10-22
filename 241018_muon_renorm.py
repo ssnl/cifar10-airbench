@@ -221,21 +221,44 @@ class NormInterface:
 
 
 @torch.compile
-def right_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7):
+def _right_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7):
     # return V S-1 V.T
     vsv = (g0.T @ g).to(dtype)
     vsv.diagonal(dim1=-2, dim2=-1).add_(eps)
-    L = torch.linalg.cholesky(vsv)
+    L, info = torch.linalg.cholesky_ex(vsv)
+    if info.item() != 0:
+        raise RuntimeError(f"cholesky_ex failed with info {info}")
     return torch.cholesky_inverse(L).to(g.dtype)
 
+def right_preconditioner_from_zerothpower_with_retry(g, g0, eps=1e-7):
+    dtype = torch.float32
+    while True:
+        try:
+            return _right_preconditioner_from_zerothpower(g, g0, dtype=dtype, eps=eps)
+        except RuntimeError:
+            if dtype == torch.float64:
+                return None
+            dtype = torch.float64
+
 @torch.compile
-def left_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7):
+def _left_preconditioner_from_zerothpower(g, g0, dtype=torch.float32, eps=1e-7):
     # return U S-1 U.T
     usu = (g @ g0.T).to(dtype)
     usu.diagonal(dim1=-2, dim2=-1).add_(eps)
-    L = torch.linalg.cholesky(usu)
+    L, info = torch.linalg.cholesky_ex(usu)
+    if info.item() != 0:
+        raise RuntimeError(f"cholesky_ex failed with info {info}")
     return torch.cholesky_inverse(L).to(g.dtype)
 
+def left_preconditioner_from_zerothpower_with_retry(g, g0, eps=1e-7):
+    dtype = torch.float32
+    while True:
+        try:
+            return _left_preconditioner_from_zerothpower(g, g0, dtype=dtype, eps=eps)
+        except RuntimeError:
+            if dtype == torch.float64:
+                return None
+            dtype = torch.float64
 
 
 class Muon(torch.optim.Optimizer):
@@ -333,10 +356,16 @@ class Muon(torch.optim.Optimizer):
                 # update preconditioner
                 if precondition_kind is not None and stept > 0 and stept % group['compute_precondition_freq'] == 0:
                     assert group['backend'] not in {'sgd', 'sign'}, "preconditioner not supported for sgd or sign"
+                    # here we don something "hacky" to pick eps
+                    # let's assume that rawg0 has singular values in [0.95, 1.05]
+                    # rawg/rawgnorm_fro has singular values in [0, 1]
+                    # now the preconditioner is generally (rawg0.T @ rawg + eps I)^{-1}
+                    # note that scaling preconditioner doesn't matter for the 0th power
+                    # so we can also do (rawg0.T @ rawg / C + eps I)^{-1}
                     if precondition_kind == 'left':
-                        state['preconditioner'] = left_preconditioner_from_zerothpower(rawg, rawg0, eps=eps)
+                        state['preconditioner'] = left_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-2)
                     elif precondition_kind == 'right':
-                        state['preconditioner'] = right_preconditioner_from_zerothpower(rawg, rawg0, eps=eps)
+                        state['preconditioner'] = right_preconditioner_from_zerothpower_with_retry(rawg, rawg0, eps=1e-2)
 
                 if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
                     g = self._apply_momentum(state, rawg0, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov')

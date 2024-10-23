@@ -955,6 +955,9 @@ if __name__ == '__main__':
         if optim_kind in EQUIV_MAPS:
             actual_optim_kind = EQUIV_MAPS[optim_kind]
             actual_file = f'./orth_{actual_optim_kind}_lr{lr:g}_seed{seed}.pth'
+            # check if a link already exists
+            if os.path.islink(file):
+                os.remove(file)
             os.symlink(actual_file, file)
             print(f'linked {actual_file} to {file}')
             return

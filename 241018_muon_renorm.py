@@ -11,7 +11,7 @@ import math
 import time
 import random
 from distributed_shampoo import DistributedShampoo
-from .distributed_shampoo.shampoo_types import AdamGraftingConfig  # type: ignore
+from distributed_shampoo.shampoo_types import AdamGraftingConfig  # type: ignore
 
 
 from typing import Optional

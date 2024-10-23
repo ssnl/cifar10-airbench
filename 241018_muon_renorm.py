@@ -722,10 +722,10 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_post_ns_nesterov=                                          (functools.partial(Muon, momentum_kind='post_ns_nesterov', norm_kind='rms_exact'),                                                       [r'muon w post-ns nesterov-type update']),
 
 
-    muon_sgd=                                                       (functools.partial(Muon, backend='sgd'),                                                                          [r'SGD',
+    muon_sgd=                                                       (functools.partial(Muon, backend='sgd', target_norm=None),                                                                          [r'SGD',
                                                                                                                                                                                        r'(i.e., muon w/o orthogonalization)']),
 
-    muon_sign=                                                      (functools.partial(Muon, backend='sign'),                                                                         [r'sign-SGD',
+    muon_sign=                                                      (functools.partial(Muon, backend='sign', target_norm=None),                                                                         [r'sign-SGD',
                                                                                                                                                                                        r'(i.e., muon w/ sign instead of orthogonalization)']),
 
     muon_proper=                                                    (functools.partial(Muon, backend='newtonschulz5_proper'),                                                         [r'muon w naive simple cubic NS iter',

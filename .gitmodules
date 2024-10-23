@@ -1,0 +1,3 @@
+[submodule "distributed_shampoo"]
+	path = third_party/distributed_shampoo
+	url = git@github.com:ssnl/distributed_shampoo.git

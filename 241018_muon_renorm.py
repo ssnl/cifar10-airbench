@@ -705,6 +705,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
                                                                                             beta2=0.9,
                                                                                             epsilon=1e-10,
                                                                                         )),                                                                                           r'''shampoo (precond freq=100)'''),
+
     adam=                                                           (functools.partial(optim.Adam, betas=(0.9, 0.999)),                                                               r'''adam'''),
     adam_b09=                                                       (functools.partial(optim.Adam, betas=(0.9, 0.999)),                                                               r'''adam ($\beta_1$=0.9)'''),
     adam_b095=                                                      (functools.partial(optim.Adam, betas=(0.95, 0.999)),                                                              r'''adam ($\beta_1$=0.9$\rightarrow$0.95)'''),

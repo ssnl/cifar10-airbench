@@ -1206,14 +1206,20 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
 )
 
 for k in list(OPTIM_MAP.keys()):
-    if 'precond' in k:
-        del OPTIM_MAP[k]
-    elif '_1step' in k:
-        del OPTIM_MAP[k]
-    elif '_2step' in k:
-        del OPTIM_MAP[k]
-    elif '_3step' in k:
-        del OPTIM_MAP[k]
+    if 'muon' in k:
+        if 'precond' in k:
+            del OPTIM_MAP[k]
+        elif '_1step' in k:
+            del OPTIM_MAP[k]
+        elif '_2step' in k:
+            del OPTIM_MAP[k]
+        elif '_3step' in k:
+            del OPTIM_MAP[k]
+
+for k in list(OPTIM_MAP.keys()):
+    optim_ctor, desc = OPTIM_MAP[k]
+    desc = '\n'.join([l.strip() for l in desc.split('\n') if l.strip()])
+    OPTIM_MAP[k] = (optim_ctor, desc)
 
 EQUIV_MAPS: Mapping[str, str] = dict(
     muon_5step='muon',

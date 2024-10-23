@@ -422,7 +422,12 @@ class Muon(torch.optim.Optimizer):
             norm_kind = group['norm_kind']
             target_norm = group['target_norm']
 
-            if target_norm == 'unit':
+            if target_norm is None:
+                # no rescaling
+                for p, norm_interface in norms.items():
+                    self.state[p]['last_update']['target_norm'] = None
+
+            elif target_norm == 'unit':
                 # target_norm = 1
                 for p, norm_interface in norms.items():
                     self.state[p]['last_update']['target_norm'] = 1
@@ -491,7 +496,11 @@ class Muon(torch.optim.Optimizer):
             for p, norm_interface in norms.items():
                 state = self.state[p]
                 last_update = state['last_update']
-                scale = last_update['target_norm'] / norm_interface('g', norm_kind, dual=False)  # see anthology proposition 1. unit norm, scale to target_norm that could be the dual||g||^dagger
+                target_norm = last_update['target_norm']
+                if target_norm is None:
+                    scale = 1
+                else:
+                    scale = target_norm / norm_interface('g', norm_kind, dual=False)  # see anthology proposition 1. unit norm, scale to target_norm that could be the dual||g||^dagger
                 update = norm_interface.g * scale
 
                 if group['momentum_kind'] in {'post_norm_scale', 'post_norm_scale_nesterov'}:
@@ -706,11 +715,11 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
 
     muon_pre_ns=                                                    (functools.partial(Muon, momentum_kind='pre_ns'),                                                                 [r'muon w pre-ns ema']),
 
-    muon_post_ns=                                                   (functools.partial(Muon, momentum_kind='post_ns'),                                                                [r'muon w post-ns ema']),
+    muon_post_ns=                                                   (functools.partial(Muon, momentum_kind='post_ns', norm_kind='rms_exact'),                                                                [r'muon w post-ns ema']),
 
     muon_pre_ns_nesterov=                                           (functools.partial(Muon, momentum_kind='pre_ns_nesterov'),                                                        [r'muon w pre-ns nesterov-type update']),
 
-    muon_post_ns_nesterov=                                          (functools.partial(Muon, momentum_kind='post_ns_nesterov'),                                                       [r'muon w post-ns nesterov-type update']),
+    muon_post_ns_nesterov=                                          (functools.partial(Muon, momentum_kind='post_ns_nesterov', norm_kind='rms_exact'),                                                       [r'muon w post-ns nesterov-type update']),
 
 
     muon_sgd=                                                       (functools.partial(Muon, backend='sgd'),                                                                          [r'SGD',

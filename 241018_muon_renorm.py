@@ -954,7 +954,7 @@ if __name__ == '__main__':
     def run():
         if optim_kind in EQUIV_MAPS:
             actual_optim_kind = EQUIV_MAPS[optim_kind]
-            actual_file = f'241018_300steps_bzs2048/orth_{actual_optim_kind}_lr{lr:g}_seed{seed}.pth'
+            actual_file = f'./orth_{actual_optim_kind}_lr{lr:g}_seed{seed}.pth'
             os.symlink(actual_file, file)
             print(f'linked {actual_file} to {file}')
             return

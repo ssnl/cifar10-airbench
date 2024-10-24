@@ -127,7 +127,7 @@ class NormInterface:
             self.cached_norms[cache_key] = self._compute_norm(tensor_kind, norm_kind, dual)
         return self.cached_norms[cache_key]
 
-    DUAL_NORM_MAP: Dict[str, str] = dict(
+    DUAL_NORM_MAP: ClassVar[Dict[str, str]] = dict(
         spectral='nuclear',
         spectral_exact='nuclear_exact',
         nuclear='spectral',
@@ -136,7 +136,7 @@ class NormInterface:
         fro_exact='fro_exact',
     )
 
-    EXTENDED_NORM_EQUIV_SCALE_MAP: Dict[str, Tuple[str, Callable[[Self], float]]] = dict(
+    EXTENDED_NORM_EQUIV_SCALE_MAP: ClassVar[Dict[str, Tuple[str, Callable[[Self], float]]]] = dict(
         # ||W|| := 1 / sqrt(numel) * ||W||_fro
         rms=('fro', lambda self: 1 / self.rawg.numel()**0.5),
         rms_exact=('fro_exact', lambda self: 1 / self.rawg.numel()**0.5),

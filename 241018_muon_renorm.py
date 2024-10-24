@@ -127,51 +127,58 @@ class NormInterface:
             self.cached_norms[cache_key] = self._compute_norm(tensor_kind, norm_kind, dual)
         return self.cached_norms[cache_key]
 
+    DUAL_NORM_MAP: Dict[str, str] = dict(
+        spectral='nuclear',
+        spectral_exact='nuclear_exact',
+        nuclear='spectral',
+        nuclear_exact='spectral_exact',
+        fro='fro',
+        fro_exact='fro_exact',
+    )
+
+    EXTENDED_NORM_EQUIV_SCALE_MAP: Dict[str, Tuple[str, Callable[[Self], float]]] = dict(
+        # ||W|| := 1 / sqrt(numel) * ||W||_fro
+        rms=('fro', lambda self: 1 / self.rawg.numel()**0.5),
+        rms_exact=('fro_exact', lambda self: 1 / self.rawg.numel()**0.5),
+        # ||W|| := sqrt(fan_in / fan_out) * ||W||_2
+        jbnorm=('spectral', lambda self: (self.fan_in / self.fan_out)**0.5),
+        jbnorm_exact=('spectral_exact', lambda self: (self.fan_in / self.fan_out)**0.5),
+        # ||W|| := sqrt(fan_out / fan_in) * ||W||_2
+        jbinvnorm=('spectral', lambda self: (self.fan_out / self.fan_in)**0.5),
+        jbinvnorm_exact=('spectral_exact', lambda self: (self.fan_out / self.fan_in)**0.5),
+    )
+
     def _compute_norm(self, tensor_kind: str, norm_kind: str, dual: bool = False):
+        scaled_norm_kind, mult_fn = self.EXTENDED_NORM_EQUIV_SCALE_MAP.get(norm_kind, (None, None))
+        if scaled_norm_kind is not None:
+            mult = mult_fn(self)
+            norm = self(tensor_kind, scaled_norm_kind, dual=dual)
+            if dual:
+                return norm * mult
+            else:
+                return norm / mult
         if dual:
-            dual_norm_kind, mult = dict(
-                spectral=('nuclear', 1),
-                nuclear=('spectral', 1),
-                jbnorm=('jbnuclear', 1),
-                jbnuclear=('jbnorm', 1),
-                spectral_exact=('nuclear_exact', 1),
-                nuclear_exact=('spectral_exact', 1),
-                jbnorm_exact=('jbnuclear_exact', 1),
-                jbnuclear_exact=('jbnorm_exact', 1),
-                fro=('fro', 1),
-                fro_exact=('fro_exact', 1),
-                rms=('fro', self.rawg.numel()**0.5),
-                rms_exact=('fro_exact', self.rawg.numel()**0.5),
-            ).get(norm_kind, (None, None))
+            dual_norm_kind = self.DUAL_NORM_MAP[norm_kind]
             if dual_norm_kind is None:
                 raise ValueError(f"dual norm kind {norm_kind} not supported")
-            return self(tensor_kind, dual_norm_kind, dual=False) * mult
+            return self(tensor_kind, dual_norm_kind, dual=False)
+        # else:
 
         assert tensor_kind in ('rawg', 'g', 'grad')
-        if norm_kind in {'rms_exact', 'rms'}:
-            denom = self.rawg.numel() ** 0.5
-            return self(tensor_kind, norm_kind.replace('rms', 'fro'), dual=dual) / denom
-        elif norm_kind == 'fro_exact':
+        if norm_kind in {'fro', 'fro_exact'}:
             if tensor_kind == 'rawg':
                 return self.rawgnorm_fro
             elif tensor_kind == 'g':
-                return self.g.norm()
+                if norm_kind == 'fro':
+                    assert self.zeropower_backend not in ('svd', 'sign'), "fro norm of g not supported for svd or sign"
+                    assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "fro norm of g not supported for post-ns which breaks g=rawg0"
+                    # currently have ||DW||_fro     ~= sqrt(min(fan_in, fan_out))
+                    return self.min_fan**0.5
+                else:
+                    return self.g.norm()
             else:
+                assert tensor_kind == 'grad'
                 return self.grad.norm()
-        elif norm_kind == 'fro':
-            if tensor_kind == 'rawg':
-                return self.rawgnorm_fro
-            elif tensor_kind == 'g':
-                assert self.zeropower_backend not in ('svd', 'sign'), "fro norm of g not supported for svd or sign"
-                assert self.momentum_kind not in {'post_ns', 'post_ns_nesterov'}, "fro norm of g not supported for post-ns which breaks g=rawg0"
-                # currently have ||DW||_fro     ~= sqrt(min(fan_in, fan_out))
-                return self.min_fan**0.5
-            else:
-                return self.grad.norm()
-        elif norm_kind in {'jbnorm', 'jbnorm_exact'}:
-            # ||W|| := sqrt(fan_out / fan_in) * ||W||_2
-            scale = (self.fan_out / self.fan_in)**0.5
-            return self(tensor_kind, norm_kind.replace('jbnorm', 'spectral'), dual=dual) * scale
         elif norm_kind in ('spectral', 'spectral_exact'):
             # initialize power iterations on rawg (momentum/grad)
             # ref: https://github.com/jxbz/modula/blob/e274a352551ec4c6055b7fc0086db7a516863578/modula/atom.py#L32
@@ -201,9 +208,6 @@ class NormInterface:
                 torch.mv(tensor.T, v, out=u)
                 F.normalize(u, dim=0, eps=self.eps, out=u)
             return torch.dot(v, torch.mv(tensor, u))
-        elif norm_kind in {'jbnuclear', 'jbnuclear_exact'}:
-            inv_scale = (self.fan_out / self.fan_in)**0.5
-            return self(tensor_kind, norm_kind.replace('jbnuclear', 'nuclear'), dual=dual) / inv_scale
         elif norm_kind in {'nuclear', 'nuclear_exact'}:
             if tensor_kind == 'rawg':
                 if self.g.shape[0] > self.g.shape[1]:

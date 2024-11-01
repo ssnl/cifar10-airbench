@@ -1270,9 +1270,11 @@ if __name__ == '__main__':
 
     file = f'241018_300steps_bzs2048/orth_{optim_kind}_lr{lr:g}_seed{seed}.pth'
 
-    if should_rerun(optim_kind):
-        print(f'rerunning {file}')
-    elif os.path.exists(file):
+    # if should_rerun(optim_kind):
+    #     print(f'rerunning {file}')
+    # else:
+    force_rerun = os.environ.get('FORCE_RERUN', '0') == '1'
+    if os.path.exists(file) and not force_rerun:
         print(f'skipping {file}')
         sys.exit()
 

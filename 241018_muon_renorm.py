@@ -554,9 +554,14 @@ def train_mnist(model, opt, nsteps=3000, log_nsteps=100,
     model = model.to(device)
     optimizers = []
     if callable(opt):
+        opt_cls = opt([torch.empty(1, 1, requires_grad=True)]).__class__
+        if opt_cls is Muon:
+            opt_1d = optim.Adam
+        else:
+            opt_1d = opt
         optimizers.extend([
             opt([p for p in model.parameters() if len(p.data.shape) == 2], lr=lr),
-            optim.Adam([p for p in model.parameters() if len(p.data.shape) != 2], lr=lr),
+            opt_1d([p for p in model.parameters() if len(p.data.shape) != 2], lr=lr),
         ])
     else:
         raise ValueError(f"Unknown optimizer: {opt}")
@@ -1244,6 +1249,17 @@ EQUIV_MAPS: Mapping[str, str] = dict(
 )
 
 
+def should_rerun(optim_kind):
+    should_rerun = False
+    test_opt = OPTIM_MAP[optim_kind][0]([torch.empty(1, 1, requires_grad=True)])
+    if test_opt.__class__ in {optim.Adam, DistributedShampoo}:
+        should_rerun = True
+    else:
+        assert test_opt.__class__ is Muon
+        should_rerun = test_opt.defaults['norm_kind'] in {'rms', 'rms_exact', 'jbnorm', 'jbnorm_exact', 'jbinvnorm', 'jbinvnorm_exact'}
+    return should_rerun
+
+
 if __name__ == '__main__':
     import sys
     # argv: [optim, lr, seed]
@@ -1254,7 +1270,9 @@ if __name__ == '__main__':
 
     file = f'241018_300steps_bzs2048/orth_{optim_kind}_lr{lr:g}_seed{seed}.pth'
 
-    if os.path.exists(file):
+    if should_rerun(optim_kind):
+        print(f'rerunning {file}')
+    elif os.path.exists(file):
         print(f'skipping {file}')
         sys.exit()
 

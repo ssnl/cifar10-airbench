@@ -389,13 +389,14 @@ class Muon(torch.optim.Optimizer):
                         cond_rawgnorm_fro = cond_rawg.norm()
 
                     do_update_preconditioner = stept > 0 and stept % group['compute_precondition_freq'] == 0
-                    backend = group['backend']
-                    backend_steps = group['backend_steps']
-                    if do_update_preconditioner:
-                        if group['precondition_backend'] is not None:
-                            backend = group['precondition_backend']
-                        if group['precondition_backend_steps'] is not None:
-                            backend_steps = group['precondition_backend_steps']
+
+                backend = group['backend']
+                backend_steps = group['backend_steps']
+                if do_update_preconditioner:
+                    if group['precondition_backend'] is not None:
+                        backend = group['precondition_backend']
+                    if group['precondition_backend_steps'] is not None:
+                        backend_steps = group['precondition_backend_steps']
 
                 # ns iter
                 rawg0 = zeropower_backends[backend](cond_rawg, steps=backend_steps, dtype=cond_rawg.dtype, eps=eps, G_fro=cond_rawgnorm_fro)

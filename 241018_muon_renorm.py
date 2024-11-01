@@ -138,14 +138,14 @@ class NormInterface:
 
     EXTENDED_NORM_EQUIV_SCALE_MAP: ClassVar[Dict[str, Tuple[str, Callable[[Self], float]]]] = dict(
         # ||W|| := 1 / sqrt(numel) * ||W||_fro
-        rms=('fro', lambda self: 1 / self.rawg.numel()**0.5),
-        rms_exact=('fro_exact', lambda self: 1 / self.rawg.numel()**0.5),
-        # ||W|| := sqrt(fan_in / fan_out) * ||W||_2
-        jbnorm=('spectral', lambda self: (self.fan_in / self.fan_out)**0.5),
-        jbnorm_exact=('spectral_exact', lambda self: (self.fan_in / self.fan_out)**0.5),
-        # ||W|| := sqrt(fan_out / fan_in) * ||W||_2
-        jbinvnorm=('spectral', lambda self: (self.fan_out / self.fan_in)**0.5),
-        jbinvnorm_exact=('spectral_exact', lambda self: (self.fan_out / self.fan_in)**0.5),
+        rms=              ('fro',               lambda self: 1 / self.rawg.numel()**0.5),
+        rms_exact=        ('fro_exact',         lambda self: 1 / self.rawg.numel()**0.5),
+        # ||W|| := sqrt(fan_in / fan_out) * ||W||_*
+        jbnorm=           ('spectral',          lambda self: (self.fan_in / self.fan_out)**0.5),
+        jbnorm_exact=     ('spectral_exact',    lambda self: (self.fan_in / self.fan_out)**0.5),
+        # ||W|| := sqrt(fan_out / fan_in) * ||W||_*
+        jbinvnorm=        ('spectral',          lambda self: (self.fan_out / self.fan_in)**0.5),
+        jbinvnorm_exact=  ('spectral_exact',    lambda self: (self.fan_out / self.fan_in)**0.5),
     )
 
     def _compute_norm(self, tensor_kind: str, norm_kind: str, dual: bool = False):
@@ -153,7 +153,7 @@ class NormInterface:
         if scaled_norm_kind is not None:
             mult = mult_fn(self)
             norm = self(tensor_kind, scaled_norm_kind, dual=dual)
-            if dual:
+            if not dual:
                 return norm * mult
             else:
                 return norm / mult
@@ -368,32 +368,34 @@ class Muon(torch.optim.Optimizer):
                 # apply preconditioner
                 cond_rawg = rawg
                 cond_rawgnorm_fro = rawgnorm_fro = rawg.norm()
-                arg_precondition_kind = group['precondition_kind']
-                if arg_precondition_kind == 'min_dim':
-                    precondition_kind = 'left' if p.shape[0] < p.shape[1] else 'right'
-                else:
-                    precondition_kind = arg_precondition_kind
-                if precondition_kind is not None and (preconditioner:= state.get('preconditioner', None)) is not None:
-                    # regress to idt
-                    if group['precondition_beta2'] != 1:
-                        preconditioner.mul_(group['precondition_beta2'])
-                        preconditioner.diagonal(dim1=-2, dim2=-1).add_(1 - group['precondition_beta2'])
-                    if precondition_kind == 'left':
-                        cond_rawg = preconditioner @ cond_rawg
-                    elif precondition_kind == 'right':
-                        cond_rawg = cond_rawg @ preconditioner
+                do_update_preconditioner = False
+                precondition_kind = group['precondition_kind']
+                if precondition_kind is not None:
+                    if precondition_kind == 'min_dim':
+                        precondition_kind = 'left' if p.shape[0] < p.shape[1] else 'right'
                     else:
-                        assert False, f"unknown precondition_kind {group['precondition_kind']}"
-                    cond_rawgnorm_fro = cond_rawg.norm()
+                        precondition_kind = precondition_kind
+                    if (preconditioner:= state.get('preconditioner', None)) is not None:
+                        if group['precondition_beta2'] != 1:
+                            # regress to idt
+                            preconditioner.mul_(group['precondition_beta2'])
+                            preconditioner.diagonal(dim1=-2, dim2=-1).add_(1 - group['precondition_beta2'])
+                        if precondition_kind == 'left':
+                            cond_rawg = preconditioner @ cond_rawg
+                        elif precondition_kind == 'right':
+                            cond_rawg = cond_rawg @ preconditioner
+                        else:
+                            assert False, f"unknown precondition_kind {group['precondition_kind']}"
+                        cond_rawgnorm_fro = cond_rawg.norm()
 
-                do_update_preconditioner = precondition_kind is not None and stept > 0 and stept % group['compute_precondition_freq'] == 0
-                backend = group['backend']
-                backend_steps = group['backend_steps']
-                if do_update_preconditioner:
-                    if group['precondition_backend'] is not None:
-                        backend = group['precondition_backend']
-                    if group['precondition_backend_steps'] is not None:
-                        backend_steps = group['precondition_backend_steps']
+                    do_update_preconditioner = stept > 0 and stept % group['compute_precondition_freq'] == 0
+                    backend = group['backend']
+                    backend_steps = group['backend_steps']
+                    if do_update_preconditioner:
+                        if group['precondition_backend'] is not None:
+                            backend = group['precondition_backend']
+                        if group['precondition_backend_steps'] is not None:
+                            backend_steps = group['precondition_backend_steps']
 
                 # ns iter
                 rawg0 = zeropower_backends[backend](cond_rawg, steps=backend_steps, dtype=cond_rawg.dtype, eps=eps, G_fro=cond_rawgnorm_fro)
@@ -415,9 +417,9 @@ class Muon(torch.optim.Optimizer):
                 # post-ns momentum
                 g = rawg0
                 if group['momentum_kind'] in {'post_ns', 'post_ns_nesterov'}:
-                    g = self._apply_momentum(state, rawg0, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov', prefix='post_ns')
+                    g = self._apply_momentum(state, g, momentum, is_nesterov=group['momentum_kind'] == 'post_ns_nesterov', prefix='post_ns')
                 state['last_update'] = dict(grad=p.grad, rawg=rawg, cond_rawg=cond_rawg, rawg0=rawg0, g=g, rawgnorm_fro=rawgnorm_fro)
-                norms[p] = norm_interface = NormInterface(
+                norms[p] = NormInterface(
                     state,
                     zeropower_backend=group['backend'],
                     momentum_kind=group['momentum_kind'],
@@ -838,7 +840,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_norm_spec_target_unit=                                     (functools.partial(Muon, norm_kind='spectral', target_norm='unit'),                                               r'''muon w/ unit norm update (spectral)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
                                                                                                                                                                                           $\text{momentum}^0_i := \text{NS}(\text{momentum}_i)$
-                                                                                                                                                                                          $\Delta W_i := \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_2}$
+                                                                                                                                                                                          $\Delta W_i := \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_*}$
                                                                                                                                                                                        '''),
     muon_norm_jb_target_unit=                                       (functools.partial(Muon, norm_kind='jbnorm', target_norm='unit'),                                                 r'''muon w/ unit norm update ($\text{rms}\rightarrow\text{rms}$)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
@@ -875,7 +877,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_norm_spec_target_momentum=                                 (functools.partial(Muon, norm_kind='spectral', target_norm='rawg'),                                           r'''muon w/ norm-match (spectral)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
                                                                                                                                                                                           $\text{momentum}^0_i := \text{NS}(\text{momentum}_i)$
-                                                                                                                                                                                          $\Delta W_i := ||\text{momentum}_i||_2 \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_2}$
+                                                                                                                                                                                          $\Delta W_i := ||\text{momentum}_i||_* \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_*}$
                                                                                                                                                                                        '''),
     muon_norm_jb_target_momentum=                                   (functools.partial(Muon, norm_kind='jbnorm', target_norm='rawg'),                                             r'''muon w/ norm-match ($\text{rms}\rightarrow\text{rms}$)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
@@ -906,7 +908,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_norm_spec_target_momentum_dual=                                 (functools.partial(Muon, norm_kind='spectral', target_norm='rawg_dual'),                                           r'''muon w/ dual-norm-match (spectral)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
                                                                                                                                                                                           $\text{momentum}^0_i := \text{NS}(\text{momentum}_i)$
-                                                                                                                                                                                          $\Delta W_i := ||\text{momentum}_i||_2^\dagger \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_2}$
+                                                                                                                                                                                          $\Delta W_i := ||\text{momentum}_i||_*^\dagger \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_*}$
                                                                                                                                                                                        '''),
     muon_norm_jb_target_momentum_dual=                                   (functools.partial(Muon, norm_kind='jbnorm', target_norm='rawg_dual'),                                         r'''muon w/ dual-norm-match ($\text{rms}\rightarrow\text{rms}$)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
@@ -953,7 +955,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_norm_spec_target_ema_grad_norm2_sqrt=                      (functools.partial(Muon, norm_kind='spectral', target_norm='ema_grad_norm2_sqrt'),                                r'''muon w/ ema-norm-match (spectral)
                                                                                                                                                                                           $\text{momentum}_i := \text{ema}(\text{grad}_i)$
                                                                                                                                                                                           $\text{momentum}^0_i := \text{NS}(\text{momentum}_i)$
-                                                                                                                                                                                          $\Delta W_i := \text{ema}(||\text{momentum}_i||_2) \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_2}$
+                                                                                                                                                                                          $\Delta W_i := \text{ema}(||\text{momentum}_i||_*) \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_*}$
                                                                                                                                                                                        '''),
     muon_norm_jb_target_ema_grad_norm2_sqrt=                        (functools.partial(Muon, norm_kind='jbnorm', target_norm='ema_grad_norm2_sqrt'),                                  r'''muon w/ ema-norm-match ($\text{rms}\rightarrow\text{rms}$)
                                                                                                                                                                                           $\text{momentum}_i := \text{ema}(\text{grad}_i)$
@@ -994,8 +996,8 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_norm_spec_target_glbavgmomentum=                           (functools.partial(Muon, norm_kind='spectral', target_norm='globalavg_rawg'),                                 r'''muon w/ modula-like norm-match (spectral, avg over $W_i$)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
                                                                                                                                                                                           $\text{momentum}^0_i := \text{NS}(\text{momentum}_i)$
-                                                                                                                                                                                          $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_2$
-                                                                                                                                                                                          $\Delta W_i := ||\mathcal{W}||_M \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_2}$
+                                                                                                                                                                                          $||\mathcal{W}||_M := \text{AVG}_i\ s_i\ ||W_i||_*$
+                                                                                                                                                                                          $\Delta W_i := ||\mathcal{W}||_M \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_*}$
                                                                                                                                                                                     '''),
     muon_norm_jb_target_glbavgmomentum=                             (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalavg_rawg'),                                   r'''muon w/ modula-like norm-match ($\text{rms}\rightarrow\text{rms}$, avg over $W_i$)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
@@ -1031,8 +1033,8 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_norm_spec_target_glbavgmomentum_dual=                        (functools.partial(Muon, norm_kind='spectral', target_norm='globalavg_rawg_dual'),                              r'''muon w/ modula-like dual-norm-match (spectral, avg over $W_i$)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
                                                                                                                                                                                           $\text{momentum}^0_i := \text{NS}(\text{momentum}_i)$
-                                                                                                                                                                                          $||\mathcal{W}||_M^\dagger := \text{AVG}_i\ s_i\ ||W_i||_2^\dagger$
-                                                                                                                                                                                          $\Delta W_i := ||\text{momentum}||_M^\dagger \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_2}$
+                                                                                                                                                                                          $||\mathcal{W}||_M^\dagger := \text{AVG}_i\ s_i\ ||W_i||_*^\dagger$
+                                                                                                                                                                                          $\Delta W_i := ||\text{momentum}||_M^\dagger \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_*}$
                                                                                                                                                                                     '''),
     muon_norm_jb_target_glbavgmomentum_dual=                        (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalavg_rawg_dual'),                              r'''muon w/ modula-like dual-norm-match ($\text{rms}\rightarrow\text{rms}$, avg over $W_i$)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
@@ -1088,8 +1090,8 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_norm_spec_target_glbmaxmomentum=                           (functools.partial(Muon, norm_kind='spectral', target_norm='globalmax_rawg'),                                 r'''muon w/ modula-like norm-match (spectral, max over $W_i$)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
                                                                                                                                                                                           $\text{momentum}^0_i := \text{NS}(\text{momentum}_i)$
-                                                                                                                                                                                          $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_2$
-                                                                                                                                                                                          $\Delta W_i := ||\mathcal{W}||_M \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_2}$
+                                                                                                                                                                                          $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_*$
+                                                                                                                                                                                          $\Delta W_i := ||\mathcal{W}||_M \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_*}$
                                                                                                                                                                                     '''),
     muon_norm_jb_target_glbmaxmomentum=                             (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalmax_rawg'),                                   r'''muon w/ modula-like norm-match ($\text{rms}\rightarrow\text{rms}$)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
@@ -1125,8 +1127,8 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     muon_norm_spec_target_glbmaxmomentum_dual=                       (functools.partial(Muon, norm_kind='spectral', target_norm='globalmax_rawg_dual'),                                 r'''muon w/ modula-like dual-norm-match (spectral, max over $W_i$)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
                                                                                                                                                                                           $\text{momentum}^0_i := \text{NS}(\text{momentum}_i)$
-                                                                                                                                                                                          $||\mathcal{W}||_M^\dagger := \max_i\ s_i\ ||W_i||_2^\dagger$
-                                                                                                                                                                                          $\Delta W_i := ||\text{momentum}||_M^\dagger \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_2}$
+                                                                                                                                                                                          $||\mathcal{W}||_M^\dagger := \max_i\ s_i\ ||W_i||_*^\dagger$
+                                                                                                                                                                                          $\Delta W_i := ||\text{momentum}||_M^\dagger \frac{\text{momentum}^0_i}{||\text{momentum}^0_i||_*}$
                                                                                                                                                                                     '''),
     muon_norm_jb_target_glbmaxmomentum_dual=                        (functools.partial(Muon, norm_kind='jbnorm', target_norm='globalmax_rawg_dual'),                              r'''muon w/ modula-like dual-norm-match ($\text{rms}\rightarrow\text{rms}$, max over $W_i$)
                                                                                                                                                                                           $\text{momentum}_i := \text{nesterov}(\text{grad}_i)$
@@ -1157,7 +1159,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     # muon_renorm_fro=                                          (functools.partial(Muon, renormalize='momentum', renorm_kind='fro'),                                                           [r'muon renorm',
     #                                                                                                                                                                                           r'($||\Delta W||_F$ match $||\text{momentum}||_F$)']),
     # muon_renorm_spec=                                         (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral'),                                                      [r'muon renorm',
-    #                                                                                                                                                                                           r'($||\Delta W||_2$ match $||\text{momentum}||_2$)']),
+    #                                                                                                                                                                                           r'($||\Delta W||_*$ match $||\text{momentum}||_*$)']),
 
     # muon_renorm_glbsfro=                                      (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='fro'),                                                 [r'muon renorm',
     #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \sum_i\ s_i\ ||W_i||_F$,',
@@ -1168,15 +1170,15 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     #                                                                                                                                                                                           r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
 
     # muon_renorm_glbsspec=                                     (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='spectral'),                                            [r'muon renorm',
-    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \sum_i\ s_i\ ||W_i||_2$,',
+    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \sum_i\ s_i\ ||W_i||_*$,',
     #                                                                                                                                                                                           r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
 
     # muon_renorm_glbmspec=                                     (functools.partial(Muon, renormalize='globalmax_rawg', renorm_kind='spectral'),                                            [r'muon renorm',
-    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_2$,',
+    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_*$,',
     #                                                                                                                                                                                           r'$||\Delta W||_M$ match $||\text{momentum}||_M$)']),
 
     # muon_noscale=                                             (functools.partial(Muon, scale=None),                                                                                          [r'muon no scale']),
-    # muon_jbscale=                                             (functools.partial(Muon, scale='jxbz'),                                                                                        [r'muon scale to unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$*$||\Delta W||_2$',
+    # muon_jbscale=                                             (functools.partial(Muon, scale='jxbz'),                                                                                        [r'muon scale to unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$*$||\Delta W||_*$',
     #                                                                                                                                                                                           r'(default is unit $||\Delta W||_\text{RMS}$)']),
 
     # muon_renorm_fro_noscale=                                  (functools.partial(Muon, renormalize='momentum', renorm_kind='fro', scale=None),                                               [r'muon renorm',
@@ -1184,7 +1186,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     #                                                                                                                                                                                           r'+ no scale']),
 
     # muon_renorm_spec_noscale=                                 (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral', scale=None),                                          [r'muon renorm',
-    #                                                                                                                                                                                           r'($||\Delta W||_2$ match $||\text{momentum}||$)',
+    #                                                                                                                                                                                           r'($||\Delta W||_*$ match $||\text{momentum}||$)',
     #                                                                                                                                                                                           r'+ no scale']),
 
     # muon_renorm_fro_jbscale=                                  (functools.partial(Muon, renormalize='momentum', renorm_kind='fro', scale='jxbz'),                                             [r'muon renorm',
@@ -1192,7 +1194,7 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     #                                                                                                                                                                                           r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
 
     # muon_renorm_spec_jbscale=                                 (functools.partial(Muon, renormalize='momentum', renorm_kind='spectral', scale='jxbz'),                                        [r'muon renorm',
-    #                                                                                                                                                                                           r'($||\Delta W||_2$ match $||\text{momentum}||$)',
+    #                                                                                                                                                                                           r'($||\Delta W||_*$ match $||\text{momentum}||$)',
     #                                                                                                                                                                                           r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
 
     # muon_renorm_glbsfro_jbscale=                              (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='fro', scale='jxbz'),                                   [r'muon renorm',
@@ -1206,12 +1208,12 @@ OPTIM_MAP: Mapping[str, Tuple[Union[str, Callable], List[str]]] = dict(
     #                                                                                                                                                                                           r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
 
     # muon_renorm_glbsspec_jbscale=                             (functools.partial(Muon, renormalize='globalsum_momentum', renorm_kind='spectral', scale='jxbz'),                              [r'muon renorm',
-    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \sum_i\ s_i\ ||W_i||_2$,',
+    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \sum_i\ s_i\ ||W_i||_*$,',
     #                                                                                                                                                                                           r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
     #                                                                                                                                                                                           r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
 
     # muon_renorm_glbmspec_jbscale=                             (functools.partial(Muon, renormalize='globalmax_rawg', renorm_kind='spectral', scale='jxbz'),                              [r'muon renorm',
-    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_2$,',
+    #                                                                                                                                                                                           r'(modula-inspired $||\mathcal{W}||_M := \max_i\ s_i\ ||W_i||_*$,',
     #                                                                                                                                                                                           r'$||\Delta W||_M$ match $||\text{momentum}||_M$)',
     #                                                                                                                                                                                           r'+ unit $\sqrt{\frac{\text{fanout}}{\text{fanin}}}$ scale']),
 )

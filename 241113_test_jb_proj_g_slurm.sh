@@ -20,6 +20,7 @@ IFS=$'\n' read -rd '' -a commands <<< "$commands_str"
 
 # Set up progress bar variables
 total_commands=${#commands[@]}
+echo "total_commands=$total_commands"
 bar_width=50  # Width of the progress bar
 count=0
 

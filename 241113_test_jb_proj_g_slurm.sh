@@ -161,10 +161,19 @@ IFS=$'\n' read -rd '' -a commands <<< "$commands_str"
 total_commands=${#commands[@]}
 bar_width=120  # Width of the progress bar
 count=0
+failed_commands=()  # Array to track failed commands
+fail_count=0  # Counter to track number of failed commands
 
 # Loop over each command in the array
 for cmd in "${commands[@]}"; do
     eval "$cmd"  # Execute the command
+    exit_code=$?  # Capture the exit code
+
+    if [ $exit_code -ne 0 ]; then
+        failed_commands+=("$cmd")  # Add to failed commands if it failed
+        ((fail_count++))           # Increment the fail count
+    fi
+
     ((count++))
 
     # Calculate progress percentage and the number of hashes for the bar
@@ -174,12 +183,20 @@ for cmd in "${commands[@]}"; do
     # Create the progress bar with the correct number of # and spaces
     bar=$(printf "%-${bar_width}s" "$(printf '#%.0s' $(seq 1 $num_hashes))")
 
-    # Display the progress bar with percentage and count
-    echo -ne "Progress: [${bar}] $progress% ($count/$total_commands) \r"
+    # Display the progress bar with percentage, count, and failure count
+    echo -ne "Progress: [${bar}] $progress% ($count/$total_commands, Failures: $fail_count) \r"
 done
 
-# Move to a new line after the progress bar completes
-echo -e "\nAll commands completed."
-
 echo "START_TIME=$START_TIME"
+echo "UUID=$UUID6"
 
+
+# Print failed commands if there are any
+if [ ${#failed_commands[@]} -ne 0 ]; then
+    echo -e "\nThe following commands failed:"
+    for failed_cmd in "${failed_commands[@]}"; do
+        echo "  $failed_cmd"
+    done
+else
+    echo "All commands executed successfully."
+fi

@@ -3,7 +3,7 @@
 set +e
 
 START_TIME=$(date +"%m/%d/%y-%H:%M")
-UUID6=$(echo -n $(date +%s%N) | md5sum | fold -w6 | shuf | head -n1)
+UUID6=$(echo -n $(date +%s%N) | md5sum | sed 's/.\{5\}$//' | fold -w6 | shuf | head -n1)
 
 python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl nvidia_a100-sxm4-80gb tesla_v100-sxm2-32gb nvidia_rtx_6000_ada_generation nvidia_geforce_rtx_2080_ti -uuid $UUID6 -q -e py312 proj_g_lr0.001_final_scale0.001 -- python -u 241113_test_jb_proj_g.py newtonschulz5 0.001 0.001 0
 python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl nvidia_a100-sxm4-80gb tesla_v100-sxm2-32gb nvidia_rtx_6000_ada_generation nvidia_geforce_rtx_2080_ti -uuid $UUID6 -q -e py312 proj_g_lr0.00231013_final_scale0.001 -- python -u 241113_test_jb_proj_g.py newtonschulz5 0.001 0.00231013 0

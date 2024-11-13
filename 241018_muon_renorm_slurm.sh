@@ -3,7 +3,7 @@
 set +e
 
 START_TIME=$(date +"%m/%d/%y-%H:%M")
-UUID6=$(echo -n $(date +%s%N) | md5sum | fold -w6 | shuf | head -n1)
+UUID6=$(echo -n $(date +%s%N) | md5sum | sed 's/.\{5\}$//' | fold -w6 | shuf | head -n1)
 
 python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl nvidia_a100-sxm4-80gb tesla_v100-sxm2-32gb nvidia_rtx_6000_ada_generation -uuid $UUID6 -q -e py312 adam_1e-07 -- env FORCE_RERUN=1 python -u 241018_muon_renorm.py adam 1e-07 0
 python /data/vision/phillipi/contrastive/tongzhou/qrl2/scripts/sbatch.py -g nvidia_h100_80gb_hbm3 nvidia_h100_nvl nvidia_a100-sxm4-80gb tesla_v100-sxm2-32gb nvidia_rtx_6000_ada_generation -uuid $UUID6 -q -e py312 adam_b09_1e-07 -- env FORCE_RERUN=1 python -u 241018_muon_renorm.py adam_b09 1e-07 0

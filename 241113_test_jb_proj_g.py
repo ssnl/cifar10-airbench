@@ -6,6 +6,8 @@ import numpy as np
 import os
 import random
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 
 def zeropower_via_svd(G, steps=None, dtype=torch.float32, **kwargs):
     U, S, V = G.to(dtype).svd()
@@ -179,7 +181,7 @@ def make_model(add_relu_scale=True, final_scale_fn=nn.Identity):
         final_scale_fn(),
     ).to(torch.float32)
 
-    model = orth_init(model)
+    model = orth_init(model).to(device)
     model = torch.compile(model)
     return model
 
@@ -248,7 +250,6 @@ def eval_model(model, loader):
             correct += pred.eq(target.view_as(pred)).sum().item()
     return correct / len(loader.dataset)
 
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def train_model(model, optims, train_loader, test_loader, epochs=20):
     test_accs = []

@@ -186,9 +186,7 @@ for cmd in "${commands[@]}"; do
     # Display the progress bar with percentage, count, and failure count
     echo -ne "Progress: [${bar}] $progress% ($count/$total_commands, Failures: $fail_count) \r"
 done
-
-echo "START_TIME=$START_TIME"
-echo "UUID=$UUID6"
+echo ""
 
 
 # Print failed commands if there are any
@@ -200,3 +198,58 @@ if [ ${#failed_commands[@]} -ne 0 ]; then
 else
     echo "All commands executed successfully."
 fi
+
+echo "----------------------------------------"
+echo "START_TIME=$START_TIME"
+echo "UUID=$UUID6"
+echo "----------------------------------------"
+
+
+# Print Python snippet for status checking
+cat << EOF
+
+START_TIME = "$START_TIME"  # Set from bash variable
+UUID = "$UUID"  # Set from bash variable
+
+import json, subprocess
+import datetime, time
+from IPython.display import display
+from time import sleep
+
+
+class printed_str(str):
+    def __repr__(self):
+       return self
+
+dh = display('slurm status',display_id=True)
+while True:
+    # print human readable time
+    time_str = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    out = json.loads(subprocess.getoutput(f'sacct --json -S {START_TIME}'))
+    jobs = {j['job_id']: j for j in out['jobs']}
+    jobs = {k: j for k, j in jobs.items() if j['name'].endswith('-' + UUID)}
+
+    pending = running = failed = successful = 0
+    for _, j in jobs.items():
+        state = j['state']['current'][0]
+        if state == 'PENDING':
+            pending += 1
+        elif state == 'RUNNING':
+            running += 1
+        elif state == 'FAILED':
+            failed += 1
+        elif state == 'COMPLETED':
+            if j['exit_code']['status'][0] == 'SUCCESS':
+                successful += 1
+            else:
+                failed += 1
+        else:
+            raise ValueError(f'Unknown state: {j["state"]}')
+    dh.update(printed_str(f'''{time_str}
+Pending: {pending}, Running: {running}, Failed: {failed}, Successful: {successful}
+'''))
+    if running + pending == 0:
+        break
+    time.sleep(2)
+EOF
+

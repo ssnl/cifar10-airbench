@@ -253,7 +253,9 @@ def eval_model(model, loader):
 
 def train_model(model, optims, train_loader, test_loader, epochs=20):
     test_accs = []
+    sds = []
     losses = []
+
     for epoch in range(epochs):
         model.train()
         for batch_idx, (data, target) in enumerate(train_loader):
@@ -267,10 +269,11 @@ def train_model(model, optims, train_loader, test_loader, epochs=20):
             if batch_idx % 20 == 0:
                 print(f'epoch {epoch:02d} batch {batch_idx:03d} loss: {loss.item():.4f}')
         test_accs.append(eval_model(model, test_loader))
+        sds.append({k: v.cpu() for k, v in model.state_dict().items()})
 
     final_train_acc, final_test_acc = eval_model(model, train_loader), test_accs[-1]
     print(f'final train acc: {final_train_acc:.2%} test acc: {final_test_acc:.2%}')
-    return final_train_acc, torch.as_tensor(test_accs), torch.as_tensor(losses).reshape(epochs, -1)
+    return final_train_acc, torch.as_tensor(test_accs), torch.as_tensor(losses).reshape(epochs, -1), sds
 
 
 
@@ -301,8 +304,8 @@ if __name__ == '__main__':
                             #      zeropower_backends['newtonschulz5_proper'](w, normalize=False, steps=1)
                             #  ),
                          )
-        final_train_acc, test_accs, losses = train_model(model, optims, train_loader, test_loader, epochs=25)
-        torch.save(dict(final_train_acc=final_train_acc, test_accs=test_accs, losses=losses), file)
+        final_train_acc, test_accs, losses, sds = train_model(model, optims, train_loader, test_loader, epochs=25)
+        torch.save(dict(final_train_acc=final_train_acc, test_accs=test_accs, losses=losses, sds=sds), file)
         print(f'saved {file}')
 
     with open(file + '.running', 'w') as f:

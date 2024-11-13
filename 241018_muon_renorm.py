@@ -520,6 +520,8 @@ class Muon(torch.optim.Optimizer):
                 state['last_update']['update'] = update
                 p.data.add_(update, alpha=-lr)
 
+
+
 Result = namedtuple('Result', ['steps', 'train_accs', 'eval_accs', 'model_ws', 'state_dict', 'losses_all_steps', 'time_all_steps'])
 
 class CallBackProtocol(Protocol):

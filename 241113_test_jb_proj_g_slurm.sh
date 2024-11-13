@@ -3,7 +3,7 @@
 set +e
 
 START_TIME=$(date +"%m/%d/%y-%H:%M")
-UUID6=$(echo -n $(date +%s%N) | md5sum | fold -w6 | shuf | head -n1)
+UUID6=$(echo -n $(date +%s%N) | md5sum | sed 's/.\{5\}$//' | fold -w6 | shuf | head -n1)
 
 # Define commands as a multi-line string
 commands_str=$(cat << 'EOF'
@@ -32,11 +32,14 @@ for cmd in "${commands[@]}"; do
     # Calculate progress percentage and the number of hashes for the bar
     progress=$((count * 100 / total_commands))
     num_hashes=$((count * bar_width / total_commands))
-    bar=$(printf "%-${bar_width}s" "#" | cut -c 1-$num_hashes)
+
+    # Create the progress bar string
+    bar=$(printf "%-${bar_width}s" "#" | sed "s/ /#/g" | cut -c1-$num_hashes)
 
     # Display the progress bar with the percentage
-    echo -ne "Progress: [$bar] $progress% \r"
+    echo -ne "Progress: [${bar}] $progress% \r"
 done
+
 
 # Move to a new line after the progress bar completes
 echo -e "\nAll commands completed."

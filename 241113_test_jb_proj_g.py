@@ -288,6 +288,10 @@ if __name__ == '__main__':
 
     file = f'241113_test_jb_proj_g/mnist_lr{lr:g}_scale{scale:g}_seed{seed}.pth'
 
+    if os.path.exists(file):
+        print(f'{file} already exists, skipping')
+        exit(0)
+
     def run():
         torch.manual_seed(seed + 21436)
         torch.cuda.manual_seed(seed + 21436)
